@@ -96,16 +96,15 @@ endcode
 ; ### check_vector
 code check_vector, 'check_vector'       ; vector -> ^vector
         cmp     bl, HANDLE_TAG
-        jne     .error2
+        jne     error_not_vector
         mov     rax, rbx
         shr     rbx, HANDLE_TAG_BITS
         mov     rbx, [rbx]              ; rbx: ^vector
         cmp     word [rbx], TYPECODE_VECTOR
-        jne     .error1
+        jne     .error
         next
-.error1:
+.error:
         mov     rbx, rax
-.error2:
         jmp     error_not_vector
 endcode
 
@@ -113,15 +112,20 @@ endcode
 code verify_vector, 'verify-vector'     ; vector -> vector
 ; Returns argument unchanged.
         cmp     bl, HANDLE_TAG
-        jne     .error
+        jne     error_not_vector
         mov     rax, rbx
         shr     rax, HANDLE_TAG_BITS
         mov     rax, [rax]
         cmp     word [rax], TYPECODE_VECTOR
-        jne     .error
+        jne     error_not_vector
         next
-.error:
-        jmp     error_not_vector
+endcode
+
+; ### error-not-vector
+code error_not_vector, 'error-not-vector' ; x ->
+        _quote "a vector"
+        _ format_type_error
+        next
 endcode
 
 ; ### vector-capacity
