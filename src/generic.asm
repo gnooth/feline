@@ -24,36 +24,8 @@ file __FILE__
 %define GENERIC_FUNCTION_METHODS_OFFSET                 32
 %define GENERIC_FUNCTION_DISPATCH_OFFSET                40
 
-%macro  _gf_raw_code_address 0          ; gf -> raw-code-address
-        _slot1
-%endmacro
-
-%macro  _gf_set_raw_code_address 0      ; raw-code-address gf -> void
-        _set_slot1
-%endmacro
-
-%macro  _this_gf_set_raw_code_address 0 ; raw-code-address -> void
-        _this_set_slot1
-%endmacro
-
-%macro  _gf_raw_code_size 0             ; gf -> raw-code-size
-        _slot2
-%endmacro
-
-%macro  _gf_set_raw_code_size 0         ; raw-code-size gf -> void
-        _set_slot2
-%endmacro
-
-%macro  _this_gf_set_raw_code_size 0    ; raw-code-size -> void
-        _this_set_slot2
-%endmacro
-
 %macro  _gf_name 0                      ; gf -> symbol
         _slot3
-%endmacro
-
-%macro  _this_gf_set_name 0             ; symbol -> void
-        _this_set_slot3
 %endmacro
 
 %macro  _gf_methods 0                   ; gf -> methods
@@ -64,20 +36,12 @@ file __FILE__
         _set_slot4
 %endmacro
 
-%macro  _this_gf_set_methods 0          ; methods -> void
-        _this_set_slot4
-%endmacro
-
 %macro  _gf_dispatch 0                  ; gf -> dispatch
         _slot5
 %endmacro
 
 %macro  _gf_set_dispatch 0              ; dispatch gf -> void
         _set_slot5
-%endmacro
-
-%macro  _this_gf_set_dispatch 0         ; dispatch -> void
-        _this_set_slot5
 %endmacro
 
 ; ### generic-function?
