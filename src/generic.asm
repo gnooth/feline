@@ -277,12 +277,12 @@ code make_fixnum_hashtable_0, 'make-fixnum-hashtable/0' ; -> hashtable
         _lit 2
         _ new_hashtable_untagged
 
-        _symbol fixnum_hashcode
+        _tick fixnum_hashcode
         _ symbol_raw_code_address
         _over
         _ hashtable_set_hash_function
 
-        _symbol eq?
+        _tick eq?
         _ symbol_raw_code_address
         _over
         _ hashtable_set_test_function
@@ -333,11 +333,11 @@ code define_generic, 'define-generic'   ; symbol -> symbol
         _rfetch
         _ generic_function_set_dispatch ; -> symbol
 
-        _symbol dup
-        _symbol object_typecode
+        _tick dup
+        _tick object_typecode
         _rfetch
         _ generic_function_dispatch
-        _symbol do_generic
+        _tick do_generic
         _ four_array
         _ array_to_quotation
         _ compile_quotation             ; -> symbol quotation
@@ -400,7 +400,7 @@ code find_method, 'find-method'         ; symbol-or-type symbol-or-gf -> method/
 endcode
 
 %macro _initialize_generic_function 1
-        _symbol %1
+        _tick %1
         _ initialize_generic_function   ; -> gf
         _ generic_function_dispatch     ; -> hashtable
         mov     [%1_generic_function_dispatch_table], rbx
@@ -444,12 +444,12 @@ endcode
 %macro _add_method 3                    ; generic-asm-name, raw-typecode, method-asm-name
         _lit %2                         ; -> raw-typecode
         _tag_fixnum                     ; -> typecode
-        _symbol %1                      ; -> typecode generic-symbol
+        _tick %1                        ; -> typecode generic-symbol
         _ symbol_def                    ; -> typecode generic-function
 %ifdef DEBUG
         _ verify_generic_function
 %endif
-        _symbol %3                      ; -> typecode generic-function callable
+        _tick %3                        ; -> typecode generic-function callable
         _ make_method                   ; -> method
         _ install_method                ; -> empty
 %endmacro
@@ -805,8 +805,8 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method object_to_string, TYPECODE_STRING_SLICE, quote_string_slice
         _add_method object_to_string, TYPECODE_BIT_ARRAY, bit_array_to_string
 
-        _symbol object_to_string_default
-        _symbol object_to_string
+        _tick object_to_string_default
+        _tick object_to_string
         _ set_default_method
         next
 endcode
