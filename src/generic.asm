@@ -16,16 +16,23 @@
 file __FILE__
 
 ; 6 slots: object header, raw code address, raw code size, symbol, methods, dispatch
+%define GENERIC_FUNCTION_SIZE           6 * BYTES_PER_CELL
+
+%define GENERIC_FUNCTION_RAW_CODE_ADDRESS_OFFSET        8
+%define GENERIC_FUNCTION_RAW_CODE_SIZE_OFFSET           16
+%define GENERIC_FUNCTION_NAME_OFFSET                    24
+%define GENERIC_FUNCTION_METHODS_OFFSET                 32
+%define GENERIC_FUNCTION_DISPATCH_OFFSET                40
 
 %macro  _gf_raw_code_address 0          ; gf -> raw-code-address
         _slot1
 %endmacro
 
-%macro  _gf_set_raw_code_address 0      ; raw-code-address gf ->
+%macro  _gf_set_raw_code_address 0      ; raw-code-address gf -> void
         _set_slot1
 %endmacro
 
-%macro  _this_gf_set_raw_code_address 0 ; raw-code-address ->
+%macro  _this_gf_set_raw_code_address 0 ; raw-code-address -> void
         _this_set_slot1
 %endmacro
 
@@ -33,11 +40,11 @@ file __FILE__
         _slot2
 %endmacro
 
-%macro  _gf_set_raw_code_size 0         ; raw-code-size gf ->
+%macro  _gf_set_raw_code_size 0         ; raw-code-size gf -> void
         _set_slot2
 %endmacro
 
-%macro  _this_gf_set_raw_code_size 0    ; raw-code-size ->
+%macro  _this_gf_set_raw_code_size 0    ; raw-code-size -> void
         _this_set_slot2
 %endmacro
 
@@ -45,7 +52,7 @@ file __FILE__
         _slot3
 %endmacro
 
-%macro  _this_gf_set_name 0             ; symbol ->
+%macro  _this_gf_set_name 0             ; symbol -> void
         _this_set_slot3
 %endmacro
 
@@ -53,11 +60,11 @@ file __FILE__
         _slot4
 %endmacro
 
-%macro  _gf_set_methods 0               ; methods gf ->
+%macro  _gf_set_methods 0               ; methods gf -> void
         _set_slot4
 %endmacro
 
-%macro  _this_gf_set_methods 0          ; methods ->
+%macro  _this_gf_set_methods 0          ; methods -> void
         _this_set_slot4
 %endmacro
 
@@ -65,82 +72,82 @@ file __FILE__
         _slot5
 %endmacro
 
-%macro  _gf_set_dispatch 0              ; dispatch gf ->
+%macro  _gf_set_dispatch 0              ; dispatch gf -> void
         _set_slot5
 %endmacro
 
-%macro  _this_gf_set_dispatch 0         ; dispatch ->
+%macro  _this_gf_set_dispatch 0         ; dispatch -> void
         _this_set_slot5
 %endmacro
 
 ; ### generic-function?
-code generic_function?, 'generic-function?'     ; handle -> ?
-        _ deref                         ; -> raw-object/0
-        test    rbx, rbx
-        jz      .1
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_GENERIC_FUNCTION
-        jne     .1
-        mov     ebx, t_value
-        _return
-.1:
-        mov     ebx, f_value
+code generic_function?, 'generic-function?' ; x -> x/nil
+; If x is a generic function, returns x unchanged, otherwise returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .no
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_GENERIC_FUNCTION
+        jne     .no
+        next
+.no:
+        mov     ebx, NIL
         next
 endcode
 
-; ### check-generic-function
-code check_generic_function, 'check-generic-function'   ; handle -> gf
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_GENERIC_FUNCTION
+; ### check_generic_function
+code check_generic_function, 'check_generic_function' ; gf -> ^gf
+        cmp     bl, HANDLE_TAG
+        jne     error_not_generic_function
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]
+        cmp     word [rbx], TYPECODE_GENERIC_FUNCTION
         jne     .error
-        _nip
         next
 .error:
-        _drop
-        _ error_not_generic_function
-        next
+        mov     rbx, rax
+        jmp     error_not_generic_function
 endcode
 
 ; ### verify-generic-function
-code verify_generic_function, 'verify-generic-function' ; handle -> handle
-        _dup
-        _ generic_function?
-        _tagged_if .1
-        _return
-        _then .1
-
-        _ error_not_generic_function
+code verify_generic_function, 'verify-generic-function' ; gf -> gf
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
+        jne     error_not_generic_function
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_GENERIC_FUNCTION
+        jne     error_not_generic_function
         next
 endcode
 
-; ### <generic-function>
-code new_generic_function, '<generic-function>' ; symbol -> gf
-; 6 slots: object header, raw code address, raw code size, symbol, methods, dispatch
+; ### error-not-generic-function
+code error_not_generic_function, 'error-not-generic-function' ; x ->
+        _quote "a generic function"
+        _ format_type_error
+        next
+endcode
 
-        _lit 6
-        _ raw_allocate_cells
+; ### make-generic-function
+code make_generic_function, 'make-generic-function' ; symbol -> gf
 
-        push    this_register
-        mov     this_register, rbx
-        _drop
+        mov     arg0_register, GENERIC_FUNCTION_SIZE
+        _ feline_malloc
 
-        _this_object_set_raw_typecode TYPECODE_GENERIC_FUNCTION
+        mov     qword [rax], TYPECODE_GENERIC_FUNCTION
+        mov     qword [rax + GENERIC_FUNCTION_RAW_CODE_ADDRESS_OFFSET], 0
+        mov     qword [rax + GENERIC_FUNCTION_RAW_CODE_SIZE_OFFSET], 0
 
-        _this_gf_set_name
+        ; rbx: symbol
+        mov     qword [rax + GENERIC_FUNCTION_NAME_OFFSET], rbx
 
-        _nil
-        _this_gf_set_methods
+        mov     qword [rax + GENERIC_FUNCTION_METHODS_OFFSET], NIL
+        mov     qword [rax + GENERIC_FUNCTION_DISPATCH_OFFSET], NIL
 
-        _nil
-        _this_gf_set_dispatch
-
-        _dup
-        mov     rbx, this_register
-        pop     this_register
+        mov     rbx, rax
 
         _ new_handle
 
@@ -148,42 +155,42 @@ code new_generic_function, '<generic-function>' ; symbol -> gf
 endcode
 
 ; ### generic-function-name
-code generic_function_name, 'generic-function-name'     ; gf -> symbol
+code generic_function_name, 'generic-function-name' ; gf -> symbol
         _ check_generic_function
         _gf_name
         next
 endcode
 
 ; ### generic-function-methods
-code generic_function_methods, 'generic-function-methods'       ; gf -> methods
+code generic_function_methods, 'generic-function-methods' ; gf -> methods
         _ check_generic_function
         _gf_methods
         next
 endcode
 
 ; ### generic-function-set-methods
-code generic_function_set_methods, 'generic-function-set-methods'       ; methods gf ->
+code generic_function_set_methods, 'generic-function-set-methods' ; methods gf ->
         _ check_generic_function
         _gf_set_methods
         next
 endcode
 
 ; ### generic-function-dispatch
-code generic_function_dispatch, 'generic-function-dispatch'     ; gf -> dispatch
+code generic_function_dispatch, 'generic-function-dispatch' ; gf -> dispatch
         _ check_generic_function
         _gf_dispatch
         next
 endcode
 
 ; ### generic-function-set-dispatch
-code generic_function_set_dispatch, 'generic-function-set-dispatch'     ; dispatch gf ->
+code generic_function_set_dispatch, 'generic-function-set-dispatch' ; dispatch gf ->
         _ check_generic_function
         _gf_set_dispatch
         next
 endcode
 
 ; ### generic-function-to-string
-code generic_function_to_string, 'generic-function-to-string'   ; generic-function -> string
+code generic_function_to_string, 'generic-function-to-string' ; generic-function -> string
 
         _ verify_generic_function
         _quote "<generic-function "
@@ -255,7 +262,7 @@ code do_generic, 'do-generic'           ; object typecode dispatch-table ->
         jmp     rax
 %endif
 
-.1:                                     ; -> object f
+.1:                                     ; -> object nil
         ; typecode lookup failed
         ; is there a default method?
         pop     rbx                     ; -> object dispatch-table
@@ -323,7 +330,7 @@ endcode
 code initialize_generic_function, 'initialize-generic-function' ; generic-symbol -> gf
 
         _dup
-        _ new_generic_function          ; -> symbol gf
+        _ make_generic_function         ; -> symbol gf
 
         ; methods
         _ make_fixnum_hashtable_0
@@ -348,7 +355,7 @@ endcode
 code define_generic, 'define-generic'   ; symbol -> symbol
 
         _dup
-        _ new_generic_function          ; -> symbol gf
+        _ make_generic_function         ; -> symbol gf
 
         _tor                            ; -> symbol     r: -> gf
 
@@ -380,7 +387,7 @@ code define_generic, 'define-generic'   ; symbol -> symbol
         _over
         _ symbol_set_code_size          ; -> symbol
 
-        _rfrom                          ; -> symbol gf          r: -> void
+        _rfrom                          ; -> symbol gf  r: -> empty
 
         _over
         _ symbol_set_def
@@ -559,19 +566,19 @@ generic substring, 'substring'          ; from to string/sbuf -> substring
 generic to_float, '>float'
 
 ; ### stream-write-char
-generic stream_write_char, 'stream-write-char'  ; char stream -> void
+generic stream_write_char, 'stream-write-char' ; char stream -> void
 
 ; ### stream-write-char-escaped
-generic stream_write_char_escaped, 'stream-write-char-escaped'  ; char stream -> void
+generic stream_write_char_escaped, 'stream-write-char-escaped' ; char stream -> void
 
 ; ### stream-write-string
-generic stream_write_string, 'stream-write-string'      ; string stream -> void
+generic stream_write_string, 'stream-write-string' ; string stream -> void
 
 ; ### stream-write-string-escaped
-generic stream_write_string_escaped, 'stream-write-string-escaped'      ; string stream -> void
+generic stream_write_string_escaped, 'stream-write-string-escaped' ; string stream -> void
 
 ; ### stream-output-column
-generic stream_output_column, 'stream-output-column'    ; stream -> fixnum
+generic stream_output_column, 'stream-output-column' ; stream -> fixnum
 
 ; ### stream-nl
 generic stream_nl, 'stream-nl'          ; stream -> void
@@ -586,7 +593,7 @@ generic generic_close, 'close'          ; stream -> void
 generic object_to_string, 'object->string' ; object -> string
 
 ; ### initialize_generic_functions
-code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERNAL ; ->
+code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERNAL
 
         ; hashcode
         _initialize_generic_function generic_hashcode

@@ -213,13 +213,6 @@ code error_data_stack_underflow, 'error-data-stack-underflow'           ; --
         next
 endcode
 
-; ### error-not-generic-function
-code error_not_generic_function, 'error-not-generic-function'   ; x --
-        _quote "a generic function"
-        _ format_type_error
-        next
-endcode
-
 ; ### error-not-generic-word
 code error_not_generic_word, 'error-not-generic-word'           ; x -> void
         _quote "ERROR: `%S` is not a generic word."
