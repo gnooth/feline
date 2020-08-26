@@ -30,21 +30,21 @@ special accum, 'accum'
 %endmacro
 
 ; ### add-to-definition
-code add_to_definition, 'add-to-definition'     ; x --
+code add_to_definition, 'add-to-definition' ; x -> void
         _get_accum
         _ vector_push
         next
 endcode
 
 ; ### maybe-add
-code maybe_add, 'maybe-add'             ; x -- ???
+code maybe_add, 'maybe-add'             ; x -> void
         _get_accum
         _dup
         _tagged_if .1
-        _ vector_push                   ; --
+        _ vector_push
         _else .1
         _drop
-        _then .1                        ; -- x
+        _then .1
         next
 endcode
 
@@ -65,7 +65,7 @@ code parse_token, 'parse-token'         ; -> string/nil
 endcode
 
 ; ### must-parse-token
-code must_parse_token, 'must-parse-token'       ; -> string
+code must_parse_token, 'must-parse-token' ; -> string
         _ parse_token
         cmp     rbx, NIL
         je      error_unexpected_end_of_input
@@ -73,48 +73,49 @@ code must_parse_token, 'must-parse-token'       ; -> string
 endcode
 
 ; ### t
-code t, 't', SYMBOL_IMMEDIATE   ; -- t
+code t, 't', SYMBOL_IMMEDIATE
         _t
         _ maybe_add
         next
 endcode
 
 ; ### f
-code f, 'f', SYMBOL_IMMEDIATE   ; -- f
-        _f
+; Deprecated. Use nil.
+code f, 'f', SYMBOL_IMMEDIATE
+        _nil
         _ maybe_add
         next
 endcode
 
 ; ### true
-code true, 'true', SYMBOL_IMMEDIATE ; -> nil
+code true, 'true', SYMBOL_IMMEDIATE
         _true
         _ maybe_add
         next
 endcode
 
 ; ### nil
-code nil, 'nil', SYMBOL_IMMEDIATE ; -> nil
+code nil, 'nil', SYMBOL_IMMEDIATE
         _nil
         _ maybe_add
         next
 endcode
 
 ; ### immediate?
-code immediate?, 'immediate?'   ; object -- ?
+code immediate?, 'immediate?'           ; object -> ?
         _dup
         _ symbol?
         _tagged_if .1
         _ symbol_immediate?
         _else .1
         _drop
-        _f
+        _nil
         _then .1
         next
 endcode
 
 ; ### process-token
-code process_token, 'process-token'     ; string -- ???
+code process_token, 'process-token'     ; string -> void
         _ using_locals?
         _tagged_if .1
         _dup
@@ -135,8 +136,8 @@ code process_token, 'process-token'     ; string -- ???
         _return
         _then .3
 
-        _ find_name                     ; -- symbol/string ?
-        _tagged_if .4                   ; -- symbol
+        _ find_name                     ; -> symbol/string ?
+        _tagged_if .4                   ; -> symbol
         _dup
         _ symbol_immediate?
         _tagged_if .5
@@ -161,7 +162,7 @@ code process_token, 'process-token'     ; string -- ???
 
         _dup
         _ string_to_number
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         je      .error
         _nip
         _ maybe_add
@@ -204,7 +205,7 @@ code parse_until, 'parse-until'         ; delimiter -> vector
         jmp     .top
 .bottom:
         _2drop
-        _get_accum                      ; -- vector
+        _get_accum                      ; -> vector
 
         _ end_dynamic_scope
 
@@ -212,7 +213,7 @@ code parse_until, 'parse-until'         ; delimiter -> vector
 endcode
 
 ; ### vector{
-code old_parse_vector, 'vector{', SYMBOL_IMMEDIATE ; -> vector
+code old_parse_vector, 'vector{', SYMBOL_IMMEDIATE
         _quote "}"
         _ parse_until
         _ maybe_add
@@ -220,7 +221,7 @@ code old_parse_vector, 'vector{', SYMBOL_IMMEDIATE ; -> vector
 endcode
 
 ; ### V{
-code parse_vector, 'V{', SYMBOL_IMMEDIATE ; -> vector
+code parse_vector, 'V{', SYMBOL_IMMEDIATE
         _quote "}"
         _ parse_until
         _ maybe_add
@@ -228,7 +229,7 @@ code parse_vector, 'V{', SYMBOL_IMMEDIATE ; -> vector
 endcode
 
 ; ### {
-code parse_array, '{', SYMBOL_IMMEDIATE         ; -- handle
+code parse_array, '{', SYMBOL_IMMEDIATE
         _quote "}"
         _ parse_until
         _ vector_to_array
@@ -237,13 +238,13 @@ code parse_array, '{', SYMBOL_IMMEDIATE         ; -- handle
 endcode
 
 ; ### }
-code rbrace, '}', SYMBOL_IMMEDIATE              ; --
+code rbrace, '}', SYMBOL_IMMEDIATE
         _ error_unexpected_delimiter
         next
 endcode
 
 ; ### [
-code parse_quotation, '[', SYMBOL_IMMEDIATE     ; -- quotation
+code parse_quotation, '[', SYMBOL_IMMEDIATE
         _quote "]"
         _ parse_until
         _ vector_to_array
@@ -253,7 +254,7 @@ code parse_quotation, '[', SYMBOL_IMMEDIATE     ; -- quotation
 endcode
 
 ; ### ]
-code rbracket, ']', SYMBOL_IMMEDIATE            ; --
+code rbracket, ']', SYMBOL_IMMEDIATE
         _ error_unexpected_delimiter
         next
 endcode
@@ -290,20 +291,20 @@ code postpone, 'postpone:', SYMBOL_IMMEDIATE
 endcode
 
 ; ### symbol:
-code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE  ; --
-        _ must_parse_token              ; -- string
-        _ new_symbol_in_current_vocab   ; -- symbol
+code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE
+        _ must_parse_token              ; -> string
+        _ new_symbol_in_current_vocab   ; -> symbol
         _dup
         _ new_wrapper
         _ one_quotation
         _over
-        _ symbol_set_def                ; -- handle
+        _ symbol_set_def                ; -> symbol
         _ compile_word
         next
 endcode
 
 ; ### special
-code parse_special, 'special', SYMBOL_IMMEDIATE ; void -> void
+code parse_special, 'special', SYMBOL_IMMEDIATE
         _ must_parse_token              ; -> string
         _ new_symbol_in_current_vocab   ; -> symbol
 
@@ -314,13 +315,13 @@ code parse_special, 'special', SYMBOL_IMMEDIATE ; void -> void
         _ new_wrapper
         _ one_quotation
         _over
-        _ symbol_set_def                ; -- handle
+        _ symbol_set_def                ; -> symbol
         _ compile_word
         next
 endcode
 
 ; ### note-redefinition
-code note_redefinition, 'note_redefinition'     ; symbol --
+code note_redefinition, 'note_redefinition' ; symbol ->
         _ ?nl
         _dup
         _ symbol_vocab_name
@@ -342,10 +343,10 @@ code note_redefinition, 'note_redefinition'     ; symbol --
 endcode
 
 ; ### maybe-note-redefinition
-code maybe_note_redefinition, 'maybe-note-redefinition' ; string --
+code maybe_note_redefinition, 'maybe-note-redefinition' ; string ->
         _ current_vocab
         _ vocab_hashtable
-        _ hashtable_at_star             ; -- symbol/f ?
+        _ hashtable_at_star             ; -> symbol/nil ?
         _tagged_if .1
         _ note_redefinition
         _else .1
@@ -361,7 +362,7 @@ code new_symbol_in_current_vocab, 'new-symbol-in-current-vocab' ; string -> symb
         _ current_vocab
         _ new_symbol
 
-        _ current_lexer_location        ; -> symbol 3array/f
+        _ current_lexer_location        ; -> symbol 3array/nil
         _dup
         _tagged_if .1                   ; -> symbol 3array
         _dup
@@ -392,14 +393,14 @@ endcode
 asm_global current_definition_, NIL
 
 ; ### current-definition
-code current_definition, 'current-definition'   ; -> vector/nil
+code current_definition, 'current-definition' ; -> vector/nil
         _dup
         mov     rbx, [current_definition_]
         next
 endcode
 
 ; ### set-current-definition
-code set_current_definition, 'set-current-definition'   ; vector/nil -> void
+code set_current_definition, 'set-current-definition' ; vector/nil -> void
         _dup
         _tagged_if .1
         _ verify_vector
@@ -410,7 +411,7 @@ code set_current_definition, 'set-current-definition'   ; vector/nil -> void
 endcode
 
 ; ### parse-definition
-code parse_definition, 'parse-definition'       ; -> vector
+code parse_definition, 'parse-definition' ; -> vector
 
         _ begin_dynamic_scope
 
@@ -476,7 +477,7 @@ endcode
 ; ### :
 code colon, ':', SYMBOL_IMMEDIATE
 
-        _symbol colon
+        _tick colon
         _ top_level_only
 
         _ parse_name                    ; -> symbol
@@ -496,8 +497,8 @@ code colon, ':', SYMBOL_IMMEDIATE
 endcode
 
 ; ### private:
-code private_colon, 'private:', SYMBOL_IMMEDIATE        ; --
-        _symbol private_colon
+code private_colon, 'private:', SYMBOL_IMMEDIATE
+        _tick private_colon
         _ top_level_only
 
         _ colon
@@ -507,8 +508,8 @@ code private_colon, 'private:', SYMBOL_IMMEDIATE        ; --
 endcode
 
 ; ### public:
-code public_colon, 'public:', SYMBOL_IMMEDIATE          ; --
-        _symbol public_colon
+code public_colon, 'public:', SYMBOL_IMMEDIATE
+        _tick public_colon
         _ top_level_only
 
         _ colon
@@ -518,13 +519,13 @@ code public_colon, 'public:', SYMBOL_IMMEDIATE          ; --
 endcode
 
 ; ### ;
-code semi, ';', SYMBOL_IMMEDIATE        ; --
+code semi, ';', SYMBOL_IMMEDIATE
         _ error_unexpected_delimiter
         next
 endcode
 
 ; ### immediate
-code immediate, 'immediate'             ; --
+code immediate, 'immediate'
         _ last_word
         _ symbol_set_immediate
         next
@@ -542,7 +543,7 @@ code define_test, 'test:'
         _ parse_name                    ; -> symbol
         _ parse_definition              ; -> symbol vector
 
-        _symbol ?nl
+        _tick ?nl
         _lit tagged_zero
         _pick
         _ vector_insert_nth
@@ -553,7 +554,7 @@ code define_test, 'test:'
         _pick
         _ vector_insert_nth
 
-        _symbol write_string
+        _tick write_string
         _lit tagged_fixnum(2)
         _pick
         _ vector_insert_nth
@@ -644,7 +645,7 @@ endcode
 ; ### method:
 code method_colon, 'method:', SYMBOL_IMMEDIATE
 
-        _symbol method_colon
+        _tick method_colon
         _ top_level_only
 
         ; type
@@ -739,9 +740,9 @@ endcode
 code ?exit, '?exit', SYMBOL_IMMEDIATE
         _ using_locals?
         _tagged_if .1
-        _symbol ?exit_locals
+        _tick ?exit_locals
         _else .1
-        _symbol ?exit_no_locals
+        _tick ?exit_no_locals
         _then .1
         _get_accum
         _ vector_push
@@ -762,9 +763,9 @@ endcode
 code ?return, '?return', SYMBOL_IMMEDIATE
         _ using_locals?
         _tagged_if .1
-        _symbol ?return_locals
+        _tick ?return_locals
         _else .1
-        _symbol ?return_no_locals
+        _tick ?return_no_locals
         _then .1
         _get_accum
         _ vector_push
@@ -824,25 +825,25 @@ code process_named_parameters, 'process-named-parameters'
 
 .1:
         _drop
-        _symbol store_1_arg
+        _tick store_1_arg
         _ add_to_definition
         _return
 
 .2:
         _drop
-        _symbol store_2_args
+        _tick store_2_args
         _ add_to_definition
         _return
 
 .3:
         _drop
-        _symbol store_3_args
+        _tick store_3_args
         _ add_to_definition
         _return
 
 .4:
         _drop
-        _symbol store_4_args
+        _tick store_4_args
         _ add_to_definition
         _return
 
@@ -850,13 +851,13 @@ code process_named_parameters, 'process-named-parameters'
 endcode
 
 ; ### add-named-parameter
-code add_named_parameter, 'add-named-parameter' ; string --
+code add_named_parameter, 'add-named-parameter' ; string ->
         _ add_local
         next
 endcode
 
 ; ### (
-code paren, '(', SYMBOL_IMMEDIATE       ; --
+code paren, '(', SYMBOL_IMMEDIATE       ; ->
 
         _ current_lexer
         _ get
@@ -1004,7 +1005,7 @@ code local, 'local', SYMBOL_IMMEDIATE
 endcode
 
 ; ### top-level-only
-code top_level_only, 'top-level-only'   ; word --
+code top_level_only, 'top-level-only'   ; word ->
         _ in_definition?
         _ get
         _tagged_if .1
@@ -1024,11 +1025,11 @@ code sh, 'sh'
         _dup
         _tagged_if .1
         _dup
-        _ lexer_line                    ; -- lexer string
+        _ lexer_line                    ; -> lexer string
         _over
-        _ lexer_index                   ; -- lexer string index
+        _ lexer_index                   ; -> lexer string index
         _swap
-        _ string_tail                   ; -- lexer tail
+        _ string_tail                   ; -> lexer tail
 
         _swap
         _ lexer_next_line
