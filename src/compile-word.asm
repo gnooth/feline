@@ -331,8 +331,8 @@ code emit_nip, 'emit-nip'               ; void -> void
         next
 endcode
 
-; ### compile-call
-code compile_call, 'compile-call'       ; address -> void
+; ### compile-call-address
+code compile_call_address, 'compile-call-address' ; address -> void
         ; calculate displacement
         _dup
         _ pc
@@ -385,7 +385,7 @@ endcode
 ; ### compile-call-symbol
 code compile_call_symbol, 'compile-call-symbol' ; symbol -> void
         _ symbol_code_address
-        _ compile_call
+        _ compile_call_address
         next
 endcode
 
