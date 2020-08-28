@@ -54,6 +54,7 @@ global inspected-object
     { "raw typecode" :raw }
     "generic function"
     "callable"
+    "symbol"
 } method builtin-type-set-layout
 
 {
