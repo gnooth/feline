@@ -668,9 +668,22 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE
         _ parse_definition              ; -> typecode gf vector
         _ vector_to_array
         _ array_to_quotation            ; -> typecode gf quotation
-        _ compile_quotation             ; -> typecode gf quotation
-        _ forget_locals
-        _ make_method
+        _ make_method                   ; -> method
+
+        _dup
+        _ method_callable
+        _ verify_quotation              ; -> method quotation
+        _over
+        _ method_symbol
+        _ symbol_set_def                ; -> method
+
+        _dup
+        _ method_symbol                 ; -> method symbol
+        _ locals_count
+        _over                           ; -> method symbol n symbol
+        _ symbol_set_locals_count       ; -> method symbol
+
+        _ compile_word                  ; -> method
         _ install_method
 
         next
