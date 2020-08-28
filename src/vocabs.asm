@@ -15,7 +15,7 @@
 
 file __FILE__
 
-asm_global feline_vocab_, nil
+asm_global feline_vocab_
 
 ; ### feline-vocab
 code feline_vocab, 'feline-vocab'       ; -> vocab
@@ -24,7 +24,7 @@ code feline_vocab, 'feline-vocab'       ; -> vocab
         next
 endcode
 
-asm_global user_vocab_, nil
+asm_global user_vocab_
 
 ; ### user-vocab
 code user_vocab, 'user-vocab'           ; -> vocab
@@ -33,7 +33,7 @@ code user_vocab, 'user-vocab'           ; -> vocab
         next
 endcode
 
-asm_global accessors_vocab_, nil
+asm_global accessors_vocab_
 
 ; ### accessors-vocab
 code accessors_vocab, 'accessors-vocab' ; -> vocab
@@ -42,7 +42,7 @@ code accessors_vocab, 'accessors-vocab' ; -> vocab
         next
 endcode
 
-asm_global methods_vocab_, nil
+asm_global methods_vocab_
 
 ; ### methods-vocab
 code methods_vocab, 'methods-vocab'     ; -> vocab
@@ -51,7 +51,7 @@ code methods_vocab, 'methods-vocab'     ; -> vocab
         next
 endcode
 
-asm_global dictionary_, nil
+asm_global dictionary_
 
 ; ### dictionary
 code dictionary, 'dictionary'           ; -> hashtable
@@ -70,7 +70,7 @@ code context_vector, 'context-vector', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
         next
 endcode
 
-asm_global current_vocab_, nil
+asm_global current_vocab_
 
 ; ### current-vocab
 code current_vocab, 'current-vocab'     ; -> vocab
@@ -214,6 +214,11 @@ code hash_vocabs, 'hash-vocabs', SYMBOL_INTERNAL
 
         _ accessors_vocab
         _quote "accessors"
+        _ dictionary
+        _ hashtable_set_at
+
+        _ methods_vocab
+        _quote "methods"
         _ dictionary
         _ hashtable_set_at
 
