@@ -176,12 +176,20 @@ code make_tuple_type, 'make-tuple-type' ; symbol slots -> type
         next
 endcode
 
-asm_global types_, f_value
+asm_global types_
 
 ; ### types
 code types, 'types'                     ; -> sequence
-        pushrbx
+        _dup
         mov     rbx, [types_]
+        next
+endcode
+
+; ### type-name-from-typecode
+code type_name_from_typecode, 'type-name-from-typecode' ; fixnum -> string
+        _ types
+        _ vector_nth
+        _ type_name
         next
 endcode
 
