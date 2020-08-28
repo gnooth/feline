@@ -16,12 +16,13 @@
 file __FILE__
 
 ; REVIEW code address, code size
-; 4 slots: object header, raw typecode, generic function, callable
-%define METHOD_SIZE                             4 * BYTES_PER_CELL
+; 5 slots: object header, raw typecode, generic function, callable, symbol
+%define METHOD_SIZE                             5 * BYTES_PER_CELL
 
 %define METHOD_RAW_TYPECODE_OFFSET              8
 %define METHOD_GENERIC_FUNCTION_OFFSET          16
 %define METHOD_CALLABLE_OFFSET                  24
+%define METHOD_SYMBOL_OFFSET                    32
 
 %macro  _method_raw_typecode 0          ; method -> raw-typecode
         _slot1
@@ -51,7 +52,7 @@ file __FILE__
         _this_slot2
 %endmacro
 
-%macro  _this_method_set_generic_function 0     ; generic-function ->
+%macro  _this_method_set_generic_function 0 ; generic-function ->
         _this_set_slot2
 %endmacro
 
@@ -69,6 +70,22 @@ file __FILE__
 
 %macro  _this_method_set_callable 0     ; callable ->
         _this_set_slot3
+%endmacro
+
+%macro  _method_symbol 0                ; method -> symbol
+        _slot4
+%endmacro
+
+%macro  _method_set_symbol 0            ; symbol method ->
+        _set_slot4
+%endmacro
+
+%macro  _this_method_symbol 0           ; -> symbol
+        _this_slot4
+%endmacro
+
+%macro  _this_method_set_symbol 0       ; symbol ->
+        _this_set_slot4
 %endmacro
 
 ; ### method?
@@ -93,7 +110,7 @@ code check_method, 'check_method'       ; method -> ^method
         jne     error_not_method
         mov     rax, rbx
         shr     rbx, HANDLE_TAG_BITS
-        mov     rbx, [rbx]              ; rbx: ^method
+        mov     rbx, [rbx]
         cmp     word [rbx], TYPECODE_METHOD
         jne     .error
         next
@@ -122,9 +139,34 @@ code error_not_method, 'error-not-method' ; x ->
         next
 endcode
 
+; ### method-symbol-name
+code method_symbol_name, 'method-symbol-name' ; method -> string
+        _dup
+        _ method_typecode
+        _ type_name_from_typecode
+        _tagged_char('.')
+        _ string_append_char
+        _swap
+        _ method_generic_function
+        _ generic_function_name
+        _ symbol_name
+        _ verify_string
+        _ string_append
+        next
+endcode
+
+; ### make-method-symbol
+code make_method_symbol, 'make-method-symbol' ; method -> symbol
+        _ method_symbol_name
+        _ methods_vocab
+        _ verify_vocab
+        _ new_symbol
+        next
+endcode
+
 ; ### make-method
 code make_method, 'make-method'          ; typecode gf callable -> method
-        _lit 4
+        _lit 5
         _ raw_allocate_cells
 
         push    this_register
@@ -189,6 +231,36 @@ code method_set_callable, 'method-set-callable' ; callable method ->
         _ verify_callable
         _swap
         _method_set_callable
+        next
+endcode
+
+; ### method-set-symbol
+code method_set_symbol, 'method-set-symbol' ; symbol method ->
+        _ check_method
+        _swap
+        _ verify_symbol
+        _swap
+        _method_set_symbol
+        next
+endcode
+
+; ### method-symbol
+code method_symbol, 'method-symbol' ; method -> symbol
+        push    rbx
+        _ check_method
+        _method_symbol
+        cmp     rbx, NIL
+        pop     rax
+        je      .1
+        next
+.1:
+        ; rax: method
+        mov     rbx, rax                ; -> method
+        _dup
+        _ make_method_symbol            ; -> method symbol
+        _tuck                           ; -> symbol method symbol
+        _swap                           ; -> symbol symbol method
+        _ method_set_symbol             ; -> symbol
         next
 endcode
 
