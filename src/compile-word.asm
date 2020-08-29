@@ -942,9 +942,8 @@ code add_quotation, 'add-quotation'     ; quotation -> void
 endcode
 
 ; ### add-children
-code add_children, 'add-children'       ; quotation -> void
+code add_children, 'add-children'       ; quotation-or-array -> void
         _ ?enough_1
-        _ verify_quotation
 
         _tick maybe_add_quotation_and_children
         _ each
@@ -966,11 +965,18 @@ endcode
 code maybe_add_quotation_and_children, 'maybe-add-quotation-and-children' ; x -> void
         _ ?enough_1
 
-        _ quotation?                    ; -> quotation/nil
+        _dup
+        _ quotation?                    ; -> x x/nil
         cmp     rbx, NIL
-        je      drop
-        ; -> quotation
-        _ add_quotation_and_children
+        _drop                           ; -> x
+        jnz     add_quotation_and_children
+
+        ; not a quotation
+        ; -> x
+        _ array?
+        cmp     rbx, NIL
+        jz      drop
+        _ add_children
         next
 endcode
 
