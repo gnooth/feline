@@ -127,7 +127,9 @@ global extension
         current-buffer output-buffer eq? [ editor:request-update-display ] when
     ] when ;
 
-: find-in-directory ( directory extension )
+defer find-in-directory
+
+: %find-in-directory ( directory extension )
     local filename
     directory directory-files [
         [
@@ -148,6 +150,8 @@ global extension
             } cond
         ] each
     ] when* ;
+
+' %find-in-directory is find-in-directory
 
 : find-in-files-run
     directory extension find-in-directory
