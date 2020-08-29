@@ -97,6 +97,19 @@ code check_array, 'check_array'         ; x -> ^array
         jmp     error_not_array
 endcode
 
+; ### verify-array
+code verify_array, 'verify-array'       ; array -> array
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
+        jne     error_not_array
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_ARRAY
+        jne     error_not_array
+        next
+endcode
+
 ; ### error-not-array
 code error_not_array, 'error-not-array' ; x ->
         _quote "an array"
