@@ -99,3 +99,21 @@ test: test-7
     { 42 } [ true %test-7 ] unit-test ;
 
 test-7
+
+: %test-8
+    most-positive-fixnum :> x x ;
+
+test: test-8
+    4611686018427387903 most-positive-fixnum assert-eq
+    { 4611686018427387903 } [ %test-8 ] unit-test ;
+
+test-8
+
+: %test-9
+    2147483647 :> x x ;
+
+test: test-9
+    2147483647 max-int32 assert-eq
+    { 2147483647 } [ %test-9 ] unit-test ;
+
+test-9
