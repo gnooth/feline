@@ -136,9 +136,7 @@ code recover, 'recover'                 ; try-quotation recover-quotion ->
         ; restore data stack
         _ clear
         _rfrom
-        _quotation .1
-        _ identity
-        _end_quotation .1
+        _tick identity
         _ each
 
         _dup
