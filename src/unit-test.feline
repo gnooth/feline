@@ -24,13 +24,14 @@ var location
 var expected
 var quot
 var got
+var saved
 
 : do-unit-test                          // sequence quotation location -> void
     location! quot! expected!
-    clear
+    get-datastack saved!
     quot call
     get-datastack got!
-    clear
+    saved set-datastack
     expected got sequence= [
         location set-error-location
         expected got "ERROR: expected %s, got %s." format error
