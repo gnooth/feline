@@ -16,6 +16,8 @@
 using: feline ;
 in: feline
 
+"compiler.feline" load-system-file
+
 public
 
 : blank?                                // char -> ?
