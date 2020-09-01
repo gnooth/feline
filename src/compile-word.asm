@@ -398,17 +398,10 @@ code compile_literal, 'compile-literal' ; literal -> void
         _then .1
 
         _ emit_dup
-        _dup
-        _lit 0x100000000
-        _ult
-        _if .2
-        _emit_byte 0xbb
-        _ emit_raw_dword
-        _else .2
+        _ object_to_uint64
         _emit_byte 0x48
         _emit_byte 0xbb
-        _ emit_raw_qword
-        _then .2
+        _ emit_qword
         next
 endcode
 
