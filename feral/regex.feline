@@ -21,10 +21,6 @@ empty
 private
 
 // FIXME copied from feral-core.feline
-: dprintf                               // ... format-string -> void
-    ?nl format print ;
-
-// FIXME copied from feral-core.feline
 : alphanumeric?                         // char -> ?
     verify-char char-code :> c
     [ 'A' char-code c <= ] [ c 'Z' char-code <= ] both? [ true ] ?return
@@ -250,7 +246,7 @@ defer match-here
     0 0 match-here as-boolean ;
 
 // Testing
-: test ( text pattern expected )        // text pattern expected -> void
+: test1 ( text pattern expected )       // text pattern expected -> void
     ?nl text pattern "%S %S -> " format write
     text pattern matches? dup .
     expected assert-eq ;
@@ -261,16 +257,16 @@ defer match-here
     expected2 assert-eq expected1 assert-eq ;
 
 : tests
-    "a" "a" true test
-    "b" "a" nil test
-    "ab" "ab" true test
-    "ab" "a." true test
-    "ab" ".b" true test
-    "fooooobar" "f.*bar" true test
-    "a" "[ab]" true test
-    "b" "[ab]" true test
-    "c" "[ab]" nil test
-    "d" "[a-z]" true test
+    "a" "a" true test1
+    "b" "a" nil test1
+    "ab" "ab" true test1
+    "ab" "a." true test1
+    "ab" ".b" true test1
+    "fooooobar" "f.*bar" true test1
+    "a" "[ab]" true test1
+    "b" "[ab]" true test1
+    "c" "[ab]" nil test1
+    "d" "[a-z]" true test1
 
     "[^a]" "ab" 1 2 test2
     "[^ab]" "abcd" 2 3 test2
