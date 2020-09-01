@@ -1007,6 +1007,17 @@ code depth, 'depth'                     ; -- fixnum
         next
 endcode
 
+; ### set-datastack
+code set_datastack, 'set-datastack'     ; array -> void
+        push    rbx
+        _ clear
+        _dup
+        pop     rbx
+        _tick identity
+        _ array_each
+        next
+endcode
+
 ; ### get-datastack
 code get_datastack, 'get-datastack'     ; -> array
 
@@ -1058,7 +1069,7 @@ code get_datastack, 'get-datastack'     ; -> array
 endcode
 
 ; ### clear
-code clear, 'clear'                     ; ??? --
+code clear, 'clear'
 ; clear the current thread's data stack
         _ current_thread_raw_sp0_rax
         mov     rbp, rax
