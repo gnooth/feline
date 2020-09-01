@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feline accessors ;
+using: feline ;
 in: user
 
 "compiler" delete-vocab
@@ -22,185 +22,11 @@ in: compiler
 
 empty
 
-private
+public
 
-// These definitions shadow the ones in compile-word.asm. Turning on
-// verbosity in this vocabulary only affects the optimizing compiler.
-global compile-verbose?
-: +v true compile-verbose?! ;
-: -v nil compile-verbose?! ;
+: compile-?return-locals ( node )       // node -> void
 
-tuple: compiler-context
-    pc
-    origin
-    pending ;
-
-: make-compiler-context                 // void -> compiler-context
-    compile-verbose? [ ?nl "make-compiler-context" print ] when
-
-    compiler-context make-instance
-    10 <vector> >>pending ;
-
-special current-context
-
-: origin                                // void -> fixnum
-    current-context get origin>> ;
-
-: origin!                               // address -> void
-    current-context get origin<< ;
-
-: pc                                    // void -> fixnum
-    current-context get pc>> ;
-
-: pc!                                   // address -> void
-    current-context get pc<< ;
-
-: emit-byte                             // byte -> void
-    pc c!
-    pc 1+ pc! ;
-
-: emit-dword                            // dword -> void
-    pc l!
-    pc 4 + pc! ;
-
-: emit-qword                            // qword -> void
-    pc !
-    pc 8 + pc! ;
-
-: emit-bytes                            // sequence -> void
-    ' emit-byte each ;
-
-tuple: node
-    literal-value
-    op                                  // symbol
-    type                                // result type
-    pred                                // predecessor node or nil
-;
-
-: make-literal-node                     // literal -> node
-    dup type-of                         // -> literal type
-    node make-instance
-    swap >>type
-    swap >>literal-value ;
-
-: make-operator-node                    // symbol -> node
-    [ symbol-declared-type ] keep
-    node make-instance
-    swap >>op
-    swap >>type ;
-
-: dump-node ( node )                    // node -> void
-    node op>> [
-        "operator: " write-string
-        node op>> object->string write-string
-        " type: " write-string
-        node type>> object->string print
-    ] [
-        "literal: " write-string
-        node literal-value>> object->string write-string
-        " type: " write-string
-        node type>> [ object->string print ] [ . ] if*
-    ] if ;
-
-: pending                               // void -> vector
-    current-context get pending>> ;
-
-: pending-last                          // void -> node
-    pending vector-last ;
-
-: pending-last-value                    // void -> x
-    pending vector-last literal-value>> ;
-
-: pending-remove-last
-    pending vector-pop* ;
-
-defer compile-quotation
-
-: precompile-object ( x )               // x -> node
-    x symbol? [
-        x make-operator-node
-    ] [
-        x quotation? [
-            x quotation-code-address 0? [
-                x compile-quotation drop
-                x quotation-code-address 0? assert-false
-            ] when
-        ] when
-        x make-literal-node
-    ] if ;
-
-: precompile-quotation                  // quotation -> vector
-
-    64 <vector> :> vec
-
-    quotation-array [
-        precompile-object               // -> node
-        vec vector-?last >>pred
-        vec push
-    ] each
-
-    compile-verbose? [
-        ?nl vec [ dec. space dump-node ] each-index
-    ] when
-
-    vec ;
-
-: emit-dup
-    { 0x48 0x89 0x5d 0xf8 0x48 0x8d 0x6d 0xf8 } emit-bytes ;
-
-: emit-drop
-    { 0x48 0x8b 0x5d 0x00 0x48 0x8d 0x6d 0x08 } emit-bytes ;
-
-: compile-literal                       // node -> void
-    literal-value>>
-
-    dup wrapper? [ wrapped ] when
-
-    emit-dup
-    object>uint64
-    dup 32 rshift 0? [
-        0xbb emit-byte emit-dword
-    ] [
-        0x48 emit-byte 0xbb emit-byte emit-qword
-    ] if ;
-
-: flush-pending
-    pending length 0? [
-        pending [ compile-literal ] each
-        pending vector-delete-all
-    ] unless ;
-
-: inline-primitive
-    dup symbol-code-address
-    swap symbol-code-size               // -> address size
-    1-                                  // adjust size to exclude ret instruction
-    pc swap [ unsafe-copy-bytes ] keep  // -> size
-    pc + pc! ;
-
-: compile-call-address                  // tagged-address -> void
-    dup pc 5 + -                        // -> tagged-address tagged-displacement
-    int32? [
-        0xe8 emit-byte                  // -> tagged-address
-        pc 4 + - emit-dword
-    ] [
-        "unsupported" error
-    ] if ;
-
-: compile-call-symbol                   // symbol -> void
-    symbol-code-address
-    compile-call-address ;
-
-: compile-primitive                     // symbol -> void
-    dup debug? [
-        symbol-always-inline? [ inline-primitive ] [ compile-call-symbol ] if
-    ] [
-        symbol-inline? [ inline-primitive ] [ compile-call-symbol ] if
-    ] if ;
-
-: compile-when ( node )                 // node -> void
-//     ?nl node op>> symbol-name print
-
-    pending length 0? [ node op>> compile-call-symbol ] ?return
+    pending length 0? [ node node-operator compile-call-symbol ] ?return
 
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
 
@@ -209,78 +35,40 @@ defer compile-quotation
     address [
         pending-remove-last
         flush-pending
-        { 0x48 0x83 0xfb 0x06 } emit-bytes // cmp rbx, 6
-        emit-drop
+
+        0x48 emit-byte
+        0x83 emit-byte
+        0xfb emit-byte
+        0x00 emit-byte                  // cmp rbx, nil
+        emit-drop                       // drop
         0x74 emit-byte                  // jz
-        0x05 emit-byte                  // $+5
+        0x0a emit-byte                  // $+10
         address compile-call-address
+
+        // jump to exit
+        0xe9 emit-byte                  // jmp
+        pc add-forward-jump-address
+        // following bytes will be patched by patch-forward-jump
+        0x00 emit-byte
+        0x00 emit-byte
+        0x00 emit-byte
+        0x00 emit-byte
     ] [
         flush-pending
-        node op>> compile-call-symbol
+        node node-operator compile-call-symbol
     ] if ;
 
-' compile-when :compiler ' when symbol-set-prop
-
-: compile-unless ( node )                 // node -> void
-//     ?nl node op>> symbol-name print
-
-    pending length 0? [ node op>> compile-call-symbol ] ?return
-
-    pending-last-value dup wrapper? [ wrapped ] when :> last-value
-
-    last-value callable-code-address :> address
-
-    address [
-        pending-remove-last
-        flush-pending
-        { 0x48 0x83 0xfb 0x06 } emit-bytes // cmp rbx, 6
-        emit-drop
-        0x75 emit-byte                  // jne
-        0x05 emit-byte                  // $+5
-        address compile-call-address
-    ] [
-        flush-pending
-        node op>> compile-call-symbol
-    ] if ;
-
-' compile-unless :compiler ' unless symbol-set-prop
-
-: compile-when* ( node )                // node -> void
-//     ?nl node op>> symbol-name print
-
-    pending length 0? [ node op>> compile-call-symbol ] ?return
-
-    pending-last-value dup wrapper? [ wrapped ] when :> last-value
-
-    last-value callable-code-address :> address
-
-    address [
-        pending-remove-last
-        flush-pending
-        { 0x48 0x83 0xfb 0x06 } emit-bytes // cmp rbx, 6
-        0x74 emit-byte                  // je
-        0x07 emit-byte                  // $+7
-        address compile-call-address
-        0xeb emit-byte                  // jmp
-        0x08 emit-byte                  // $+8
-        emit-drop
-    ] [
-        flush-pending
-        node op>> compile-call-symbol
-    ] if ;
-
-' compile-when* :compiler ' when* symbol-set-prop
+' compile-?return-locals ' ?return_locals symbol-set-compiler
 
 : compile-both? ( node )
-//     ?nl node op>> symbol-name print
 
     pending length 2 < [ ' both? compile-call-symbol ] ?return
 
-    pending last literal-value>> :> quot2
+    pending last node-literal-value :> quot2
 
-    pending dup length 2 - swap nth literal-value>> :> quot1
+    pending dup length 2 - swap nth node-literal-value :> quot1
     [ quot1 quotation? ] [ quot2 quotation? ] both? nil?
-    [ ' both? compile-call-symbol ] ?return
+    [ ' both? compile-call-address ] ?return
 
     // quot1 and quot2 are both literal quotations
     quot2 callable-code-address :> addr2
@@ -291,23 +79,173 @@ defer compile-quotation
     flush-pending
 
     addr1 compile-call-address          // call addr1
-    { 0x48 0x83 0xfb 0x06 } emit-bytes  // cmp rbx, 6
+    0x48 emit-byte
+    0x83 emit-byte
+    0xfb emit-byte
+    0x00 emit-byte                      // cmp rbx, nil
     0x74 emit-byte                      // jz
     0x0d emit-byte                      // $+13
     emit-drop                           // drop
     addr2 compile-call-address          // call addr2
 ;
 
-' compile-both? :compiler ' both? symbol-set-prop
+' compile-both? ' both? symbol-set-compiler
+
+: compile-if ( node )
+
+    pending length 2 < [ flush-pending node node-operator compile-call-symbol ] ?return
+
+    pending last node-literal-value :> quot2
+    pending dup length 2 - swap nth node-literal-value :> quot1
+    [ quot1 quotation? ] [ quot2 quotation? ] both? nil? [
+        flush-pending
+        node node-operator compile-call-symbol
+    ] ?return
+
+    // quot1 and quot2 are both literal quotations
+    quot2 callable-code-address :> addr2
+    pending-remove-last
+    quot1 callable-code-address :> addr1
+    pending-remove-last
+
+    flush-pending
+
+    0x48 emit-byte
+    0x83 emit-byte
+    0xfb emit-byte
+    0x00 emit-byte                      // cmp rbx, nil
+    emit-drop                           // drop
+    0x74 emit-byte                      // je
+    0x07 emit-byte                      // $+5
+    addr1 compile-call-address          // call addr1
+    0xeb emit-byte                      // jmp
+    0x05 emit-byte                      // $+5
+    addr2 compile-call-address          // call addr2
+;
+
+' compile-if ' if symbol-set-compiler
+
+: compile-when ( node )                 // node -> void
+
+    pending length 0? [ node node-operator compile-call-symbol ] ?return
+
+    pending-last-value dup wrapper? [ wrapped ] when :> last-value
+
+    last-value callable-code-address :> address
+
+    address [
+        pending-remove-last
+        flush-pending
+        0x48 emit-byte
+        0x83 emit-byte
+        0xfb emit-byte
+        0x00 emit-byte                  // cmp rbx, nil
+        emit-drop
+        0x74 emit-byte                  // jz
+        0x05 emit-byte                  // $+5
+        address compile-call-address
+    ] [
+        flush-pending
+        node node-operator compile-call-symbol
+    ] if ;
+
+' compile-when ' when symbol-set-compiler
+
+: compile-when* ( node )                // node -> void
+
+    pending length 0? [ node node-operator compile-call-symbol ] ?return
+
+    pending-last-value dup wrapper? [ wrapped ] when :> last-value
+
+    last-value callable-code-address :> address
+
+    address [
+        pending-remove-last
+        flush-pending
+        0x48 emit-byte
+        0x83 emit-byte
+        0xfb emit-byte
+        0x00 emit-byte                  // cmp rbx, nil
+        0x74 emit-byte                  // je
+        0x07 emit-byte                  // $+7
+        address compile-call-address
+        0xeb emit-byte                  // jmp
+        0x08 emit-byte                  // $+8
+        emit-drop
+    ] [
+        flush-pending
+        node node-operator compile-call-symbol
+    ] if ;
+
+' compile-when* ' when* symbol-set-compiler
+
+: compile-unless ( node )                 // node -> void
+
+    pending length 0? [ node node-operator compile-call-address ] ?return
+
+    pending-last-value dup wrapper? [ wrapped ] when :> last-value
+
+    last-value callable-code-address :> address
+
+    address [
+        pending-remove-last
+        flush-pending
+        0x48 emit-byte
+        0x83 emit-byte
+        0xfb emit-byte
+        0x00 emit-byte                  // cmp rbx, nil
+        emit-drop
+        0x75 emit-byte                  // jne
+        0x05 emit-byte                  // $+5
+        address compile-call-address
+    ] [
+        flush-pending
+        node node-operator compile-call-symbol
+    ] if ;
+
+' compile-unless ' unless symbol-set-compiler
+
+: compile-if* ( node )
+
+    pending length 2 < [ flush-pending ' if* compile-call-symbol ] ?return
+
+    pending last node-literal-value :> quot2
+    pending dup length 2 - swap nth node-literal-value :> quot1
+    [ quot1 quotation? ] [ quot2 quotation? ] both? nil? [
+        flush-pending
+        ' if* compile-call-symbol
+    ] ?return
+
+    // quot1 and quot2 are both literal quotations
+    quot2 callable-code-address :> addr2
+    pending-remove-last
+    quot1 callable-code-address :> addr1
+    pending-remove-last
+
+    flush-pending
+
+    0x48 emit-byte
+    0x83 emit-byte
+    0xfb emit-byte
+    0x00 emit-byte                      // cmp rbx, nil
+    0x74 emit-byte                      // je
+    0x07 emit-byte                      // $+7
+    addr1 compile-call-address          // call addr1
+    0xeb emit-byte                      // jmp
+    0x0d emit-byte                      // $+13
+    emit-drop                           // drop
+    addr2 compile-call-address          // call addr2
+;
+
+' compile-if* ' if* symbol-set-compiler
 
 : compile-either? ( node )
-//     ?nl node op>> symbol-name print
 
-    pending length 2 < [ ' either? compile-call-symbol ] ?return
+    pending length 2 < [ ' either? compile-call-address ] ?return
 
-    pending last literal-value>> :> quot2
+    pending last node-literal-value :> quot2
 
-    pending dup length 2 - swap nth literal-value>> :> quot1
+    pending dup length 2 - swap nth node-literal-value :> quot1
     [ quot1 quotation? ] [ quot2 quotation? ] both? nil?
     [ ' either? compile-call-symbol ] ?return
 
@@ -320,25 +258,27 @@ defer compile-quotation
     flush-pending
 
     addr1 compile-call-address          // call addr1
-    { 0x48 0x83 0xfb 0x06 } emit-bytes  // cmp rbx, 6
+    0x48 emit-byte
+    0x83 emit-byte
+    0xfb emit-byte
+    0x00 emit-byte                      // cmp rbx, nil
     0x75 emit-byte                      // jne
     0x0d emit-byte                      // $+13
     emit-drop                           // drop
     addr2 compile-call-address          // call addr2
 ;
 
-' compile-either? :compiler ' either? symbol-set-prop
+' compile-either? ' either? symbol-set-compiler
 
 : compile-while ( node )
-//     ?nl node op>> symbol-name print
 
-    pending length 2 < [ ' while compile-call-symbol ] ?return
+    pending length 2 < [ ' while compile-call-address ] ?return
 
-    pending last literal-value>> :> quot2
+    pending last node-literal-value :> quot2
 
-    pending dup length 2 - swap nth literal-value>> :> quot1
+    pending dup length 2 - swap nth node-literal-value :> quot1
     [ quot1 quotation? ] [ quot2 quotation? ] both? nil?
-    [ ' while compile-call-symbol ] ?return
+    [ ' while compile-call-address ] ?return
 
     // quot1 and quot2 are both literal quotations
     quot2 callable-code-address :> addr2
@@ -349,7 +289,10 @@ defer compile-quotation
     flush-pending
 
     addr1 compile-call-address          // call addr1
-    { 0x48 0x83 0xfb 0x06 } emit-bytes  // cmp rbx, 6
+    0x48 emit-byte
+    0x83 emit-byte
+    0xfb emit-byte
+    0x00 emit-byte
     emit-drop                           // drop
     0x74 emit-byte                      // je
     0x07 emit-byte                      // $+7
@@ -358,80 +301,113 @@ defer compile-quotation
     0xe6 emit-byte                      // $-26
 ;
 
-' compile-while :compiler ' while symbol-set-prop
+' compile-while ' while symbol-set-compiler
 
-: compile-if ( node )
-//     ?nl node op>> symbol-name print
+: %compile-generic ( op )               // symbol -> void
 
-    pending length 2 < [
-        flush-pending
-        node op>> compile-call-symbol
-    ] ?return
+    pending length 0? [ op compile-call-symbol ] ?return
 
-    pending last literal-value>> :> quot2
-    pending dup length 2 - swap nth literal-value>> :> quot1
-    [ quot1 quotation? ] [ quot2 quotation? ] both? nil? [
-        flush-pending
-        node op>> compile-call-symbol
-    ] ?return
+    pending-last node-literal-value type-of :> derived-type
 
-    // quot1 and quot2 are both literal quotations
-    quot2 callable-code-address :> addr2
-    pending-remove-last
-    quot1 callable-code-address :> addr1
-    pending-remove-last
+    local method
+    derived-type type? [ op find-method [ method! ] when* ] when*
 
     flush-pending
 
-    { 0x48 0x83 0xfb 0x06 } emit-bytes  // cmp rbx, 6
-    emit-drop                           // drop
-    0x74 emit-byte                      // je
-    0x07 emit-byte                      // $+5
-    addr1 compile-call-address          // call addr1
-    0xeb emit-byte                      // jmp
-    0x05 emit-byte                      // $+5
-    addr2 compile-call-address          // call addr2
-;
+    method nil? [ op compile-call-symbol ] ?return
 
-' compile-if :compiler ' if symbol-set-prop
+    method method-callable :> callable
 
-: compile-if* ( node )
-//     ?nl node op>> symbol-name print
+    callable symbol? [ callable inline-or-compile-call ] ?return
 
-    pending length 2 < [
+    callable callable-code-address compile-call-address ;
+
+' %compile-generic is compile-generic
+
+: compile-?return-no-locals ( node )    // node -> void
+
+    pending length 0? [ node node-operator compile-call-symbol ] ?return
+    pending-last-value dup wrapper? [ wrapped ] when :> last-value
+    last-value callable-code-address :> address
+
+    address [
+        pending-remove-last
         flush-pending
-        ' if* compile-call-symbol
+        0x48 emit-byte
+        0x83 emit-byte
+        0xfb emit-byte
+        0x00 emit-byte                  // cmp rbx, nil
+        emit-drop                       // drop
+        0x74 emit-byte                  // jz
+        0x06 emit-byte                  // $+6
+        address compile-call-address
+        0xc3 emit-byte
+    ] [
+        flush-pending
+        node node-operator compile-call-symbol
+    ] if ;
+
+' compile-?return-no-locals ' ?return_no_locals symbol-set-compiler
+
+: compile-keep ( node )
+
+    pending length 0? [ node node-operator compile-call-symbol ] ?return
+    pending-last-value dup wrapper? [ wrapped ] when :> last-value
+    last-value callable-code-address :> address
+
+    address [
+        pending-remove-last
+        flush-pending
+        0x53 emit-byte                  // push rbx
+        address compile-call-address
+        emit-dup
+        0x5b emit-byte                  // pop rbx
+    ] [
+        flush-pending
+        node node-operator compile-call-symbol
+    ] if ;
+
+' compile-keep ' keep symbol-set-compiler
+
+: compile-symbol-value ( node )         // node -> void
+
+    pending length 0? [ node node-operator compile-primitive ] ?return
+    pending-last-value !> x
+    x wrapper? [ x wrapped x! ] when
+
+    x symbol? nil? [
+        flush-pending
+        node node-operator compile-primitive
     ] ?return
 
-    pending last literal-value>> :> quot2
-    pending dup length 2 - swap nth literal-value>> :> quot1
-    [ quot1 quotation? ] [ quot2 quotation? ] both? nil? [
-        flush-pending
-        ' if* compile-call-symbol
-    ] ?return
+    // x is a symbol
+    // we want slot 6
+    x object-address 48 + :> addr
 
-    // quot1 and quot2 are both literal quotations
-    quot2 callable-code-address :> addr2
     pending-remove-last
-    quot1 callable-code-address :> addr1
-    pending-remove-last
-
     flush-pending
 
-    { 0x48 0x83 0xfb 0x06 } emit-bytes  // cmp rbx, 6
-    0x74 emit-byte                      // je
-    0x07 emit-byte                      // $+7
-    addr1 compile-call-address          // call addr1
-    0xeb emit-byte                      // jmp
-    0x0d emit-byte                      // $+13
-    emit-drop                           // drop
-    addr2 compile-call-address          // call addr2
+    addr int32? [
+        emit-dup
+        0x48 emit-byte
+        0x8b emit-byte
+        0x1c emit-byte
+        0x25 emit-byte
+        addr emit-int32
+    ] [
+        emit-dup
+        0x48 emit-byte
+        0xbb emit-byte
+        addr emit-qword                     // mov rbx, addr
+        0x48 emit-byte
+        0x8b emit-byte
+        0x1b emit-byte                      // mov rbx, [rbx]
+    ] if
 ;
 
-' compile-if* :compiler ' if* symbol-set-prop
+' compile-symbol-value ' symbol-value symbol-set-compiler
 
-: compile-call-quotation ( node )
-//     ?nl "call" print
+: compile-call ( node )
 
     pending length 0? [ ' call compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
@@ -445,10 +421,9 @@ defer compile-quotation
         ' call compile-call-symbol
     ] if ;
 
-' compile-call-quotation :compiler ' call symbol-set-prop
+' compile-call ' call symbol-set-compiler
 
 : compile-dip ( node )
-//     ?nl node op>> symbol-name print
 
     pending length 0? [ ' dip compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> last-value
@@ -463,44 +438,20 @@ defer compile-quotation
         0x5b emit-byte                  // pop rbx
     ] [
         flush-pending
-        node op>> compile-call-symbol
+        ' dip compile-call-symbol
     ] if ;
 
-' compile-dip :compiler ' dip symbol-set-prop
-
-: compile-keep ( node )
-//     ?nl node op>> symbol-name print
-
-    pending length 0? [ node op>> compile-call-symbol ] ?return
-    pending-last-value dup wrapper? [ wrapped ] when :> last-value
-    last-value callable-code-address :> address
-    address [
-        pending-remove-last
-        flush-pending
-        0x53 emit-byte                  // push rbx
-        address compile-call-address
-        emit-dup
-        0x5b emit-byte                  // pop rbx
-    ] [
-        flush-pending
-        node op>> compile-call-symbol
-    ] if ;
-
-' compile-keep :compiler ' keep symbol-set-prop
+' compile-dip ' dip symbol-set-compiler
 
 : compile-bi ( node )
-//     ?nl node op>> symbol-name print
 
-    pending length 2 < [
-        flush-pending
-        node op>> compile-call-symbol
-    ] ?return
+    pending length 2 < [ flush-pending ' bi compile-call-symbol ] ?return
 
-    pending last literal-value>> :> quot2
-    pending dup length 2 - swap nth literal-value>> :> quot1
+    pending-last-value :> quot2
+    pending dup length 2 - swap nth node-literal-value :> quot1
     [ quot1 quotation? ] [ quot2 quotation? ] both? nil? [
         flush-pending
-        node op>> compile-call-symbol
+        ' bi compile-call-symbol
     ] ?return
 
     // quot1 and quot2 are both literal quotations
@@ -517,19 +468,16 @@ defer compile-quotation
     0x5b emit-byte                  // pop rbx
     addr2 compile-call-address ;
 
-' compile-bi :compiler ' bi symbol-set-prop
+' compile-bi ' bi symbol-set-compiler
 
 : compile-bi@ ( node )
-//     ?nl node op>> symbol-name print
 
-    pending length 0? [
-        node op>> compile-call-symbol
-    ] ?return
+    pending length 0? [ ' bi@ compile-call-symbol ] ?return
 
-    pending last literal-value>> :> quot
+    pending-last-value :> quot
     quot quotation? nil? [
         flush-pending
-        node op>> compile-call-symbol
+        ' bi@ compile-call-symbol
     ] ?return
 
     // quot1 is a literal quotation
@@ -545,16 +493,16 @@ defer compile-quotation
     0x5b emit-byte                  // pop rbx
     addr compile-call-address ;
 
-' compile-bi@ :compiler ' bi@ symbol-set-prop
+' compile-bi@ ' bi@ symbol-set-compiler
+
 
 : compile-local-set ( node )
-//     ?nl node op>> symbol-name print
 
-    pending length 0? [
-        node op>> compile-primitive
-    ] ?return
+    node node-operator :> op
 
-    node op>> {
+    pending length 0? [ op compile-primitive ] ?return
+
+    op {
         { local_0_set [ 0 ] }
         { local_1_set [ 1 ] }
         { local_2_set [ 2 ] }
@@ -565,7 +513,7 @@ defer compile-quotation
         { local_7_set [ 7 ] }
     } case :> n
 
-    pending last literal-value>> :> x
+    pending-last-value :> x
 
     pending-remove-last
     flush-pending
@@ -583,162 +531,11 @@ defer compile-quotation
         0x08 n * emit-byte      // mov [r14 + BYTES_PER_CELL * n], rax
     ] if ;
 
-' compile-local-set :compiler ' local_0_set symbol-set-prop
-' compile-local-set :compiler ' local_1_set symbol-set-prop
-' compile-local-set :compiler ' local_2_set symbol-set-prop
-' compile-local-set :compiler ' local_3_set symbol-set-prop
-' compile-local-set :compiler ' local_4_set symbol-set-prop
-' compile-local-set :compiler ' local_5_set symbol-set-prop
-' compile-local-set :compiler ' local_6_set symbol-set-prop
-' compile-local-set :compiler ' local_7_set symbol-set-prop
-
-: compile-symbol-value ( node )         // node -> void
-//     ?nl node op>> symbol-name print
-
-    pending length 0? [
-        node op>> compile-primitive
-    ] ?return
-
-    pending last literal-value>> !> x
-
-    x wrapper? [ x wrapped x! ] when
-
-    x symbol? nil? [
-        flush-pending
-        node op>> compile-primitive
-    ] ?return
-
-    // x is a symbol
-    x object-address :> addr
-
-    pending-remove-last
-    flush-pending
-
-    emit-dup
-    0x48 emit-byte
-    0xbb emit-byte
-    addr emit-qword
-    { 0x48 0x8b 0x5b 0x30 } emit-bytes  // mov rbx, qword [rbx + BYTES_PER_CELL * 6]
-;
-
-' compile-symbol-value :compiler ' symbol-value symbol-set-prop
-
-: compile-declare ( node )              // node -> void
-    ?nl "declare" print
-
-    compile-verbose? [ ?nl "compile-declare" print ] when
-
-    node pred>> :> pred
-
-    pred pending-last assert-eq
-
-    pending vector-pop*
-
-    pred literal-value>> array-?last symbol-value verify-type :> declared-type
-
-    declared-type node type<<
-
-    compile-verbose? [
-        ?nl "compile-declare declared type = " write-string declared-type type-name print
-    ] when ;
-
-' compile-declare :compiler ' declare symbol-set-prop
-
-: inline-or-compile-call                // symbol -> void
-    dup symbol-primitive? [ compile-primitive ] [ compile-call-symbol ] if ;
-
-: compile-generic ( node )              // node -> void
-
-    node op>> :> op
-
-    node pred>> [ type>> ] [ nil ] if* :> derived-type
-
-    compile-verbose? [ ?nl "compile-generic derived-type = " write derived-type . ] when
-
-    {
-        [ derived-type type? ]
-        [ derived-type op find-method ]
-    } && :> method
-
-    flush-pending
-
-    method nil? [ op compile-call-symbol ] ?return
-
-    method method-callable :> callable
-
-    callable symbol? [ callable inline-or-compile-call ] ?return
-
-    callable callable-code-address compile-call-address ;
-
-: compile-operator-node ( node )        // node -> void
-
-    node op>> :> op
-
-    :compiler op symbol-prop :> compiler
-
-    compiler symbol? [
-        node compiler call-symbol
-    ] ?return
-
-    op generic? [
-        node compile-generic
-    ] ?return
-
-    flush-pending
-
-    op inline-or-compile-call ;
-
-: compile-node                          // node -> void
-    dup op>> [
-        compile-operator-node
-    ] [
-        pending vector-push
-    ] if ;
-
-: compile-quotation-internal            // quotation -> void
-    dup precompile-quotation            // -> quotation array
-    dup length 32 * 16 max initialize-code-block dup pc! origin!
-    ' compile-node each
-    flush-pending
-    0xc3 emit-byte
-    origin pc over -                    // -> quotation code-address code-size
-    pick quotation-set-code-size
-    swap quotation-set-code-address ;
-
-: %compile-quotation ( quotation )      // quotation -> quotation
-
-    [ quotation length 1 eq? ] [ quotation first symbol? ] both?
-    [
-        quotation first [ symbol-code-address ] [ symbol-code-size ] bi
-        quotation quotation-set-code-size
-        quotation quotation-set-code-address
-        quotation
-    ] ?return
-
-    [
-        make-compiler-context current-context set
-        quotation [ compile-quotation-internal ] keep
-    ] with-dynamic-scope ;
-
-' %compile-quotation ' compile-quotation defer!
-
-: compile-word                          // symbol -> void
-    dup symbol-def compile-quotation    // -> symbol quotation
-    dup quotation-code-address pick symbol-set-code-address
-    quotation-code-size swap symbol-set-code-size
-    forget-locals ;
-
-public
-
-: opt
-    postpone: '
-    +v
-    compile-word
-    -v ;
-
-: +opt
-    -v
-    ' compiler:compile-word ' feline:compile-word defer! ;
-
-: -opt
-    ' feline:primitive-compile-word ' feline:compile-word defer! ;
+' compile-local-set ' local_0_set symbol-set-compiler
+' compile-local-set ' local_1_set symbol-set-compiler
+' compile-local-set ' local_2_set symbol-set-compiler
+' compile-local-set ' local_3_set symbol-set-compiler
+' compile-local-set ' local_4_set symbol-set-compiler
+' compile-local-set ' local_5_set symbol-set-compiler
+' compile-local-set ' local_6_set symbol-set-compiler
+' compile-local-set ' local_7_set symbol-set-compiler
