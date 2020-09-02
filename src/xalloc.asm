@@ -30,7 +30,7 @@ code xalloc, 'xalloc'                   ; raw-size -> raw-address
 
         add     rbx, rax
         cmp     rbx, [code_space_limit_]
-        jae     .1
+        jge     .1
 
         ; REVIEW
         ; 16-byte alignment
@@ -44,7 +44,7 @@ code xalloc, 'xalloc'                   ; raw-size -> raw-address
 
 .1:
         _ ?nl
-        _write "FATAL ERROR: no code space"
+        _write "FATAL: no code space"
         _ nl
         xcall os_bye
 
