@@ -439,68 +439,60 @@ use: kill-ring
 
 : delete-word-right
     check-read-only ?exit
-
     mark [ delete-region ] ?return
-
     at-eof? ?exit
-
     at-eol? [ delete-line-separator modified ] ?return
 
     [
         add-undo-move
         dot copy-position mark!
-
         {
-            [ in-word? ] =>
+            {
+                [ in-word? ]
+                [
+                    // delete to end of word
+                    [ in-word? ] [ ++dot-offset ] while
+                ]
+            }
+            {
+                [ in-whitespace? ]
+                [
+                    ++dot-offset
+                    {
+                        {
+                            [ in-whitespace? ]
+                            [
+                                // delete rest of whitespace
+                                [ in-whitespace? ] [ ++dot-offset ] while
+                            ]
+                        }
+                        {
+                            [ in-word? ]
+                            [
+                                // delete to end of word
+                                [ in-word? ] [ ++dot-offset ] while
+                            ]
+                        }
+                        [
+                            // not in word, not in whitespace
+                            [ in-word? in-whitespace? or at-eol? or ]
+                            [ ++dot-offset ] until
+                        ]
+                    } cond
+                ]
+            }
             [
-                // delete to end of word
-                [ in-word? ] [ ++dot-offset ] while
-            ]
-
-            [ in-whitespace? ] =>
-            [
-                ++dot-offset
-
-                {
-                    [ in-whitespace? ] =>
-                    [
-                        // delete rest of whitespace
-                        [ in-whitespace? ] [ ++dot-offset ] while
-                    ]
-
-                    [ in-word? ] =>
-                    [
-                        // delete to end of word
-                        [ in-word? ] [ ++dot-offset ] while
-                    ]
-
-                    // not in word, not in whitespace
-                    [ true ] =>
-                    [
-                        [ in-word? in-whitespace? or at-eol? or ]
-                        [ ++dot-offset ] until
-                    ]
-                } cond
-            ]
-
-            // not in word, not in whitespace
-            [ true ] =>
-            [
+                // not in word, not in whitespace
                 [ in-word? in-whitespace? or at-eol? or ] [ ++dot-offset ] until
             ]
         } cond
-
         delete-region
-
     ] with-compound-undo ;
 
 : delete-word-left
     check-read-only ?exit
-
     mark [ delete-region ] ?return
-
     at-bof? ?exit
-
     at-bol? [
         [
             add-undo-move
@@ -513,55 +505,52 @@ use: kill-ring
     [
         add-undo-move
         dot copy-position mark!
-
         --dot-offset
-
         {
-            [ in-word? ] =>
+            {
+                [ in-word? ]
+                [
+                    // move left to beginning of word
+                    [ in-word? at-bol? not and ] [ --dot-offset ] while
+                    in-word? [ ++dot-offset ] unless
+                ]
+            }
+            {
+                [ in-whitespace? ]
+                [
+                    --dot-offset
+                    {
+                        {
+                            [ in-whitespace? ]
+                            [
+                                // delete rest of whitespace
+                                [ in-whitespace? at-bol? not and ] [ --dot-offset ] while
+                                in-whitespace? [ ++dot-offset ] unless
+                            ]
+                        }
+                        {
+                            [ in-word? ]
+                            [
+                                // move left to beginning of word
+                                [ in-word? at-bol? not and ] [ --dot-offset ] while
+                                in-word? [ ++dot-offset ] unless
+                            ]
+                        }
+                        [
+                            // not in word, not in whitespace
+                            [ in-word? in-whitespace? or at-bol? or ] [ --dot-offset ] until
+                            [ in-word? in-whitespace? or ] [ ++dot-offset ] when
+                        ]
+                    } cond
+                ]
+            }
             [
-                // move left to beginning of word
-                [ in-word? at-bol? not and ] [ --dot-offset ] while
-                in-word? [ ++dot-offset ] unless
-            ]
-
-            [ in-whitespace? ] =>
-            [
-                --dot-offset
-
-                {
-                    [ in-whitespace? ] =>
-                    [
-                        // delete rest of whitespace
-                        [ in-whitespace? at-bol? not and ] [ --dot-offset ] while
-                        in-whitespace? [ ++dot-offset ] unless
-                    ]
-
-                    [ in-word? ] =>
-                    [
-                        // move left to beginning of word
-                        [ in-word? at-bol? not and ] [ --dot-offset ] while
-                        in-word? [ ++dot-offset ] unless
-                    ]
-
-                    // not in word, not in whitespace
-                    [ true ] =>
-                    [
-                        [ in-word? in-whitespace? or at-bol? or ] [ --dot-offset ] until
-                        [ in-word? in-whitespace? or ] [ ++dot-offset ] when
-                    ]
-                } cond
-            ]
-
-            // not in word, not in whitespace
-            [ true ] =>
-            [
+                // not in word, not in whitespace
                 [ in-word? in-whitespace? or at-bol? or ] [ --dot-offset ] until
                 [ in-word? in-whitespace? or ] [ ++dot-offset ] when
             ]
         } cond
-
         delete-region
-
     ] with-compound-undo ;
 
 : do-delete
