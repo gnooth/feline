@@ -539,3 +539,74 @@ public
 ' compile-local-set ' local_5_set symbol-set-compiler
 ' compile-local-set ' local_6_set symbol-set-compiler
 ' compile-local-set ' local_7_set symbol-set-compiler
+
+: no-cond
+    "no cond" error ;
+
+: cond-step-default ( quotation end-address )
+    quotation callable-code-address compile-call-address
+    end-address pc 5 + - verify-int32 :> delta
+    delta 0? [
+        0xe9 emit-byte
+        delta emit-int32
+    ] unless ;
+
+: cond-step-array ( array end-address )
+    end-address fixnum? assert
+    array verify-array length 2 assert-eq
+
+    array first callable-code-address compile-call-address
+    0x48 emit-byte
+    0x83 emit-byte
+    0xfb emit-byte
+    0x00 emit-byte                      // cmp rbx, 0
+    emit-drop
+    0x74 emit-byte                      // jz
+    0x0a emit-byte                      // $+10
+    array second callable-code-address compile-call-address
+
+    end-address pc 5 + - :> delta
+    delta 0? [
+        0xe9 emit-byte
+        delta emit-int32
+    ] unless
+;
+
+: cond-step
+    over array? [ cond-step-array ] [ cond-step-default ] if ;
+
+: compile-cond ( node )
+
+    pending length 0? [ ' cond compile-call-symbol ] ?return
+
+    pending-last-value verify-array :> array
+
+    array length 0? [ ' cond compile-call-symbol ] ?return
+
+    pending-remove-last
+    flush-pending
+
+    array ' quotation? find  :> default-quotation :> default-index
+
+    default-quotation [
+        default-index 0> [ default-index 29 * pc + 5 + ] [ pc 5 + ] if
+    ] [
+        array length 29 * pc + 5 +
+    ] if :> cond-end-address
+
+    cond-end-address ' cond-step curry :> callable
+
+    default-index [
+        [ array nth callable call ] each-integer
+    ] [
+        array callable each
+    ] if*
+
+    default-quotation [
+        callable-code-address compile-call-address
+    ] [
+        ' no-cond callable-code-address compile-call-address
+    ] if*
+;
+
+' compile-cond ' cond symbol-set-compiler
