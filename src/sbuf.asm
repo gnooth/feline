@@ -318,6 +318,21 @@ code sbuf_nth, 'sbuf-nth'               ; index sbuf -- char
         next
 endcode
 
+; ### sbuf-set-nth-unsafe
+code sbuf_set_nth_unsafe, 'sbuf-set-nth-unsafe' ; char index sbuf -> void
+; no bounds checking
+; REVIEW does not update length
+        _ check_sbuf                    ; rbx: ^sbuf
+        mov     rbx, [rbx + SBUF_RAW_DATA_ADDRESS_OFFSET] ; rbx: address of raw data
+        mov     rdx, [rbp]              ; rdx: index
+        sar     rdx, FIXNUM_TAG_BITS
+        mov     rax, [rbp + BYTES_PER_CELL] ; rax: char
+        shr     rax, CHAR_TAG_BITS
+        mov     byte [rbx + rdx], al
+        _3drop
+        next
+endcode
+
 ; ### sbuf-?last
 code sbuf_?last, 'sbuf-?last'           ; sbuf -> char/nil
         _dup
