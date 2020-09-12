@@ -4846,4 +4846,19 @@ test: &--test
 
 &--test
 
+test: alphanumeric?-test
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789" :> s
+
+    s [ alphanumeric? assert ] each
+
+    128 [
+        code-char dup s member-eq? [
+            alphanumeric? assert
+        ] [
+            alphanumeric? assert-false
+        ] if
+    ] each-integer ;
+
+alphanumeric?-test
+
 ?nl "Reached end of test.feline" write-string
