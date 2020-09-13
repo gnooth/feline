@@ -2607,6 +2607,25 @@ test: string-nth-test-1
 
 string-nth-test-1
 
+test: sbuf-nth-unsafe-test-1
+    "this is a test" string>sbuf :> sb
+    0 sb sbuf-nth-unsafe 't' assert-eq
+    1 sb sbuf-nth-unsafe 'h' assert-eq
+    13 sb sbuf-nth-unsafe 't' assert-eq ;
+
+sbuf-nth-unsafe-test-1
+
+test: sbuf-nth-test-1
+    "this is a test" string>sbuf :> sb
+    0 sb sbuf-nth 't' assert-eq
+    1 sb sbuf-nth 'h' assert-eq
+    13 sb sbuf-nth 't' assert-eq
+
+    [ -1 sb sbuf-nth ] assert-must-fail
+    [ 14 sb sbuf-nth ] assert-must-fail ;
+
+sbuf-nth-test-1
+
 test: type-of-test-1
     "test" type-of string assert-eq
     "test" string>sbuf type-of sbuf assert-eq

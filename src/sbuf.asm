@@ -288,18 +288,21 @@ code destroy_sbuf, 'destroy_sbuf', SYMBOL_INTERNAL
 endcode
 
 ; ### sbuf-nth-unsafe
-code sbuf_nth_unsafe, 'sbuf-nth-unsafe' ; tagged-index handle -- tagged-char
+code sbuf_nth_unsafe, 'sbuf-nth-unsafe' ; index sbuf -> char
 ; no bounds check
-        _check_index qword [rbp]
-        _ check_sbuf
-        _sbuf_nth_unsafe
+        _ check_sbuf                    ; -> index ^sbuf
+        mov     rbx, [rbx + SBUF_RAW_DATA_ADDRESS_OFFSET] ; rbx: address of raw data
+        mov     rax, qword [rbp]        ; rax: index
+        _nip
+        sar     rax, FIXNUM_TAG_BITS
+        movzx   ebx, byte [rbx + rax]
         _tag_char
         next
 endcode
 
 ; ### sbuf-nth
-code sbuf_nth, 'sbuf-nth'               ; index sbuf -- char
-; Return character at index.
+code sbuf_nth, 'sbuf-nth'               ; index sbuf -> char
+; returns char at index
 
         _ check_sbuf
         _check_index qword [rbp]
