@@ -40,6 +40,7 @@ public
     "control.feline"
     "backtrace.feline"
     "dump.feline"
+    "chars.feline"
     "strings.feline"
     "sequences.feline"
     "files.feline"
