@@ -402,8 +402,7 @@ public
         0x48 emit-byte
         0x8b emit-byte
         0x1b emit-byte                      // mov rbx, [rbx]
-    ] if
-;
+    ] if ;
 
 ' compile-symbol-value ' symbol-value symbol-set-compiler
 
@@ -495,7 +494,6 @@ public
 
 ' compile-bi@ ' bi@ symbol-set-compiler
 
-
 : compile-local-set ( node )
 
     node node-operator :> op
@@ -520,15 +518,15 @@ public
 
     0x48 emit-byte
     0xb8 emit-byte
-    x object>uint64 emit-qword  // mov rax, imm64
+    x object->integer emit-qword        // mov rax, imm64
 
     0x49 emit-byte
     0x89 emit-byte
     n 0? [
-        0x06 emit-byte          // mov [r14], rax
+        0x06 emit-byte                  // mov [r14], rax
     ] [
         0x46 emit-byte
-        0x08 n * emit-byte      // mov [r14 + BYTES_PER_CELL * n], rax
+        0x08 n * emit-byte              // mov [r14 + BYTES_PER_CELL * n], rax
     ] if ;
 
 ' compile-local-set ' local_0_set symbol-set-compiler

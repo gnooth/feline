@@ -404,7 +404,7 @@ code compile_literal, 'compile-literal' ; literal -> void
         _then .1
 
         _ emit_dup
-        _ object_to_uint64
+        _ object_to_integer
         _emit_byte 0x48
         _emit_byte 0xbb
         _ emit_qword

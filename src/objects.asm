@@ -339,8 +339,8 @@ code untag_fixnum, 'untag-fixnum'       ; fixnum -> untagged
         next
 endcode
 
-; ### object>uint64
-code object_to_uint64, 'object>uint64'  ; object -- uint64
-        _ new_uint64
+; ### object->integer
+code object_to_integer, 'object->integer' ; object -- uint64
+        _ normalize_unsigned
         next
 endcode
