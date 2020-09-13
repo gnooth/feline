@@ -329,48 +329,37 @@ code string_hashcode, 'string-hashcode' ; handle-or-string -> fixnum
 endcode
 
 ; ### string-nth-unsafe
-code string_nth_unsafe, 'string-nth-unsafe'
-; tagged-index handle-or-static-string -> tagged-char
-
-        ; FIXME
-        jmp     string_nth
-
-        ; no type checking
-        ; no bounds checking
-
-        cmp     bl, HANDLE_TAG
-        jne     .1
-        shr     rbx, HANDLE_TAG_BITS
-        mov     rbx, [rbx]
-.1:
-        mov     rax, [rbp]
-        _nip
-        sar     rax, FIXNUM_TAG_BITS
-        movzx   ebx, byte [rax + rbx + STRING_RAW_DATA_OFFSET]
-        _tag_char
-
-        next
-endcode
-
-; ### string-nth
-code string_nth, 'string-nth'   ; tagged-index string -> tagged-char
-; return byte at index
+code string_nth_unsafe, 'string-nth-unsafe' ; index string -> char
+; returns char at index
+; no bounds checking
         _ check_string                  ; -> tagged-index ^string
-        push    rbx                     ; save ^string on return stack
-        _drop                           ; -> tagged_index
-        _check_fixnum
-        mov     rax, rbx                ; raw index in rax
-        pop     rbx                     ; -> ^string
-        cmp     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
-        jnc     error_string_index_out_of_bounds
+        mov     rax, qword [rbp]        ; rax: index
+        _nip                            ; rbx: tagged index
+        sar     rax, FIXNUM_TAG_BITS
         movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax]
         _tag_char
         next
 endcode
 
+; ### string-nth
+code string_nth, 'string-nth'           ; index string -> char
+; returns char at index
+        _ check_string                  ; -> tagged-index ^string
+        mov     rdx, rbx                ; rdx: ^string
+        _drop                           ; rbx: tagged index
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        sar     rbx, FIXNUM_TAG_BITS    ; rbx: raw index
+        cmp     rbx, [rdx + STRING_RAW_LENGTH_OFFSET]
+        jnc     error_string_index_out_of_bounds
+        movzx   ebx, byte [rdx + STRING_RAW_DATA_OFFSET + rbx]
+        _tag_char
+        next
+endcode
+
 ; ### string-first-char
-code string_first_char, 'string-first-char'     ; string -- char
-; return first byte of string
+code string_first_char, 'string-first-char' ; string -> char
+; returns first byte of string
 ; error if string is empty
         _ check_string
         cmp     qword [rbx + STRING_RAW_LENGTH_OFFSET], 0
@@ -382,8 +371,8 @@ endcode
 
 ; ### string-?first
 code string_?first, 'string-?first'     ; string -> char/nil
-; return first byte of string
-; return nil if string is empty
+; returns first byte of string
+; returns nil if string is empty
         _ check_string
         cmp     qword [rbx + STRING_RAW_LENGTH_OFFSET], 0
         je      .empty
@@ -396,8 +385,8 @@ code string_?first, 'string-?first'     ; string -> char/nil
 endcode
 
 ; ### string-last-char
-code string_last_char, 'string-last-char'       ; string -- char
-; return last byte of string
+code string_last_char, 'string-last-char' ; string -> char
+; returns last byte of string
 ; error if string is empty
         _ check_string
         mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
@@ -410,8 +399,8 @@ endcode
 
 ; ### string-?last
 code string_?last, 'string-?last'       ; string -> char/nil
-; return last byte of string
-; return nil if string is empty
+; returns last byte of string
+; returns nil if string is empty
         _ check_string
         mov     rax, [rbx + STRING_RAW_LENGTH_OFFSET]
         sub     rax, 1
