@@ -942,13 +942,6 @@ unuse: segments
     dup mode? assert
     formatter>> [ ' trivial-format-line ] unless* ;
 
-: alphanumeric?                         // char -> ?
-    verify-char char-code :> c
-    [ 'A' char-code c <= ] [ c 'Z' char-code <= ] both? [ true ] ?return
-    [ 'a' char-code c <= ] [ c 'z' char-code <= ] both? [ true ] ?return
-    [ '0' char-code c <= ] [ c '9' char-code <= ] both? [ true ] ?return
-    nil ;
-
 : default-identifier-char?              // char -> ?
     :> x
     [ x alphanumeric? ] [ x '_' eq? ] either? ;
