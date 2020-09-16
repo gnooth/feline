@@ -79,35 +79,32 @@ var regex
 
     [ iter string-iterator-next dup char! ]
     [
-        char {
-            '.' => [
-                :any regex push
-            ]
-            '^' => [
-                iter string-iterator-index 0? [ :bol regex push ] when
-            ]
-            '$' => [
-                iter string-iterator-peek nil? [ :eol regex push ] when
-            ]
-            '?' => [
-                iter string-iterator-index 0> [
-                    :question regex last 2array
-                    regex length 1- regex set-nth
-                ] when
-            ]
-            '*' => [
-                iter string-iterator-index 0> [
-                    :star regex last 2array
-                    regex length 1- regex set-nth
-                ] when
-            ]
-            '[' => [
-                iter parse-character-class
-            ]
-            _ => [
-                char regex push
-            ]
-        } match
+        char
+        {
+            { '.' [ :any regex push ] }
+            { '^' [ iter string-iterator-index 0? [ :bol regex push ] when ] }
+            { '$' [ iter string-iterator-peek nil? [ :eol regex push ] when ] }
+            {
+                '?'
+                [
+                    iter string-iterator-index 0> [
+                        :question regex last 2array
+                        regex length 1- regex set-nth
+                    ] when
+                ]
+            }
+            {
+                '*'
+                [
+                    iter string-iterator-index 0> [
+                        :star regex last 2array
+                        regex length 1- regex set-nth
+                    ] when
+                ]
+            }
+            { '[' [ iter parse-character-class ] }
+            [ regex push ]
+        } case
     ] while ;
 
 var text
