@@ -44,28 +44,30 @@ var regex
         done? not and
     ] [
         iter string-iterator-next char!
-        char {
-            ']' => [ true done?! ]
-            '-' => [
-                [ iter string-iterator-index 1- iter nth dup char1! alphanumeric? ]
-                [ iter string-iterator-peek dup char2! alphanumeric? ]
-                both? [
-                    // at this point char1 has already been added to buf
-                    char1 char!
-                    [
-                        char char-code 1+ code-char char!
-                        char dup char2 neq? and
+        char
+        {
+            { ']' [ true done?! ] }
+            {
+                '-'
+                [
+                    [ iter string-iterator-index 1- iter nth dup char1! alphanumeric? ]
+                    [ iter string-iterator-peek dup char2! alphanumeric? ]
+                    both? [
+                        // at this point char1 has already been added to buf
+                        char1 char!
+                        [
+                            char char-code 1+ code-char char!
+                            char dup char2 neq? and
+                        ] [
+                            char buf push
+                        ] while
                     ] [
                         char buf push
-                    ] while
-                ] [
-                    char buf push
-                ] if
-            ]
-            _ => [
-                char buf push
-            ]
-        } match
+                    ] if
+                ]
+            }
+            [ buf push ]
+        } case
     ] while
 
     negate? :nccl :ccl ?
