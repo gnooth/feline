@@ -1,0 +1,114 @@
+// Copyright (C) 2020 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: regex unit-test feline ;
+in: regex-tests
+
+empty
+
+public
+
+test: test-1
+    { true } [ "a" "a" matches? ] unit-test ;
+
+test-1
+
+test: test-2
+    { nil } [ "b" "a" matches? ] unit-test ;
+
+test-2
+
+test: test-3
+    { true } [ "ab" "ab" matches? ] unit-test ;
+
+test-3
+
+test: test-4
+    { true } [ "ab" "a." matches? ] unit-test ;
+
+test-4
+
+test: test-5
+    { true } [ "ab" ".b" matches? ]  unit-test ;
+
+test-5
+
+test: test-6
+    { true } [ "fooooobar" "f.*bar" matches? ] unit-test ;
+
+test-6
+
+test: test-7
+    { true } [ "fooooobar" "f.*bar" matches? ] unit-test ;
+
+test-7
+
+test: test-8
+    { true } [ "a" "[ab]" matches? ] unit-test ;
+
+test-8
+
+test: test-9
+    { true } [ "b" "[ab]" matches? ] unit-test ;
+
+test-9
+
+test: test-10
+    { nil } [ "c" "[ab]" matches? ] unit-test ;
+
+test-10
+
+test: test-11
+    { true } [ "d" "[a-z]" matches? ] unit-test ;
+
+test-11
+
+test: test-12
+    { 1 2 } [ "[^a]" "ab" find-regex ] unit-test ;
+
+test-12
+
+test: test-13
+    { 2 3 } [ "[^ab]" "abcd" find-regex ] unit-test ;
+
+test-13
+
+test: test-14
+    { 2 3 } [ "[ab]" "dcba" find-regex ] unit-test ;
+
+test-14
+
+test: test-15
+    { 3 13 } [ "text.*x" "no text index here" find-regex ] unit-test ;
+
+test-15
+
+test: test-16
+    // basic.dat
+    { 7 18 } [ "abracadabra$" "abracadabracadabra" find-regex ] unit-test ;
+
+test-16
+
+test: test-17
+    // basic.dat
+    { 2 7 } [ "a...b" "abababbb" find-regex ] unit-test ;
+
+test-17
+
+test: test-18
+    // basic.dat
+    { 2 8 } [ "XXXXXX" "..XXXXXX" find-regex ] unit-test ;
+
+test-18
