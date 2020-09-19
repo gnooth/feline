@@ -85,7 +85,7 @@ var regex
         {
             { '.' [ :any regex push ] }
             { '^' [ iter string-iterator-index 0? [ :bol regex push ] when ] }
-            { '$' [ iter string-iterator-peek nil? [ :eol regex push ] when ] }
+            { '$' [ iter string-iterator-peek '$' :eol ? regex push ] }
             {
                 '?'
                 [
@@ -155,8 +155,11 @@ defer match-here
         text-index regex-index 1+ match-star
     ] ?return
 
-    op :eol eq? regex-index 1+ len eq? and
-    [
+    op :bol eq? regex-index 0 eq? and [
+        text-index regex-index 1+ match-here
+    ] ?return
+
+    op :eol eq? regex-index 1+ len eq? and [
         text-index text length eq? [ text-index ] [ nil ] if
     ] ?return
 
@@ -229,7 +232,7 @@ defer match-here
 : find-last-regex                       // pattern string -> index1/nil index2/nil
     dup length find-last-regex-from ;
 
-: matches?                              // text regex -> ?
+: matches?                              // text pattern -> ?
     parse-regex
     text!
     0 0 match-here as-boolean ;
