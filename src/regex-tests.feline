@@ -112,3 +112,9 @@ test: test-18
     { 2 8 } [ "XXXXXX" "..XXXXXX" find-regex ] unit-test ;
 
 test-18
+
+test: test-19
+    // basic.dat
+    { 1 2 } [ "\\)" "()" find-regex ] unit-test ;
+
+test-19

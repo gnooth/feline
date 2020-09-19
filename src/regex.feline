@@ -105,6 +105,16 @@ var regex
                 ]
             }
             { '[' [ iter parse-character-class ] }
+            {
+                '\'
+                [
+                    iter string-iterator-peek [
+                        iter string-iterator-next
+                    ] [
+                        '\'
+                    ] if regex push
+                ]
+            }
             [ regex push ]
         } case
     ] while ;
