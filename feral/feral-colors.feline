@@ -41,10 +41,11 @@ in: feral-colors
 
 192 192   0 make-colorref constant color-header
 
-  0 255 255 make-colorref constant color-syntax
+100 149 237 make-colorref constant color-syntax // cornflower blue
+100 149 237 make-colorref constant color-combinator
+
 255 165   0 make-colorref constant color-name
   0 170   0 make-colorref constant color-string
-  0 153 153 make-colorref constant color-combinator
 255  69   0 make-colorref constant color-preprocessor
 210 105  30 make-colorref constant color-keyword
 153  77   0 make-colorref constant color-type
