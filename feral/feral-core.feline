@@ -574,6 +574,9 @@ forget current-buffer!
 : at-eof?                               // void -> ?
     at-eol? dot-line-next null? and ;
 
+: not-at-eof?                           // void -> ?
+    at-eof? not ;
+
 : first-line                            // void -> line
     current-buffer first-line>> ;
 
