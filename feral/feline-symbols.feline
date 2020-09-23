@@ -209,6 +209,7 @@ global in-vocab
     "accept.feline"
     "backtrace.feline"
     "boot.feline"
+    "chars.feline"
     "clisp-tests.feline"
     "compiler-tests.feline"
     "compiler.feline"
