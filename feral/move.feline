@@ -155,6 +155,7 @@ in: editor
     dot-offset 0> [
         dot-offset 1- dot-offset!
         dot-offset goal-column!
+        dot-line line-changed
     ] [
         dot-line-prev [
             dot-line-prev dot-line!
@@ -202,6 +203,7 @@ in: editor
     dot-offset dot-line-length < [
         dot-offset 1+ dot-offset!
         dot-offset goal-column!
+        dot-line line-changed
     ] [
         dot-line-next [
             dot-line-next dot-line!
@@ -262,8 +264,38 @@ in: editor
     true repaint?! ;
 
 private: word-right-internal
-    [ at-eof? not not-in-word? and ] [ char-right-internal ] while
-    [ at-eof? not in-word? and ] [ char-right-internal ] while ;
+    at-eof? ?exit
+    {
+        {
+            [ at-eol? ]
+            [
+                dot-line line-changed
+                dot-line-next line-changed
+                char-right-internal
+                [ in-whitespace? ] [ char-right-internal ] while
+            ]
+        }
+        {
+            [ in-whitespace? ]
+            [
+                char-right-internal
+                [ in-whitespace? ] [ char-right-internal ] while
+            ]
+        }
+        {
+            [ in-word? ]
+            [
+                char-right-internal
+                [ in-word? ] [ char-right-internal ] while
+                [ in-whitespace? ] [ char-right-internal ] while
+            ]
+        }
+        [
+            // not in word, not in whitespace
+            [ not-at-eof? not-in-word-or-whitespace? and ] [ char-right-internal ] while
+            [ in-whitespace? ] [ char-right-internal ] while
+        ]
+    } cond ;
 
 : word-right
     at-eof? ?exit
