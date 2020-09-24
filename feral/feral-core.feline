@@ -565,6 +565,9 @@ forget current-buffer!
 : at-bol?                               // void -> ?
     dot-offset zero? ;
 
+: not-at-bol?                           // void -> ?
+    at-bol? not ;
+
 : at-eol?                               // void -> ?
     dot-offset dot-line-length eq? ;
 
@@ -981,7 +984,7 @@ unuse: segments
     dot-char [ identifier-char? not ] [ true ] if* ;
 
 : not-in-word-or-whitespace?            // void -> ?
-    dot-char char? [ dup identifier-char? swap whitespace? or not ] [ nil ] if* ;
+    dot-char char? [ dup identifier-char? swap whitespace? or not ] [ true ] if* ;
 
 : identifier-at-dot                     // void -> start/nil string/nil
 
