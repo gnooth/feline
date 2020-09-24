@@ -240,27 +240,58 @@ in: editor
         ] when
     ] if ;
 
+private: move-to-beginning-of-word
+    [ in-word? not-at-bof? and ] [ char-left-internal ] while
+    in-word? [ char-right-internal ] unless ;
+
+private: word-left-internal
+    at-bof? ?exit
+    char-left-internal
+    at-bof? ?exit
+
+    {
+        { [ in-word? ] [ move-to-beginning-of-word ] }
+        {
+            [ at-eol? in-whitespace? or ]
+            [
+                [ in-whitespace? at-bol? not and ] [ char-left-internal ] while
+                in-word? [
+                    move-to-beginning-of-word
+                ] [
+                    at-bol? [ char-left-internal ] unless
+                    [
+                        not-in-word?
+                        not-in-whitespace? and
+                        not-at-bol? and
+                    ] [ char-left-internal ] while
+                    at-bol? [ char-right-internal ] unless
+                ] if
+            ]
+        }
+        {
+            [ not-in-word-or-whitespace? ]
+            [
+                [ in-word? in-whitespace? or at-bol? or ] [ char-left-internal ] until
+                at-bol? [ char-right-internal ] unless
+            ]
+        }
+    } cond ;
+
 : word-left
     at-bof? ?exit
     reset-redo
     add-undo-move
     unmark
-    in-word? [ char-left-internal ] when
-    [ at-bof? not not-in-word? and ] [ char-left-internal ] while
-    at-bof? ?exit
-    [ at-bof? not in-word? and ] [ char-left-internal ] while
-    at-bof? [ char-right-internal ] unless ;
+    dot-line line-changed
+    word-left-internal
+    dot-line line-changed ;
 
 : select-word-left
     at-bof? ?exit
     reset-redo
     add-undo-move
     mark [ copy-dot mark! ] unless
-    in-word? [ char-left-internal ] when
-    [ at-bof? not not-in-word? and ] [ char-left-internal ] while
-    at-bof? ?exit
-    [ at-bof? not in-word? and ] [ char-left-internal ] while
-    at-bof? [ char-right-internal ] unless
+    word-left-internal
     true repaint?! ;
 
 private: word-right-internal
@@ -269,8 +300,6 @@ private: word-right-internal
         {
             [ at-eol? ]
             [
-                dot-line line-changed
-                dot-line-next line-changed
                 char-right-internal
                 [ in-whitespace? ] [ char-right-internal ] while
             ]
@@ -302,7 +331,9 @@ private: word-right-internal
     reset-redo
     add-undo-move
     unmark
-    word-right-internal ;
+    dot-line line-changed
+    word-right-internal
+    dot-line line-changed ;
 
 : select-word-right
     at-eof? ?exit
