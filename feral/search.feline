@@ -147,8 +147,12 @@ use: regex
             [ search whole-words-only>> ]
             [ pattern string start find-word-from ]
         }
-        {   [ search regex>> ]
-            [ pattern string start find-regex-from ]
+        {
+            [ search regex>> ]
+            [
+                pattern string start find-regex-from // -> index1/nil index2/nil
+                drop
+            ]
         }
         [ pattern string start find-substring-from ] // default
     } cond ;
