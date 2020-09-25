@@ -203,18 +203,25 @@ in: editor
     current-mode comment-start>> :> prefix
     prefix empty? ?exit
 
+    prefix length :> prefix-length
+
     local region
     [ mark ] [ mark-line dot-line neq? ] both? // must be multiline
     [ dot mark make-region/2 region! ] when
 
+    local line
+    local text
     [
         region [
             region editor:add-undo-edit-region
             region [
-                prefix over text>> head? [
-                    prefix length over text>> tail swap text<<
+                line!
+                line text>> text!
+
+                prefix text head? [
+                    prefix-length text tail line text<<
                 ] [
-                    drop
+                    prefix string-trim-tail text string=? [ "" line text<< ] when
                 ] if
             ] region-each-line
             add-undo-move
@@ -225,10 +232,17 @@ in: editor
 
             prefix dot-line-text head? [
                 editor:add-undo-line-edit
-                prefix length dot-line-text tail dot-line-text!
-                dot-offset prefix length - 0 max dot-offset!
+                prefix-length dot-line-text tail dot-line-text!
+                dot-offset prefix-length - 0 max dot-offset!
                 true dot-line-changed?!
-            ] when
+            ] [
+                prefix string-trim-tail dot-line-text string=? [
+                    editor:add-undo-line-edit
+                    "" dot-line-text!
+                    0 dot-offset!
+                    true dot-line-changed?!
+                ] when
+            ] if
         ] if
 
         modified
