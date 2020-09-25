@@ -133,12 +133,39 @@ private
     pattern line text>> 0 find-word-from :> index
     index [ line index make-position ] [ nil ] if ;
 
+use: regex
+
+: find-regex-in-line ( pattern line )   // pattern line -> position/nil
+    pattern line text>> 0 find-regex-from // -> index1/nil index2/nil
+    :> index
+    index [ line index make-position ] [ nil ] if ;
+
+: find-in-string ( search string start ) // search string start -> index/nil
+    search pattern>> :> pattern
+    {
+        {
+            [ search whole-words-only>> ]
+            [ pattern string start find-word-from ]
+        }
+        {   [ search regex>> ]
+            [ pattern string start find-regex-from ]
+        }
+        [ pattern string start find-substring-from ] // default
+    } cond ;
+
+unuse: regex
+
 : find-in-line ( search line )          // search line -> position/nil
-    search whole-words-only>> [
-        search pattern>> line find-word-in-line
-    ] [
-        search pattern>> line find-substring-in-line
-    ] if ;
+    {
+        {
+            [ search whole-words-only>> ]
+            [ search pattern>> line find-word-in-line ]
+        }
+        {   [ search regex>> ]
+            [ search pattern>> line find-regex-in-line ]
+        }
+        [ search pattern>> line find-substring-in-line ] // default
+    } cond ;
 
 : search-forward-word ( startpos )      // position -> position/nil
     // get pattern from current-search
@@ -378,6 +405,13 @@ public
     ] if [ found ] [ not-found ] if*
     nil current-search! ;
 
+: options ( search )
+    {
+        { [ search whole-words-only>> ] [ "whole words only" ] }
+        { [ search regex>> ] [ "regex" ] }
+        [ "" ]
+    } cond ;
+
 : search-list-occurrences
     last-search nil? ?exit
 
@@ -398,14 +432,13 @@ public
             pos!
             buf [
                 make-buffer buf!
-                current-buffer filename>> filename!
+                current-buffer-filename filename!
                 filename [
                     current-search pattern>> "Pattern: %S" format make-line/1 outputline!
                     true :search-results-header outputline line-set-property
                     outputline buf buffer-append-line
                     outputline buf top-line<<
-                    current-search whole-words-only>> [ "whole words only" ] [ "" ] if
-                    "Options: %s" format make-line/1 outputline!
+                    current-search options "Options: %s" format make-line/1 outputline!
                     true :search-results-header outputline line-set-property
                     outputline buf buffer-append-line
                     filename make-line/1 outputline!
