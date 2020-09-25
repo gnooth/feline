@@ -930,7 +930,8 @@ tuple: search
     search make-instance
     swap >>pattern
     whole-words-only-default >>whole-words-only
-    ignore-case-default >>ignore-case ;
+    ignore-case-default >>ignore-case
+    regex-default >>regex ;
 
 global current-search
 
