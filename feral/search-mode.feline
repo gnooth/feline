@@ -20,6 +20,8 @@ private
 
 global instance
 
+use: regex
+
 : search-mode-format-line ( line )      // line -> segments
 
     :search current-buffer buffer-get-property :> search
@@ -39,30 +41,46 @@ global instance
     [ :source-line-number line line-get-property nil? ] both?
     [ text 0 color-filename make-segment/3 v push v ] ?return
 
-    pattern length :> patternlength
     0 !> i
+
     local j
+    local k
 
     ':' text string-index [
         1+ i! // include ':' in segment
         0 i text substring 0 color-linenumber make-segment/3 v push
     ] when*
 
-    [
-        pattern text i
-        search whole-words-only>> [ find-word-from ] [ find-substring-from ] if
-        dup j!
+    search regex>> [
+        [
+            pattern text i
+            find-regex-from             // -> index1/nil index2/nil
+            k! j!
+            j
+        ] [
+            i j text substring i color-text make-segment/3 v push
+            j k text substring j color-name make-segment/3 v push
+            k i!
+        ] while
     ] [
-        i j text substring i color-text make-segment/3 v push
-        j dup patternlength + text substring j color-name make-segment/3 v push
-        j patternlength + i!
-    ] while
+        [
+            pattern text i
+            search whole-words-only>> [ find-word-from ] [ find-substring-from ] if
+            dup j!
+        ] [
+            i j text substring i color-text make-segment/3 v push
+            j dup pattern length + text substring j color-name make-segment/3 v push
+            j pattern length + i!
+        ] while
+    ] if
 
     i text length < [
         i text length text substring i color-text make-segment/3 v push
     ] when
 
     v ;
+
+unuse: regex
 
 : search-mode-goto-source
     :search current-buffer buffer-get-property :> search
