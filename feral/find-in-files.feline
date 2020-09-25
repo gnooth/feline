@@ -87,12 +87,7 @@ global extension
         1+ linenumber! // displayed line numbers are 1-based
         s!
 
-        pattern s
-        current-search whole-words-only>> [
-            0 find-word-from
-        ] [
-            0 find-substring-from
-        ] if offset!
+        current-search s 0 search:find-in-string offset!
 
         offset [
             // we found the pattern in this line
