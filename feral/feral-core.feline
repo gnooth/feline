@@ -798,7 +798,7 @@ termui? #if
     mark [ mark position-column ] [ nil ] if ;
 
 : line-selected? ( line )               // line -> ?
-    mark null? [ nil ] ?return
+    mark nil? [ nil ] ?return
     dot mark make-region/2 :> region
     {
         {
@@ -814,7 +814,7 @@ termui? #if
     } cond ;
 
 : line-starts-in-selection? ( line )    // line -> ?
-    mark null? [ nil ] ?return
+    mark nil? [ nil ] ?return
 
     mark dot make-region/2 :> region
     line 0 make-position :> pos
@@ -1015,7 +1015,7 @@ unuse: segments
     [ mark ] [ mark-line dot-line eq? ] both?
     [ mark dot make-region/2 region-as-string ] [ nil ] if ;
 
-: find-substring-in-range ( pattern string start end )  // pattern string start end -> i/nil
+: find-substring-in-range ( pattern string start end ) // pattern string start end -> index/nil
     pattern unsafe-string-data-address :> pattern-data-address
     string unsafe-string-data-address :> string-data-address
     pattern string-length :> pattern-length
@@ -1026,11 +1026,11 @@ unuse: segments
         pattern-length unsafe-memequal
     ] find-integer-in-range ;
 
-: find-substring-from ( pattern string start )  // pattern string start -> i/nil
+: find-substring-from ( pattern string start ) // pattern string start -> index/nil
     string string-length pattern string-length - 1+ :> end
     pattern string start end find-substring-in-range ;
 
-: delimited? ( string index pattern-length )    // string index pattern-length -> ?
+: delimited? ( string index pattern-length ) // string index pattern-length -> ?
     true !> result
     index 0> [
         index 1- string string-nth identifier-char? [ nil result! ] when
@@ -1042,7 +1042,7 @@ unuse: segments
     ] when
     result ;
 
-: find-word-from ( pattern string start )   // pattern string start -> i/nil
+: find-word-from ( pattern string start ) // pattern string start -> index/nil
     pattern string-length :> pattern-length
     start !> index
     local found
