@@ -118,3 +118,15 @@ test: test-19
     { 1 2 } [ "\\)" "()" find-regex ] unit-test ;
 
 test-19
+
+test: test-20
+    // basic.dat
+    { 0 2 } [ "^ab" "ab" find-regex ] unit-test ;
+
+test-20
+
+test: test-21
+    // basic.dat
+    { nil nil } [ "^ab" "xxabxx" find-regex ] unit-test ;
+
+test-21

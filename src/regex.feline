@@ -169,7 +169,7 @@ defer match-here
         text-index regex-index 1+ match-star
     ] ?return
 
-    op :bol eq? regex-index 0 eq? and [
+    op :bol eq? text-index 0 eq? and [
         text-index regex-index 1+ match-here
     ] ?return
 
@@ -201,6 +201,8 @@ defer match-here
     verify-index !> index1
 
     text!
+
+    // -> pattern
     text empty? [ drop nil nil ] ?return
 
     parse-regex
