@@ -132,56 +132,68 @@ test: test-21
 test-21
 
 test: test-22
-    // basic.dat
+    // regex++.dat
     { 0 0 } [ "a*" "b" find-regex ] unit-test ;
 
 test-22
 
 test: test-23
-    // basic.dat
+    // regex++.dat
     { 0 1 } [ "ab*" "a" find-regex ] unit-test ;
 
 test-23
 
 test: test-24
-    // basic.dat
+    // regex++.dat
     { 0 2 } [ "ab*" "ab" find-regex ] unit-test ;
 
 test-24
 
 test: test-25
-    // basic.dat
+    // regex++.dat
     { 3 10 } [ "ab*" "sssabbbbbbsss" find-regex ] unit-test ;
 
 test-25
 
 test: test-26
-    // basic.dat
+    // regex++.dat
     { 0 1 } [ "ab*c*" "a" find-regex ] unit-test ;
 
 test-26
 
 test: test-27
-    // basic.dat
+    // regex++.dat
     { 0 4 } [ "ab*c*" "abbb" find-regex ] unit-test ;
 
 test-27
 
 test: test-28
-    // basic.dat
+    // regex++.dat
     { 0 4 } [ "ab*c*" "accc" find-regex ] unit-test ;
 
 test-28
 
 test: test-29
-    // basic.dat
+    // regex++.dat
     { 0 5 } [ "ab*c*" "abbcc" find-regex ] unit-test ;
 
 test-29
 
 test: test-30
-    // basic.dat
+    // regex++.dat
     // vscode atom "Invalid regular expression: /*a/: Nothing to repeat"
     { nil nil } [ "*a" "!" find-regex ] unit-test ;
 
 test-30
+
+test: test-31
+    // regex++.dat
+    { 0 2 } [ "\\**" "**" find-regex ] unit-test ;
+
+test-31
+
+test: test-32
+    // regex++.dat
+    { 0 1 } [ "\\*" "*" find-regex ] unit-test ;
+
+test-32
