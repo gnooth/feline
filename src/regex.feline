@@ -133,7 +133,46 @@ var text
 
 defer match-here
 
-: match-star                            // op text-index regex-index -> index/nil
+: greedy-match-star                     // op text-index regex-index -> index/nil
+
+    !> regex-index !> text-index :> op
+
+    0 !> n                              // number of chars matched
+
+    [
+        [ text-index text length < ]
+        [ [ op :any eq? ] [ op op-literal text-index text nth eq? ] either? ]
+        both?
+    ] [
+        text-index 1+ text-index!
+        n 1+ n!
+    ] while
+
+    local result
+
+    text-index regex-index match-here result!
+    result [ result ] ?return
+
+    // must backtrack
+    n 1- n!
+    text-index 1- text-index!
+
+    [
+        [ n 0> ]
+        [ [ op :any eq? ] [ op op-literal text-index text nth eq? ] either? ]
+        both?
+    ] [
+        text-index 1- text-index!
+        n 1- n!
+        text-index regex-index match-here [
+            result!
+            0 n!                        // force termination
+        ] when*
+    ] while
+
+    result ;
+
+: lazy-match-star                       // op text-index regex-index -> index/nil
     !> regex-index !> text-index :> op
 
     local result
@@ -154,6 +193,8 @@ defer match-here
     ] while
 
     result ;
+
+: match-star greedy-match-star ;
 
 : %match-here ( text-index regex-index ) // text-index regex-index -> index/nil
     regex length :> len
