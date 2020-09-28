@@ -608,3 +608,36 @@ public
 ;
 
 ' compile-cond ' cond symbol-set-compiler
+
+: compile-char-code ( node )
+    pending length 0? [ ' char-code compile-call-symbol ] ?return
+
+    pending-last-value verify-char :> char
+    pending-remove-last
+    flush-pending
+
+    char char-code compile-literal ;
+
+' compile-char-code ' char-code symbol-set-compiler
+
+: compile-nip ( node )
+
+    pending length 0? [ emit-nip ] ?return
+
+    pending-last-value !> last-value
+    pending-remove-last
+    flush-pending
+
+    last-value wrapper? [ wrapped last-value! ] when
+
+    last-value object->integer max-int32 <= [
+        0xbb emit-byte
+        last-value object->integer feline:integer_to_raw_bits tag-fixnum emit-int32
+    ] [
+        0x48 emit-byte
+        0xbb emit-byte
+        last-value object->integer emit-qword
+    ] if
+;
+
+' compile-nip ' nip symbol-set-compiler
