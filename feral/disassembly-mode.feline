@@ -1,0 +1,150 @@
+// Copyright (C) 2020 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: disassembler feral-core feline accessors segments feral-colors ;
+in: disassembly-mode
+
+empty
+
+private
+
+global instance
+
+global local-map
+
+: disassemble-component                 // string -> string
+    1 ?enough verify-string :> token
+    make-string-output-stream :> stream
+    [
+        stream standard-output set
+        token d/1
+    ] with-dynamic-scope
+    stream string-output-stream-string  // -> string
+    stream close ;
+
+: disassemble-thing-at-dot
+    dot-line-text :> s
+    s tokenize :> tokens
+    local output
+    tokens [ "call" = ] find [
+        // -> index
+        1+ tokens ?nth [
+            disassemble-component output!
+        ] when*
+    ] when
+
+    output nil? ?exit
+
+    current-buffer :> buf
+    local divider
+    output length 0> [
+        "" 0 make-line/2 dup divider! buf buffer-append-line
+        output string-lines [ make-line/1 buf buffer-append-line ] each
+        renumber
+        editor:add-undo-move
+        divider next>> 0 move-dot-to
+        "0x" dot-line-text string-has-prefix? [
+            :header :format dot-line line-set-property
+        ] unless
+        maybe-reframe
+        true repaint?!
+    ] [ "No output" message ] if ;
+
+: initialize-local-map
+    128 <hashtable> :> m
+    ' editor:kill-buffer feral-key:escape m set-at
+    ' disassemble-thing-at-dot feral-key:enter m set-at
+    m local-map! ;
+
+initialize-local-map
+
+feral-config:winui? feral-config:gtkui? or #if
+' disassemble-thing-at-dot feral-key:double-mouse-1 local-map set-at
+#endif
+
+: format-line ( line )                  // line -> segments
+    line text>> :> s
+    :format line line-get-property :> format
+    {
+        { [ format :header eq? ] [ color-filename ] }
+        { [ "0x" s string-has-prefix? ] [ color-text ] }
+        [ color-comment ]
+    } cond :> color
+    s 0 color make-segment/3 1array ;
+
+: initialize-buffer           // buffer -> void
+    1 ?enough :> buf
+    local-map buf local-map<< ;
+
+: initialize-mode
+    mode make-instance :> m
+    "Disassembly" m name<<
+    ' initialize-buffer m initialize-buffer-function<<
+    ' format-line m format-line-function<<
+    m instance! ;
+
+initialize-mode
+
+: disassemble
+    execute-command-input-string :> command
+
+    command tokenize :> tokens
+
+    tokens length 2 < ?exit
+
+    tokens first { "disassemble" "dis" } member? assert
+
+    tokens second disassemble-component :> output
+
+    local buf
+
+    output length 0> [
+        make-buffer buf!
+
+        output buf editor:buffer-set-contents
+        command buf command<<
+        command buf name<<
+
+        // REVIEW
+        current-buffer directory>> buf directory<<
+
+        true buf read-only<<
+        buf first-line>> 0 make-position buf dot<<
+        nil buf mark<<
+        buf first-line>> buf top-line<<
+
+        "0x" buf first-line>> text>> string-has-prefix? [
+            :header :format buf first-line>> line-set-property
+        ] unless
+
+        current-buffer buf parent<<
+        instance buf mode<<
+        instance initialize-buffer-function>> [ buf swap call ] when*
+
+        buf in-buffer-list? [ buf buffer-list vector-push ] unless
+        buf set-current-buffer
+
+        true repaint?!
+    ] [
+        "No output" message
+    ] if ;
+
+in: feral-commands
+
+public
+
+: disassemble disassembly-mode:disassemble ;
+
+: dis disassembly-mode:disassemble ;
