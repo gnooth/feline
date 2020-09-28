@@ -604,7 +604,7 @@ code each_index, 'each-index'           ; sequence callable ->
 endcode
 
 ; ### find
-code find, 'find'                       ; seq quot -> index/nil element/nil
+code find, 'find'                       ; seq callable -> index/nil element/nil
 
         ; protect callable from gc
         push    rbx
