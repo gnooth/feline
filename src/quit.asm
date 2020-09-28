@@ -562,7 +562,7 @@ code query, 'query'                     ; -- string/f
 
         _quote "accept-string"          ; -- name
         _quote "accept"                 ; -- name vocab-name
-        _ ?lookup_symbol
+        _ lookup_symbol
         _dup
         _tagged_if .1
         _ catch

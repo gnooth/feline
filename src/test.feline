@@ -1108,13 +1108,13 @@ test: map-find-test-1
 
 map-find-test-1
 
-test: ?lookup-symbol-test-1
-    "dup" "feline" ?lookup-symbol ' dup assert-eq
-    "xxx" "feline" ?lookup-symbol assert-false
-    "dup" "xxx" ?lookup-symbol assert-false
+test: lookup-symbol-test-1
+    "dup" "feline" lookup-symbol ' dup assert-eq
+    "xxx" "feline" lookup-symbol assert-false
+    "dup" "xxx" lookup-symbol assert-false
 ;
 
-?lookup-symbol-test-1
+lookup-symbol-test-1
 
 test: immediate?-test-1
     ' symbol: immediate? assert-true

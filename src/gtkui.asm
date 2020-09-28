@@ -48,7 +48,7 @@ subroutine gtkui_close                  ; void -> void
 
         _quote "do-quit"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -230,7 +230,7 @@ subroutine gtkui_textview_paint         ; void -> void
 
         _quote "repaint"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -255,7 +255,7 @@ subroutine gtkui_textview_keydown       ; keyval -> void
 
         _quote "gtkui-textview-keydown"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -283,7 +283,7 @@ subroutine gtkui_textview_button_press  ; x y -> void
 
         _quote "gtkui-textview-button-press"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -311,7 +311,7 @@ subroutine gtkui_textview_mousemove     ; x y -> void
 
         _quote "gtkui-textview-mousemove"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -335,14 +335,14 @@ subroutine gtkui_textview_mousewheel    ; +1/-1 -> void
 
         _quote "mousewheel-scroll-up"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
         jmp     .exit
 
 .1:
         _quote "mousewheel-scroll-down"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
 .exit:
@@ -410,7 +410,7 @@ subroutine gtkui_minibuffer_paint       ; void -> void
 
         _quote "repaint-minibuffer"     ; name
         _quote "mini"                   ; vocab-name
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -435,7 +435,7 @@ subroutine gtkui_minibuffer_keydown     ; wparam -> void
 
         _quote "minibuffer-dispatch"
         _quote "mini"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback

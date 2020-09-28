@@ -73,7 +73,7 @@ global generic-writer                   // -> symbol
 : define-setter                         // slot -> void
     ">>" swap slot-name string-append :> setter-name
 
-    setter-name accessors-vocab ?lookup-symbol ?exit
+    setter-name accessors-vocab lookup-symbol ?exit
 
     // not found
     setter-name accessors-vocab <symbol> :> setter

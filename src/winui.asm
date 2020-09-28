@@ -54,7 +54,7 @@ subroutine winui_close                  ; void -> void
 
         _quote "do-quit"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -100,7 +100,7 @@ subroutine winui_textview_paint         ; void -> void
 
         _quote "repaint"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -121,7 +121,7 @@ subroutine winui_textview_update_display        ; void -> void
 
         _quote "update-display"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -146,7 +146,7 @@ subroutine winui_textview_char          ; wparam -> void
 
         _quote "winui-textview-char"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -171,7 +171,7 @@ subroutine winui_textview_keydown       ; wparam -> void
 
         _quote "winui-textview-keydown"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -199,7 +199,7 @@ subroutine winui_textview_lbuttondown   ; wparam lparam -> void
 
         _quote "winui-textview-lbuttondown"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -227,7 +227,7 @@ subroutine winui_textview_mousemove     ; wparam lparam -> void
 
         _quote "winui-textview-mousemove"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -256,14 +256,14 @@ subroutine winui_textview_mousewheel    ; delta -> void
 
         _quote "mousewheel-scroll-up"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
         jmp     .exit
 
 .1:
         _quote "mousewheel-scroll-down"
         _quote "editor"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
 .exit:
@@ -474,7 +474,7 @@ subroutine winui_minibuffer_paint       ; void -> void
 
         _quote "repaint-minibuffer"     ; name
         _quote "mini"                   ; vocab-name
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -513,7 +513,7 @@ subroutine winui_minibuffer_char        ; char -> void
 
         _quote "winui-minibuffer-char"
         _quote "mini"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback
@@ -538,7 +538,7 @@ subroutine winui_minibuffer_keydown     ; wparam -> void
 
         _quote "winui-minibuffer-keydown"
         _quote "mini"
-        _ ?lookup_symbol
+        _ lookup_symbol
         _ call_symbol
 
         ; leave callback

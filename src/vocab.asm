@@ -234,8 +234,8 @@ code vocab_find_name, 'vocab-find-name' ; name vocab -- symbol/name ?
         next
 endcode
 
-; ### ?lookup-symbol
-code ?lookup_symbol, '?lookup-symbol'   ; name vocab-spec -- symbol/f
+; ### lookup-symbol
+code lookup_symbol, 'lookup-symbol'     ; name vocab-spec -> symbol/nil
         _ lookup_vocab
         _tagged_if_not .1
         _nip

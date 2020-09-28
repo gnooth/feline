@@ -97,7 +97,7 @@ value saved_efl, 'saved-efl', 0
 code maybe_print_saved_registers, 'maybe-print-saved-registers' ; -> void
         _quote "print-saved-registers"
         _quote "feline"
-        _ ?lookup_symbol                ; -> symbol/nil
+        _ lookup_symbol                 ; -> symbol/nil
         _dup
         _tagged_if .1                   ; -> symbol
         _ call_symbol
@@ -109,7 +109,7 @@ endcode
 code maybe_print_backtrace, 'maybe-print-backtrace' ; -> void
         _quote "print-backtrace"
         _quote "feline"
-        _ ?lookup_symbol                ; -> symbol/nil
+        _ lookup_symbol                 ; -> symbol/nil
         _dup
         _tagged_if .1                   ; -> symbol
         _ call_symbol
