@@ -169,13 +169,18 @@ use: completion
     commandline empty? ?exit
 
     commandline parse-command-line :> command
-    command empty? [
-        command find-name [
-            call-symbol
-        ] [
-            "%S is not a valid command name." format message
-        ] if
-    ] unless ;
+
+    command empty? ?exit
+
+    command "feral-commands" lookup-symbol !> symbol
+
+    symbol [ symbol call-symbol ] ?return
+
+    command find-name [
+        call-symbol
+    ] [
+        "%S is not a valid command name." format message
+    ] if ;
 
 unuse: completion
 
