@@ -405,9 +405,16 @@ code compile_literal, 'compile-literal' ; literal -> void
 
         _ emit_dup
         _ object_to_integer
+        _dup
+        _ int32?
+        _tagged_if .2
+        _emit_byte 0xbb
+        _ emit_int32
+        _else .2
         _emit_byte 0x48
         _emit_byte 0xbb
         _ emit_qword
+        _then .2
         next
 endcode
 
