@@ -188,12 +188,110 @@ test-30
 
 test: test-31
     // regex++.dat
-    { 0 2 } [ "\\**" "**" find-regex ] unit-test ;
+    { 0 2 } [ "\n*" "\n\n" find-regex ] unit-test ;
 
 test-31
 
 test: test-32
     // regex++.dat
-    { 0 1 } [ "\\*" "*" find-regex ] unit-test ;
+    { 0 2 } [ "\\**" "**" find-regex ] unit-test ;
 
 test-32
+
+test: test-33
+    // regex++.dat
+    { 0 1 } [ "\\*" "*" find-regex ] unit-test ;
+
+test-33
+
+test: test-34
+    // regex++.dat
+    { nil nil } [ "ab+" "a" find-regex ] unit-test ;
+
+test-34
+
+test: test-35
+    // regex++.dat
+    { 0 2 } [ "ab+" "ab" find-regex ] unit-test ;
+
+test-35
+
+test: test-36
+    // regex++.dat
+    { 3 10 } [ "ab+" "sssabbbbbbsss" find-regex ] unit-test ;
+
+test-36
+
+test: test-37
+    // regex++.dat
+    { nil nil } [ "ab+c+" "a" find-regex ] unit-test ;
+
+test-37
+
+test: test-38
+    // regex++.dat
+    { nil nil } [ "ab+c+" "abbb" find-regex ] unit-test ;
+
+test-38
+
+test: test-39
+    // regex++.dat
+    { nil nil } [ "ab+c+" "accc" find-regex ] unit-test ;
+
+test-39
+
+test: test-40
+    // regex++.dat
+    { 0 5 } [ "ab+c+" "abbcc" find-regex ] unit-test ;
+
+test-40
+
+test: test-41
+    // regex++.dat
+    // vscode atom "Invalid regular expression: /+a/: Nothing to repeat"
+    { nil nil } [ "+a" "!" find-regex ] unit-test ;
+
+test-41
+
+test: test-42
+    // regex++.dat
+    { 0 2 } [ "\n+" "\n\n" find-regex ] unit-test ;
+
+test-42
+
+test: test-43
+    // regex++.dat
+    { 0 1 } [ "\\+" "+" find-regex ] unit-test ;
+
+test-43
+
+test: test-44
+    // regex++.dat
+    { 0 1 } [ "\\+" "++" find-regex ] unit-test ;
+
+test-44
+
+test: test-45
+    // regex++.dat
+    { 0 2 } [ "\\++" "++" find-regex ] unit-test ;
+
+test-45
+
+test: test-46
+    // regex++.dat
+    // vscode atom "Invalid regular expression: /+a/: Nothing to repeat"
+    { nil nil } [ "+" "+" find-regex ] unit-test ;
+
+test-46
+
+test: test-47
+    // regex++.dat
+    { nil nil } [ "\\+" "!" find-regex ] unit-test ;
+
+test-47
+
+test: test-48
+    // regex++.dat
+    { nil nil } [ "a\\+" "aa" find-regex ] unit-test ;
+
+test-48

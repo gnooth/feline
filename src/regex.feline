@@ -117,6 +117,15 @@ var regex
                     ] when
                 ]
             }
+            {
+                '+'
+                [
+                    iter string-iterator-index 0> [
+                        :plus regex last 2array
+                        regex length 1- regex set-nth
+                    ] when
+                ]
+            }
             { '[' [ iter parse-character-class ] }
             { '\' [ iter escape regex push ] }
             [ regex push ]
@@ -196,6 +205,46 @@ defer match-here
 
 : match-star greedy-match-star ;
 
+: match-plus
+    !> regex-index !> text-index :> op
+
+    0 !> n                              // number of chars matched
+
+    [
+        [ text-index text length < ]
+        [ [ op :any eq? ] [ op op-literal text-index text nth eq? ] either? ]
+        both?
+    ] [
+        text-index 1+ text-index!
+        n 1+ n!
+    ] while
+
+    n 1 < [ nil ] ?return
+
+    local result
+
+    text-index regex-index match-here result!
+    result [ result ] ?return
+
+    // must backtrack
+    n 1- n!
+    text-index 1- text-index!
+
+    [
+        [ n 1 > ]
+        [ [ op :any eq? ] [ op op-literal text-index text nth eq? ] either? ]
+        both?
+    ] [
+        text-index 1- text-index!
+        n 1- n!
+        text-index regex-index match-here [
+            result!
+            0 n!                        // force termination
+        ] when*
+    ] while
+
+    result ;
+
 : %match-here ( text-index regex-index ) // text-index regex-index -> index/nil
     regex length :> len
     regex-index len eq? [ text-index ] ?return
@@ -208,6 +257,11 @@ defer match-here
     op op-first :star eq? [
         op second
         text-index regex-index 1+ match-star
+    ] ?return
+
+    op op-first :plus eq? [
+        op second
+        text-index regex-index 1+ match-plus
     ] ?return
 
     op :bol eq? text-index 0 eq? and [
