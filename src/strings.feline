@@ -16,25 +16,25 @@
 using: feline ;
 in: feline
 
-private: string-trim-head-internal ( s ) // string -> string'
+private: string-trim-head-internal ( s ) // string -> string
     s [ whitespace? not ] find // -> index/nil element/nil
     [ s string-tail ] [ drop "" ] if ;
 
-: string-trim-head ( s ) // string -> string'
+: string-trim-head ( s ) // string -> string
     s string-length 0? [ s ] ?return
     s string-first-char whitespace? not [ s ] ?return
     s string-trim-head-internal ;
 
-private: string-trim-tail-internal ( s ) // string -> string'
+private: string-trim-tail-internal ( s ) // string -> string
     s string-length 1- s [ whitespace? not ] find-last-from // -> index/nil element/nil
     [ 1+ s string-head ] [ drop "" ] if ;
 
-: string-trim-tail ( s ) // string -> string'
+: string-trim-tail ( s ) // string -> string
     s string-length 0? [ s ] ?return
     s string-last-char whitespace? not [ s ] ?return
     s string-trim-tail-internal ;
 
-: string-trim // string -> string'
+: string-trim // string -> string
     !> s
     s string-length 0? [ s ] ?return
     s string-first-char whitespace? [ s string-trim-head-internal s! ] when
@@ -42,13 +42,17 @@ private: string-trim-tail-internal ( s ) // string -> string'
     s string-last-char whitespace? [ s string-trim-tail-internal s! ] when
     s ;
 
-: string-upcase ( s ) // string -> string'
-    // FIXME optimize (this should be a primitive!)
+: string-downcase ( s ) // string -> string
+    s string-length <sbuf> :> sb
+    s [ char-downcase sb sbuf-push-unsafe ] each
+    sb sbuf>string ;
+
+: string-upcase ( s ) // string -> string
     s string-length <sbuf> :> sb
     s [ char-upcase sb sbuf-push-unsafe ] each
     sb sbuf>string ;
 
-: pad-left ( c n s ) // char fixnum string -> string'
+: pad-left ( c n s ) // char fixnum string -> string
     c char? assert
     s string-length :> len
     len n verify-index >= [ s ] ?return
