@@ -420,7 +420,7 @@ private: word-right-internal
     true repaint?! ;
 
 : move-down
-    dot-line-next nil? ?exit
+    dot-line-next nil? mark nil? and ?exit
 
     reset-redo
 
