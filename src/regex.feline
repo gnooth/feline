@@ -251,7 +251,17 @@ defer match-here
     regex-index regex nth :> op
 
     op op-first :question eq? [
-        // FIXME
+        {
+            {
+                [ text-index text length eq? ]
+                [ text-index ]
+            }
+            {
+                [ op second text-index text nth eq? ]
+                [ text-index 1+ regex-index 1+ match-here ]
+            }
+            [ text-index regex-index 1+ match-here ]
+        } cond
     ] ?return
 
     op op-first :star eq? [

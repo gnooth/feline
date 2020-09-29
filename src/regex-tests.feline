@@ -295,3 +295,106 @@ test: test-48
     { nil nil } [ "a\\+" "aa" find-regex ] unit-test ;
 
 test-48
+
+test: test-49
+    // regex++.dat
+    { 0 0 } [ "a?" "b" find-regex ] unit-test ;
+
+test-49
+
+test: test-50
+    // regex++.dat
+    { 0 1 } [ "ab?" "a" find-regex ] unit-test ;
+
+test-50
+
+test: test-51
+    // regex++.dat
+    { 0 2 } [ "ab?" "ab" find-regex ] unit-test ;
+
+test-51
+
+test: test-52
+    // regex++.dat
+    { 3 5 } [ "ab?" "sssabbbbbbsss" find-regex ] unit-test ;
+
+test-52
+
+test: test-53
+    // regex++.dat
+    { 0 1 } [ "ab?c?" "a" find-regex ] unit-test ;
+
+test-53
+
+test: test-54
+    // regex++.dat
+    { 0 2 } [ "ab?c?" "abbb" find-regex ] unit-test ;
+
+test-54
+
+test: test-55
+    // regex++.dat
+    { 0 2 } [ "ab?c?" "accc" find-regex ] unit-test ;
+
+test-55
+
+test: test-56
+    // regex++.dat
+    { 0 3 } [ "ab?c?" "abcc" find-regex ] unit-test ;
+
+test-56
+
+test: test-57
+    // regex++.dat
+    { nil nil } [ "?a" "!" find-regex ] unit-test ;
+
+test-57
+
+test: test-58
+    // regex++.dat
+    { 0 1 } [ "\n?" "\n\n" find-regex ] unit-test ;
+
+test-58
+
+test: test-59
+    // regex++.dat
+    { 0 1 } [ "\\?" "?" find-regex ] unit-test ;
+
+test-59
+
+test: test-60
+    // regex++.dat
+    { 0 1 } [ "\\?" "??" find-regex ] unit-test ;
+
+test-60
+
+test: test-61
+    // regex++.dat
+    { 0 1 } [ "\\??" "??" find-regex ] unit-test ;
+
+test-61
+
+test: test-62
+    // regex++.dat
+    // vscode atom "Invalid regular expression: /?/: Nothing to repeat"
+    { nil nil } [ "?" "?" find-regex ] unit-test ;
+
+test-62
+
+test: test-63
+    // regex++.dat
+    { nil nil } [ "\\?" "!" find-regex ] unit-test ;
+
+test-63
+
+test: test-64
+    // regex++.dat
+    { nil nil } [ "a\\?" "aa" find-regex ] unit-test ;
+
+test-64
+
+test: test-65
+    // regex++.dat
+    { nil nil } [ "a\\?" "b" find-regex ] unit-test ;
+
+test-65
