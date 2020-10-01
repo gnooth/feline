@@ -138,6 +138,7 @@ use: regex
 : find-regex-in-line ( pattern line )   // pattern line -> position/nil
     pattern line text>> 0 find-regex-from // -> index1/nil index2/nil
     :> index
+    drop
     index [ line index make-position ] [ nil ] if ;
 
 : find-in-string ( search string start ) // search string start -> index/nil
