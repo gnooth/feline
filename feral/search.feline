@@ -241,7 +241,7 @@ use: regex
             index2 current-search regex-match-end<<
             line index2 make-position result!
             nil line!
-        ] [ line next>> line! ] if*
+        ] [ line next>> line! ] if
     ] while
 
     result ;
