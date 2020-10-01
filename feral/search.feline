@@ -155,7 +155,8 @@ use: regex
                 drop
             ]
         }
-        [ pattern string start find-substring-from ] // default
+        // default
+        [ pattern string start find-substring-from ]
     } cond ;
 
 unuse: regex
@@ -166,7 +167,8 @@ unuse: regex
             [ search whole-words-only>> ]
             [ search pattern>> line find-word-in-line ]
         }
-        {   [ search regex>> ]
+        {
+            [ search regex>> ]
             [ search pattern>> line find-regex-in-line ]
         }
         [ search pattern>> line find-substring-in-line ] // default
@@ -440,7 +442,7 @@ public
 
     [ sourceline ] [
         // while
-        current-search sourceline find-in-line  // -> position/nil
+        current-search sourceline find-in-line // -> position/nil
         [
             pos!
             buf [
