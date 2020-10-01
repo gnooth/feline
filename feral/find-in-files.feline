@@ -71,7 +71,7 @@ global extension
     buf in-buffer-list? [ buf buffer-list vector-push ] unless
     buf set-current-buffer ;
 
-: find-in-file
+: find-in-file                          // filename -> void
     1 ?enough verify-string :> filename
 
     local linenumber
@@ -166,10 +166,12 @@ defer find-in-directory
     nil output-buffer!
 
     "find" history:set-history
-    whole-words-only-default "Find word: " "Find: " ? :> prompt
+
+    search:make-prompt :> prompt
 
     // REVIEW with-current-context
     :find-prompt current-context!
+
     prompt mini:minibuffer-accept-string pattern!
     nil current-context!
 
