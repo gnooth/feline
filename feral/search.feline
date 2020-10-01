@@ -281,13 +281,18 @@ use: regex
 
 public
 
+: make-prompt
+    {
+        { [ regex-default ] [ "Find regex: " ] }
+        { [ whole-words-only-default ] [ "Find word: " ] }
+        // default
+        [ "Find: " ]
+    } cond ;
+
 : find-command
     "find" set-history
-    regex-default [
-        "Find regex: "
-    ] [
-        whole-words-only-default "Find word: " "Find: " ?
-    ] if :> prompt
+
+    make-prompt :> prompt
 
     // REVIEW with-current-context
     :find-prompt current-context!
