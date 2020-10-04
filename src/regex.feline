@@ -246,8 +246,8 @@ defer match-here
     result ;
 
 : %match-here ( text-index regex-index ) // text-index regex-index -> index/nil
-    regex length :> len
-    regex-index len eq? [ text-index ] ?return
+    regex length :> regex-length
+    regex-index regex-length eq? [ text-index ] ?return
     regex-index regex nth :> op
 
     op op-first :question eq? [
@@ -274,11 +274,11 @@ defer match-here
         text-index regex-index 1+ match-plus
     ] ?return
 
-    op :bol eq? text-index 0 eq? and [
-        text-index regex-index 1+ match-here
+    op :bol eq? [
+        text-index 0? [ text-index regex-index 1+ match-here ] [ nil ] if
     ] ?return
 
-    op :eol eq? regex-index 1+ len eq? and [
+    op :eol eq? regex-index 1+ regex-length eq? and [
         text-index text length eq? [ text-index ] [ nil ] if
     ] ?return
 
@@ -307,22 +307,21 @@ defer match-here
 
     text!
 
-    // -> pattern
-    text empty? [ drop nil nil ] ?return
-
     parse-regex
     regex empty? [ nil nil ] ?return
 
     text length :> text-length
 
     nil !> index2
+
     [
         index1 text-length <
         index2 nil? and
     ] [
         index1 0 match-here index2!
         index2 [ index1 1+ index1! ] unless
-    ] while
+    ] do while
+
     index2 [ index1 index2 ] [ nil nil ] if ;
 
 : find-last-regex-from                  // pattern string start -> index1/nil index2/nil
