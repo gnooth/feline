@@ -398,3 +398,15 @@ test: test-65
     { nil nil } [ "a\\?" "b" find-regex ] unit-test ;
 
 test-65
+
+test: test-66
+    // basic.dat:83
+    { 0 0 } [ "^" "" find-regex ] unit-test ;
+
+test-66
+
+test: test-67
+    // basic.dat:86
+    { 0 1 } [ "^a$" "a" find-regex ] unit-test ;
+
+test-67
