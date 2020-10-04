@@ -472,8 +472,17 @@ code while, 'while'             ; predicate body ->
         next
 endcode
 
+; ### do
+code do, 'do'                           ; pred body -> pred body
+; Factor
+; Execute one iteration of the body of a while or until loop.
+        _dup
+        _ twodip
+        next
+endcode
+
 ; ### char-escape-char
-code char_escape_char, 'char-escape-char'       ; tagged-char1 -> tagged-char2/nil
+code char_escape_char, 'char-escape-char' ; tagged-char1 -> tagged-char2/nil
 
         _quote `\a\b\t\n\v\f\r\e '\0'`
         _ string_index
@@ -1863,6 +1872,7 @@ code printable_char?, 'printable-char?' ; x -- ?
 endcode
 
 ; ### code-char
+; REVIEW integer->char
 code code_char, 'code-char'             ; tagged_fixnum -> tagged-char
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
@@ -1871,6 +1881,7 @@ code code_char, 'code-char'             ; tagged_fixnum -> tagged-char
 endcode
 
 ; ### char-code
+; REVIEW char->integer
 code char_code, 'char-code'             ; tagged-char -> tagged-fixnum
         cmp     bl, CHAR_TAG
         jne     error_not_char
