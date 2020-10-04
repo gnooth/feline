@@ -85,6 +85,7 @@ in: feline-mode
     "cleave"
     "cond"
     "dip"
+    "do"
     "each"
     "each-index"
     "each-integer"
