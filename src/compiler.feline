@@ -272,13 +272,13 @@ public
 
 : compile-while ( node )
 
-    pending length 2 < [ ' while compile-call-address ] ?return
+    pending length 2 < [ flush-pending ' while compile-call-symbol ] ?return
 
     pending last node-literal-value :> quot2
 
     pending dup length 2 - swap nth node-literal-value :> quot1
     [ quot1 quotation? ] [ quot2 quotation? ] both? nil?
-    [ ' while compile-call-address ] ?return
+    [ flush-pending ' while compile-call-symbol ] ?return
 
     // quot1 and quot2 are both literal quotations
     quot2 callable-code-address :> addr2
