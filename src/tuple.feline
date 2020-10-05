@@ -41,7 +41,7 @@ global generic-writer                   // -> symbol
         // default case
         [ ' slot@ 2array ]
     } case
-    array>quotation :> quotation
+    array->quotation :> quotation
 
     tuple-typecode
     generic-reader symbol-def verify-generic-function
@@ -62,7 +62,7 @@ global generic-writer                   // -> symbol
     ' verify-typecode
     index
     ' slot!
-    4array array>quotation :> quotation
+    4array array->quotation :> quotation
 
     tuple-typecode
     generic-writer symbol-def verify-generic-function
@@ -83,7 +83,7 @@ global generic-writer                   // -> symbol
 
     ' over
     generic-writer
-    2array array>quotation setter symbol-set-def
+    2array array->quotation setter symbol-set-def
     setter compile-word
 ;
 
@@ -103,7 +103,7 @@ global generic-writer                   // -> symbol
     ' object-typecode
     tuple-typecode
     ' eq?
-    3array array>quotation
+    3array array->quotation
 
     over symbol-set-def
     compile-word

@@ -16,8 +16,11 @@
 file __FILE__
 
 ; 4 cells: object header, array, raw code address, raw code size
+%define QUOTATION_SIZE                          4 * BYTES_PER_CELL
 
-%define QUOTATION_RAW_CODE_ADDRESS_OFFSET  16
+%define QUOTATION_ARRAY_OFFSET                  8
+%define QUOTATION_RAW_CODE_ADDRESS_OFFSET       16
+%define QUOTATION_RAW_CODE_SIZE_OFFSET          24
 
 %macro  _quotation_array 0              ; quotation -> array
         _slot1
@@ -117,35 +120,22 @@ code verify_quotation, 'verify-quotation' ; quotation -> quotation
 endcode
 
 ; ### array>quotation
-code array_to_quotation, 'array>quotation'      ; array -> quotation
+code array_to_quotation, 'array->quotation' ; array -> quotation
 ; 4 cells: object header, array, raw code address, raw code size
 
-        _lit 4
-        _ raw_allocate_cells
+        mov     arg0_register, QUOTATION_SIZE
+        _ feline_malloc                 ; returns address in rax
 
-        push    this_register
-        mov     this_register, rbx
-        _drop
-
-        _this_object_set_raw_typecode TYPECODE_QUOTATION
-
-        _this_object_set_flags OBJECT_ALLOCATED_BIT
-
-        _this_quotation_set_array
-
-        _zero
-        _this_quotation_set_raw_code_address
-
-        _zero
-        _this_quotation_set_raw_code_size
-
-        _dup
-        mov     rbx, this_register      ; -> quotation
+        mov     qword [rax], TYPECODE_QUOTATION
+        mov     byte [rax + OBJECT_FLAGS_BYTE_OFFSET], OBJECT_ALLOCATED_BIT
+        mov     qword [rax + QUOTATION_ARRAY_OFFSET], rbx
+        mov     qword [rax + QUOTATION_RAW_CODE_ADDRESS_OFFSET], 0
+        mov     qword [rax + QUOTATION_RAW_CODE_SIZE_OFFSET], 0
+        mov     rbx, rax
 
         ; return handle
         _ new_handle                    ; -> handle
 
-        pop     this_register
         next
 endcode
 
