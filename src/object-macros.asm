@@ -112,7 +112,9 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 ; The third byte of the object header contains the object flags.
 
-%define OBJECT_FLAGS_BYTE       byte [rbx + 2]
+%define OBJECT_FLAGS_BYTE_OFFSET        2
+
+%define OBJECT_FLAGS_BYTE       byte [rbx + OBJECT_FLAGS_BYTE_OFFSET]
 
 %macro  _object_flags 0
         movzx   rbx, OBJECT_FLAGS_BYTE
@@ -120,12 +122,12 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 %macro  _object_set_flags 0             ; object flags --
         mov     rax, [rbp]              ; object in rax
-        mov     [rax + 2], bl
+        mov     [rax + OBJECT_FLAGS_BYTE_OFFSET], bl
         _2drop
 %endmacro
 
 %macro  _this_object_set_flags 1
-        mov     byte [this_register + 2], %1
+        mov     byte [this_register + OBJECT_FLAGS_BYTE_OFFSET], %1
 %endmacro
 
 %macro  _object_allocated? 0            ; object -- 0/1
