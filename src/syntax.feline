@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -61,4 +61,4 @@ syntax: var must-parse-token make-var ;
 
 syntax: constant                        // x -> void
     parse-name
-    swap 1array array>quotation over symbol-set-def compile-word ;
+    swap 1quotation over symbol-set-def compile-word ;
