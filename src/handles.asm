@@ -83,7 +83,7 @@ code initialize_handle_space, 'initialize_handle_space', SYMBOL_INTERNAL
         _dup
         _handle_to_object_unsafe                        ; -> handle raw-vector
 
-        ; store address of raw vector asm global
+        ; store address of raw vector in asm global
         mov     [recycled_handles_vector_], rbx         ; -> handle raw_vector
         _drop                                           ; -> handle
 
@@ -95,13 +95,10 @@ code initialize_handle_space, 'initialize_handle_space', SYMBOL_INTERNAL
 endcode
 
 ; ### empty-handles
-code empty_handles, 'empty-handles'     ; -> tagged-fixnum
-        _recycled_handles_vector
-        _?dup_if .1
-        _vector_raw_length
-        _else .1
-        _zero
-        _then .1
+code empty_handles, 'empty-handles'     ; void -> fixnum
+        mov     rax, [recycled_handles_vector_]
+        _dup
+        mov     rbx, [rax + VECTOR_RAW_LENGTH_OFFSET]
         add     rbx, qword [unused_]
         _tag_fixnum
         next
