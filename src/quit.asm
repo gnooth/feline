@@ -647,7 +647,7 @@ endcode
 code evaluate, 'evaluate'               ; string --
         _ begin_dynamic_scope
 
-        _ new_lexer
+        _ make_lexer
         _ current_lexer
         _ set
 

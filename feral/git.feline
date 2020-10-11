@@ -201,7 +201,7 @@ public
 : git
     nil git-command!
 
-    execute-command-input-string <lexer> :> lexer
+    execute-command-input-string make-lexer :> lexer
 
     // first token is "git"
     lexer lexer-parse-token "git" string=? assert

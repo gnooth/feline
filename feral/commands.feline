@@ -132,9 +132,7 @@ in: editor
     } cond ;
 
 : parse-command-line // string -> command
-    dup execute-command-input-string!
-    <lexer> :> lexer
-    lexer lexer-parse-token ;
+    dup execute-command-input-string! make-lexer lexer-parse-token ;
 
 use: completion
 

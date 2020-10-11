@@ -305,7 +305,7 @@ code load, 'load'                       ; string --
 
         _dup
         _ file_contents
-        _ new_lexer
+        _ make_lexer
         _tuck
         _ lexer_set_file                ; -- lexer
 

@@ -15,7 +15,14 @@
 
 file __FILE__
 
-; 6 cells: object header, string, raw index, line, line start, file
+; 6 cells: object header, string, raw index, line number, line start, file
+%define LEXER_SIZE                      6 * BYTES_PER_CELL
+
+%define LEXER_STRING_OFFSET             8
+%define LEXER_RAW_INDEX_OFFSET          16
+%define LEXER_RAW_LINE_NUMBER_OFFSET    24
+%define LEXER_RAW_LINE_START_OFFSET     32
+%define LEXER_FILE_OFFSET               40
 
 ; set in constructor, read only thereafter
 %macro  _lexer_string 0                 ; lexer -- string
@@ -291,32 +298,26 @@ code current_lexer_location, 'current-lexer-location'   ; -> 3array/f
         next
 endcode
 
-; ### <lexer>
-code new_lexer, '<lexer>'               ; string -- lexer
-; 6 cells: object header, string, raw index, line, line start, file
-
-        _lit 6
-        _ raw_allocate_cells
-
-        push    this_register
-        mov     this_register, rbx
-        poprbx                          ; -- string
-
-        _this_object_set_raw_typecode TYPECODE_LEXER
+; ### make-lexer
+code make_lexer, 'make-lexer'           ; string -> lexer
+; 6 cells: object header, string, raw index, line number, line start, file
 
         _ verify_string
-        _this_lexer_set_string
 
-        _f
-        _this_lexer_set_file
+        mov     arg0_register, LEXER_SIZE
+        _ feline_malloc                 ; rax: ^lexer
 
-        pushrbx
-        mov     rbx, this_register      ; -- lexer
+        mov     qword [rax], TYPECODE_LEXER
+        mov     qword [rax + LEXER_STRING_OFFSET], rbx
+        mov     qword [rax + LEXER_RAW_INDEX_OFFSET], 0
+        mov     qword [rax + LEXER_RAW_LINE_NUMBER_OFFSET], 0
+        mov     qword [rax + LEXER_RAW_LINE_START_OFFSET], 0
+        mov     qword [rax + LEXER_FILE_OFFSET], 0
+        mov     rbx, rax                ; -> ^lexer
 
         ; return handle
-        _ new_handle                    ; -- handle
+        _ new_handle                    ; -> lexer
 
-        pop     this_register
         next
 endcode
 

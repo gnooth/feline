@@ -101,7 +101,7 @@ endcode
 
 ; ### parse-format-string
 code parse_format_string, 'parse-format-string' ; format-string -> vector
-        _ new_lexer                     ; -> lexer
+        _ make_lexer                    ; -> lexer
 
         push    this_register
         mov     this_register, rbx
