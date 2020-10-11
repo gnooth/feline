@@ -140,6 +140,16 @@ var text
 : op-literal ( op )                     // op -? char/nil
     op char? ;
 
+: match-char ( text-index op )
+    {
+        { [ text-index text length >= ] [ nil ] }
+        { [ op :any eq? ] [ true ] }
+        { [ op op-literal ] [ op op-literal text-index text nth eq? ] }
+        { [ op op-first :ccl eq? ] [ text-index text nth op second member-eq? ] }
+        // default
+        [ nil ]
+    } cond ;
+
 defer match-here
 
 : greedy-match-star                     // op text-index regex-index -> index/nil
@@ -149,9 +159,7 @@ defer match-here
     0 !> n                              // number of chars matched
 
     [
-        [ text-index text length < ]
-        [ [ op :any eq? ] [ op op-literal text-index text nth eq? ] either? ]
-        both?
+        text-index op match-char
     ] [
         text-index 1+ text-index!
         n 1+ n!
@@ -168,7 +176,7 @@ defer match-here
 
     [
         [ n 0> ]
-        [ [ op :any eq? ] [ op op-literal text-index text nth eq? ] either? ]
+        [ text-index op match-char ]
         both?
     ] [
         text-index 1- text-index!
