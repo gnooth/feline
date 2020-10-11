@@ -21,27 +21,27 @@ asm_global handle_space_limit_, 0
 
 %define HANDLE_SPACE_SIZE 1024*1024*8   ; 8 mb (1048576 handles)
 
-asm_global unused, 1024*1024
+asm_global unused_, 1024*1024
 
 ; ### unused-handles
-code unused_handles, 'unused-handles'   ; -- n
-        pushrbx
-        mov     rbx, [unused]
+code unused_handles, 'unused-handles'   ; -> n
+        _dup
+        mov     rbx, [unused_]
         _tag_fixnum
         next
 endcode
 
 asm_global recycled_handles_vector_, 0
 
-%macro _recycled_handles_vector 0       ; -> raw-vector
-        pushrbx
+%macro _recycled_handles_vector 0       ; -> ^vector
+        _dup
         mov     rbx, [recycled_handles_vector_]
 %endmacro
 
 ; ### initialize_handle_space
 code initialize_handle_space, 'initialize_handle_space', SYMBOL_INTERNAL
 
-        pushrbx
+        _dup
         mov     rbx, [handle_space_]
 
         test    rbx, rbx
@@ -54,12 +54,12 @@ code initialize_handle_space, 'initialize_handle_space', SYMBOL_INTERNAL
 
         _dup
         shr     rbx, 3          ; convert bytes to handles
-        mov     [unused], rbx
-        poprbx
+        mov     [unused_], rbx
+        _drop
 
         _plus
         mov     [handle_space_limit_], rbx
-        poprbx
+        _drop
 
         jmp     .2
 
@@ -74,41 +74,41 @@ code initialize_handle_space, 'initialize_handle_space', SYMBOL_INTERNAL
         mov     [handle_space_free_], rbx
         _plus
         mov     [handle_space_limit_], rbx
-        poprbx
+        _drop
 
 .2:
         _lit 256
-        _ new_vector_untagged                           ; -- handle
+        _ new_vector_untagged                           ; -> handle
 
         _dup
-        _handle_to_object_unsafe                        ; -- handle raw-vector
+        _handle_to_object_unsafe                        ; -> handle raw-vector
 
         ; store address of raw vector asm global
-        mov     [recycled_handles_vector_], rbx         ; -- handle raw_vector
-        poprbx                                          ; -- handle
+        mov     [recycled_handles_vector_], rbx         ; -> handle raw_vector
+        _drop                                           ; -> handle
 
         ; and release its handle
         _untag_handle
-        _ release_handle_unsafe                         ; --
+        _ release_handle_unsafe
 
         next
 endcode
 
 ; ### empty-handles
-code empty_handles, 'empty-handles'     ; -- tagged-fixnum
+code empty_handles, 'empty-handles'     ; -> tagged-fixnum
         _recycled_handles_vector
         _?dup_if .1
         _vector_raw_length
         _else .1
         _zero
         _then .1
-        add     rbx, qword [unused]
+        add     rbx, qword [unused_]
         _tag_fixnum
         next
 endcode
 
 ; ### maybe-gc
-code maybe_gc, 'maybe-gc'       ; --
+code maybe_gc, 'maybe-gc'       ; void -> void
         _ empty_handles
         _tagged_fixnum 10
         _ fixnum_lt
@@ -119,7 +119,7 @@ code maybe_gc, 'maybe-gc'       ; --
 endcode
 
 ; ### gc-status
-code gc_status, 'gc-status'     ; --
+code gc_status, 'gc-status'     ; void -> void
         _ unused_handles
         _recycled_handles_vector
         _vector_raw_length
@@ -143,19 +143,19 @@ code get_empty_handle, 'get_empty_handle', SYMBOL_INTERNAL      ; -> handle/0
         test    rbx, rbx
         jz      .1
         _ vector_?pop_internal
-        cmp     rbx, f_value
+        cmp     rbx, NIL
         je      .1
         _rep_return
 
 .1:
-        cmp     qword [unused], 0
+        cmp     qword [unused_], 0
         jz .2
         mov     rbx, [handle_space_free_]       ; address of handle to be returned
         cmp     rbx, [handle_space_limit_]
         jae     .2
         add     qword [handle_space_free_], BYTES_PER_CELL
-        sub     qword [unused], 1
-        _return
+        sub     qword [unused_], 1
+        next
 
 .2:
         xor     ebx, ebx
@@ -165,8 +165,8 @@ endcode
 asm_global total_allocations_, 0
 
 ; ### total-allocations
-code total_allocations, 'total-allocations'     ; -- n
-        pushrbx
+code total_allocations, 'total-allocations'     ; -> n
+        _dup
         mov     rbx, [total_allocations_]
         _tag_fixnum
         next
@@ -176,8 +176,8 @@ asm_global recent_allocations_, 0
 
 ; ### recent-allocations
 ; number of allocations since last gc
-code recent_allocations, 'recent-allocations'   ; -- n
-        pushrbx
+code recent_allocations, 'recent-allocations'   ; -> n
+        _dup
         mov     rbx, [recent_allocations_]
         _tag_fixnum
         next
@@ -195,15 +195,15 @@ endcode
 asm_global handles_lock_, 0
 
 %macro  _handles_lock 0
-        pushrbx
+        _dup
         mov     rbx, [handles_lock_]
 %endmacro
 
 ; ### initialize_handles_lock
-code initialize_handles_lock, 'initialize_handles_lock', SYMBOL_INTERNAL        ; --
+code initialize_handles_lock, 'initialize_handles_lock', SYMBOL_INTERNAL ; void -> void
         _ make_mutex
         mov     [handles_lock_], rbx
-        poprbx
+        _drop
         _lit handles_lock_
         _ gc_add_root
         next
@@ -215,8 +215,8 @@ code trylock_handles, 'trylock_handles', SYMBOL_INTERNAL        ; -> ?
 
         test    rbx, rbx
         jnz      .1
-        mov     ebx, t_value
-        _return
+        mov     ebx, TRUE
+        next
 
 .1:
         _ mutex_trylock
@@ -255,8 +255,8 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -> handle
         _ safepoint
 
         _ trylock_handles
-        cmp     rbx, f_value
-        poprbx
+        cmp     rbx, NIL
+        _drop
         je      .2
 
 ; .1:
@@ -272,7 +272,7 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -> handle
 
         _increment_allocation_count
         _ unlock_handles
-        _return
+        next
 
 .3:                                     ; -> object 0
         _drop
@@ -294,7 +294,7 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -> handle
 
         _debug_print "new_handle calling get_empty_handle"
 
-        _ get_empty_handle              ; -- object handle/0
+        _ get_empty_handle              ; -> object handle/0
         test    rbx, rbx
         jz     .6
 
@@ -308,7 +308,7 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -> handle
 
         _increment_allocation_count
         _ unlock_handles
-        _return
+        next
 
 .6:
         _ unlock_handles
@@ -318,18 +318,18 @@ code new_handle, 'new_handle', SYMBOL_INTERNAL  ; object -> handle
 endcode
 
 ; ### handle?
-code handle?, 'handle?'                 ; x -- ?
+code handle?, 'handle?'                 ; x -> ?
         cmp     bl, HANDLE_TAG
         jne     .1
-        mov     ebx, t_value
-        _return
+        mov     ebx, TRUE
+        next
 .1:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
 ; ### verified-handle?
-code verified_handle?, 'verified-handle?'       ; x -- ?
+code verified_handle?, 'verified-handle?'       ; x -> ?
         cmp     bl, HANDLE_TAG
         jne     .no
         shr     rbx, HANDLE_TAG_BITS
@@ -338,23 +338,23 @@ code verified_handle?, 'verified-handle?'       ; x -- ?
         jb .no
         cmp     rbx, [handle_space_free_]
         jae .no
-        mov     ebx, t_value
-        _return
+        mov     ebx, TRUE
+        next
 .no:
-        mov     ebx, f_value
+        mov     ebx, NIL
         next
 endcode
 
 ; ### deref
-code deref, 'deref', SYMBOL_INTERNAL    ; x -- object-address/0
+code deref, 'deref', SYMBOL_INTERNAL    ; x -> object-address/0
         cmp     bl, HANDLE_TAG
         jne     .1
         ; valid handle
-        _handle_to_object_unsafe        ; -- object-address/0
-        _return
+        _handle_to_object_unsafe        ; -> object-address/0
+        next
 
 .1:
-        ; -- x
+        ; -> x
         ; drop 0
         xor     ebx, ebx
         next
@@ -383,11 +383,11 @@ code handles, 'handles'
         _zeroto nobjects
         _zeroto nfree
 
-        pushrbx
+        _dup
         mov     rbx, [handle_space_]
         _begin .1
         _dup
-        pushrbx
+        _dup
         mov     rbx, [handle_space_free_]
         _ult
         _while .1
@@ -403,9 +403,9 @@ code handles, 'handles'
         _drop
 
         _ ?nl
-        pushrbx
+        _dup
         mov     rbx, [handle_space_free_]
-        pushrbx
+        _dup
         mov     rbx, [handle_space_]
         _minus
 
@@ -435,11 +435,11 @@ code each_handle, 'each_handle'         ; raw-code-address -> void
         push    r12
         mov     r12, rbx                ; code address in r12
         _drop                           ; -> empty
-        pushrbx
+        _dup
         mov     rbx, [handle_space_]
         _begin .1
         _dup
-        pushrbx
+        _dup
         mov     rbx, [handle_space_free_]
         _ult
         _while .1                       ; -> addr
