@@ -2647,14 +2647,13 @@ test: type-of-test-1
     type-of slice assert-eq
     3 5 <range> dup range? assert-true
     type-of range assert-eq
-    "this is a test" <lexer> dup lexer? assert-true
+    "this is a test" <lexer> dup lexer? over assert-eq
     type-of lexer assert-eq
     pi type-of float assert-eq
     "test" <iterator> dup iterator? assert-true
     type-of iterator assert-eq
     ' length symbol-def type-of generic-function assert-eq
-    max-uint64 type-of uint64 assert-eq
-;
+    max-uint64 type-of uint64 assert-eq ;
 
 type-of-test-1
 

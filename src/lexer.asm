@@ -132,49 +132,54 @@ file __FILE__
 %endmacro
 
 ; ### lexer?
-code lexer?, 'lexer?'                   ; handle -- ?
-        _dup
-        _ handle?
-        _tagged_if .1
-        _handle_to_object_unsafe        ; -- object
-        _dup_if .2
-        _object_raw_typecode
-        _eq? TYPECODE_LEXER
-        _return
-        _then .2
-        _then .1
-        mov     ebx, f_value
+code lexer?, 'lexer?'                   ; x -> x/nil
+; If x is a lexer, returns x unchanged. If x is not a lexer, returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .not_a_lexer
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_LEXER
+        jne     .not_a_lexer
+        next
+.not_a_lexer:
+        mov     ebx, NIL
         next
 endcode
 
 ; ### error-not-lexer
-code error_not_lexer, 'error-not-lexer' ; x --
-        ; REVIEW
-        _error "not a lexer"
+code error_not_lexer, 'error-not-lexer' ; x -> void
+        _quote "a lexer"
+        _ format_type_error
         next
 endcode
 
 ; ### verify-lexer
-code verify_lexer, 'verify-lexer'       ; handle -- handle
-        _dup
-        _ lexer?
-        _tagged_if .1
-        _return
-        _then .1
-
-        _ error_not_lexer
+code verify_lexer, 'verify-lexer'       ; lexer -> lexer
+; returns argument unchanged
+        cmp     bl, HANDLE_TAG
+        jne     error_not_lexer
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_LEXER
+        jne     error_not_lexer
         next
 endcode
 
-; ### check-lexer
-code check_lexer, 'check-lexer'         ; x -- lexer
-        _ deref
-        test    rbx, rbx
-        jz      error_not_lexer
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_LEXER
+; ### check_lexer
+code check_lexer, 'check_lexer'         ; lexer -> ^lexer
+        cmp     bl, HANDLE_TAG
         jne     error_not_lexer
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]
+        cmp     word [rbx], TYPECODE_LEXER
+        jne     .error
         next
+.error:
+        mov     rbx, rax
+        jmp     error_not_lexer
 endcode
 
 ; ### lexer-string
