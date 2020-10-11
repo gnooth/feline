@@ -538,40 +538,6 @@ code syntax, 'syntax:', SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### test:
-code define_test, 'test:'
-        _ parse_name                    ; -> symbol
-        _ parse_definition              ; -> symbol vector
-
-        _tick ?nl
-        _lit tagged_zero
-        _pick
-        _ vector_insert_nth
-
-        _over
-        _ symbol_name
-        _lit tagged_fixnum(1)
-        _pick
-        _ vector_insert_nth
-
-        _tick write_string
-        _lit tagged_fixnum(2)
-        _pick
-        _ vector_insert_nth
-
-        _ vector_to_array
-        _ array_to_quotation            ; -> symbol quotation
-        _over
-        _ symbol_set_def                ; -> symbol
-
-        _ locals_count
-        _over
-        _ symbol_set_locals_count
-
-        _ compile_word
-        next
-endcode
-
 ; ### find-generic
 code find_generic, 'find-generic'       ; symbol-name vocab-designator -> symbol/?
 

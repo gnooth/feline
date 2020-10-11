@@ -46,3 +46,19 @@ syntax: unit-test
     ] [
         current-lexer-location do-unit-test
     ] if ;
+
+using: feline ;
+in: feline
+
+global run-tests-when-defined?
+
+syntax: test:
+    parse-name :> sym
+    parse-definition :> vec
+    ' ?nl 0 vec vector-insert-nth
+    sym symbol-name 1 vec vector-insert-nth
+    ' write-string 2 vec vector-insert-nth
+    vec vector->array array->quotation sym symbol-set-def
+    locals-count sym symbol-set-locals-count
+    sym compile-word
+    run-tests-when-defined? [ sym call-symbol ] when ;
