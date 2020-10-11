@@ -156,16 +156,15 @@ endcode
 ; ### destroy_quotation_unchecked
 code destroy_quotation_unchecked, 'destroy_quotation_unchecked', SYMBOL_INTERNAL
 ; quotation -> void
-
+        mov     rax, [rbx + QUOTATION_RAW_CODE_ADDRESS_OFFSET]
+        test    rax, rax
+        jz      .1
         _dup
-        _quotation_raw_code_address
-        _?dup_if .1
+        mov     rbx, rax
         _ raw_free_executable
-        _then .1
-
+.1:
         ; zero out object header
         mov     qword [rbx], 0
-
         _ raw_free
         next
 endcode
