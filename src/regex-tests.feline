@@ -18,395 +18,322 @@ in: regex-tests
 
 empty
 
+true run-tests-when-defined?!
+
 public
 
 test: test-1
     { true } [ "a" "a" matches? ] unit-test ;
 
-test-1
-
 test: test-2
     { nil } [ "b" "a" matches? ] unit-test ;
-
-test-2
 
 test: test-3
     { true } [ "ab" "ab" matches? ] unit-test ;
 
-test-3
-
 test: test-4
     { true } [ "ab" "a." matches? ] unit-test ;
-
-test-4
 
 test: test-5
     { true } [ "ab" ".b" matches? ]  unit-test ;
 
-test-5
-
 test: test-6
-    { true } [ "fooooobar" "f.*bar" matches? ] unit-test ;
-
-test-6
+    { 0 9 } [ "f.*bar" "fooooobar" find-regex ] unit-test ;
 
 test: test-7
     { true } [ "fooooobar" "f.*bar" matches? ] unit-test ;
 
-test-7
-
 test: test-8
     { true } [ "a" "[ab]" matches? ] unit-test ;
-
-test-8
 
 test: test-9
     { true } [ "b" "[ab]" matches? ] unit-test ;
 
-test-9
-
 test: test-10
     { nil } [ "c" "[ab]" matches? ] unit-test ;
-
-test-10
 
 test: test-11
     { true } [ "d" "[a-z]" matches? ] unit-test ;
 
-test-11
-
 test: test-12
     { 1 2 } [ "[^a]" "ab" find-regex ] unit-test ;
-
-test-12
 
 test: test-13
     { 2 3 } [ "[^ab]" "abcd" find-regex ] unit-test ;
 
-test-13
-
 test: test-14
     { 2 3 } [ "[ab]" "dcba" find-regex ] unit-test ;
-
-test-14
 
 test: test-15
     { 3 13 } [ "text.*x" "no text index here" find-regex ] unit-test ;
 
-test-15
-
-test: test-16
-    // basic.dat
+test: basic-3
+    // basic.dat:3
     { 7 18 } [ "abracadabra$" "abracadabracadabra" find-regex ] unit-test ;
 
-test-16
-
-test: test-17
-    // basic.dat
+test: basic-4
+    // basic.dat:4
     { 2 7 } [ "a...b" "abababbb" find-regex ] unit-test ;
 
-test-17
-
-test: test-18
-    // basic.dat
+test: basic-5
+    // basic.dat:5
     { 2 8 } [ "XXXXXX" "..XXXXXX" find-regex ] unit-test ;
 
-test-18
-
-test: test-19
-    // basic.dat
+test: basic-6
+    // basic.dat:6
     { 1 2 } [ "\\)" "()" find-regex ] unit-test ;
 
-test-19
-
-test: test-20
-    // basic.dat
-    { 0 2 } [ "^ab" "ab" find-regex ] unit-test ;
-
-test-20
-
-test: test-21
-    // basic.dat
-    { nil nil } [ "^ab" "xxabxx" find-regex ] unit-test ;
-
-test-21
-
-test: test-22
-    // regex++.dat
-    { 0 0 } [ "a*" "b" find-regex ] unit-test ;
-
-test-22
-
-test: test-23
-    // regex++.dat
-    { 0 1 } [ "ab*" "a" find-regex ] unit-test ;
-
-test-23
-
-test: test-24
-    // regex++.dat
-    { 0 2 } [ "ab*" "ab" find-regex ] unit-test ;
-
-test-24
-
-test: test-25
-    // regex++.dat
-    { 3 10 } [ "ab*" "sssabbbbbbsss" find-regex ] unit-test ;
-
-test-25
-
-test: test-26
-    // regex++.dat
-    { 0 1 } [ "ab*c*" "a" find-regex ] unit-test ;
-
-test-26
-
-test: test-27
-    // regex++.dat
-    { 0 4 } [ "ab*c*" "abbb" find-regex ] unit-test ;
-
-test-27
-
-test: test-28
-    // regex++.dat
-    { 0 4 } [ "ab*c*" "accc" find-regex ] unit-test ;
-
-test-28
-
-test: test-29
-    // regex++.dat
-    { 0 5 } [ "ab*c*" "abbcc" find-regex ] unit-test ;
-
-test-29
-
-test: test-30
-    // regex++.dat
-    // vscode atom "Invalid regular expression: /*a/: Nothing to repeat"
-    { nil nil } [ "*a" "!" find-regex ] unit-test ;
-
-test-30
-
-test: test-31
-    // regex++.dat
-    { 0 2 } [ "\n*" "\n\n" find-regex ] unit-test ;
-
-test-31
-
-test: test-32
-    // regex++.dat
-    { 0 2 } [ "\\**" "**" find-regex ] unit-test ;
-
-test-32
-
-test: test-33
-    // regex++.dat
-    { 0 1 } [ "\\*" "*" find-regex ] unit-test ;
-
-test-33
-
-test: test-34
-    // regex++.dat
-    { nil nil } [ "ab+" "a" find-regex ] unit-test ;
-
-test-34
-
-test: test-35
-    // regex++.dat
-    { 0 2 } [ "ab+" "ab" find-regex ] unit-test ;
-
-test-35
-
-test: test-36
-    // regex++.dat
-    { 3 10 } [ "ab+" "sssabbbbbbsss" find-regex ] unit-test ;
-
-test-36
-
-test: test-37
-    // regex++.dat
-    { nil nil } [ "ab+c+" "a" find-regex ] unit-test ;
-
-test-37
-
-test: test-38
-    // regex++.dat
-    { nil nil } [ "ab+c+" "abbb" find-regex ] unit-test ;
-
-test-38
-
-test: test-39
-    // regex++.dat
-    { nil nil } [ "ab+c+" "accc" find-regex ] unit-test ;
-
-test-39
-
-test: test-40
-    // regex++.dat
-    { 0 5 } [ "ab+c+" "abbcc" find-regex ] unit-test ;
-
-test-40
-
-test: test-41
-    // regex++.dat
-    // vscode atom "Invalid regular expression: /+a/: Nothing to repeat"
-    { nil nil } [ "+a" "!" find-regex ] unit-test ;
-
-test-41
-
-test: test-42
-    // regex++.dat
-    { 0 2 } [ "\n+" "\n\n" find-regex ] unit-test ;
-
-test-42
-
-test: test-43
-    // regex++.dat
-    { 0 1 } [ "\\+" "+" find-regex ] unit-test ;
-
-test-43
-
-test: test-44
-    // regex++.dat
-    { 0 1 } [ "\\+" "++" find-regex ] unit-test ;
-
-test-44
-
-test: test-45
-    // regex++.dat
-    { 0 2 } [ "\\++" "++" find-regex ] unit-test ;
-
-test-45
-
-test: test-46
-    // regex++.dat
-    // vscode atom "Invalid regular expression: /+a/: Nothing to repeat"
-    { nil nil } [ "+" "+" find-regex ] unit-test ;
-
-test-46
-
-test: test-47
-    // regex++.dat
-    { nil nil } [ "\\+" "!" find-regex ] unit-test ;
-
-test-47
-
-test: test-48
-    // regex++.dat
-    { nil nil } [ "a\\+" "aa" find-regex ] unit-test ;
-
-test-48
-
-test: test-49
-    // regex++.dat
-    { 0 0 } [ "a?" "b" find-regex ] unit-test ;
-
-test-49
-
-test: test-50
-    // regex++.dat
-    { 0 1 } [ "ab?" "a" find-regex ] unit-test ;
-
-test-50
-
-test: test-51
-    // regex++.dat
-    { 0 2 } [ "ab?" "ab" find-regex ] unit-test ;
-
-test-51
-
-test: test-52
-    // regex++.dat
-    { 3 5 } [ "ab?" "sssabbbbbbsss" find-regex ] unit-test ;
-
-test-52
-
-test: test-53
-    // regex++.dat
-    { 0 1 } [ "ab?c?" "a" find-regex ] unit-test ;
-
-test-53
-
-test: test-54
-    // regex++.dat
-    { 0 2 } [ "ab?c?" "abbb" find-regex ] unit-test ;
-
-test-54
-
-test: test-55
-    // regex++.dat
-    { 0 2 } [ "ab?c?" "accc" find-regex ] unit-test ;
-
-test-55
-
-test: test-56
-    // regex++.dat
-    { 0 3 } [ "ab?c?" "abcc" find-regex ] unit-test ;
-
-test-56
-
-test: test-57
-    // regex++.dat
-    { nil nil } [ "?a" "!" find-regex ] unit-test ;
-
-test-57
-
-test: test-58
-    // regex++.dat
-    { 0 1 } [ "\n?" "\n\n" find-regex ] unit-test ;
-
-test-58
-
-test: test-59
-    // regex++.dat
-    { 0 1 } [ "\\?" "?" find-regex ] unit-test ;
-
-test-59
-
-test: test-60
-    // regex++.dat
-    { 0 1 } [ "\\?" "??" find-regex ] unit-test ;
-
-test-60
-
-test: test-61
-    // regex++.dat
-    { 0 1 } [ "\\??" "??" find-regex ] unit-test ;
-
-test-61
-
-test: test-62
-    // regex++.dat
-    // vscode atom "Invalid regular expression: /?/: Nothing to repeat"
-    { nil nil } [ "?" "?" find-regex ] unit-test ;
-
-test-62
-
-test: test-63
-    // regex++.dat
-    { nil nil } [ "\\?" "!" find-regex ] unit-test ;
-
-test-63
-
-test: test-64
-    // regex++.dat
-    { nil nil } [ "a\\?" "aa" find-regex ] unit-test ;
-
-test-64
-
-test: test-65
-    // regex++.dat
-    { nil nil } [ "a\\?" "b" find-regex ] unit-test ;
-
-test-65
-
-test: test-66
+test: basic-52
+    // basic.dat:52
+    { 2 3 } [ "[^-]" "--a" find-regex ] unit-test ;
+
+test: basic-53
+    // basic.dat:53
+    { 0 3 } [ "[a-]*" "--a" find-regex ] unit-test ;
+
+test: basic-54
+    // basic.dat:54
+    { 0 4 } [ "[a-m-]*" "--amoma--" find-regex ] unit-test ;
+
+test: basic-79
+    // basic.dat:79
+    10 make-sbuf :> sb
+    '\x01' sb push
+    '\xff' sb push
+    { 0 2 } [ ".*" sb sbuf->string find-regex ] unit-test ;
+
+test: basic-82
+    // basic.dat:82
+    { 0 10 } [ "a*a*a*a*a*b" "aaaaaaaaab" find-regex ] unit-test ;
+
+test: basic-83
     // basic.dat:83
     { 0 0 } [ "^" "" find-regex ] unit-test ;
 
-test-66
+test: basic-84
+    // basic.dat:84
+    { 0 0 } [ "$" "" find-regex ] unit-test ;
 
-test: test-67
+test: basic-85
+    // basic.dat:85
+    { 0 0 } [ "^$" "" find-regex ] unit-test ;
+
+test: basic-86
     // basic.dat:86
     { 0 1 } [ "^a$" "a" find-regex ] unit-test ;
 
-test-67
+test: basic-87
+    // basic.dat:87
+    { 0 3 } [ "abc" "abc" find-regex ] unit-test ;
+
+test: basic-88
+    // basic.dat:88
+    { 1 4 } [ "abc" "xabcy" find-regex ] unit-test ;
+
+test: basic-89
+    // basic.dat:89
+    { 2 5 } [ "abc" "ababc" find-regex ] unit-test ;
+
+test: basic-90
+    // basic.dat:90
+    { 0 3 } [ "ab*c" "abc" find-regex ] unit-test ;
+
+// test: basic-91
+//     // basic.dat:91
+//     { 0 3 } [ "ab*bc" "abc" find-regex ] unit-test ;
+//
+// test: basic-92
+//     // basic.dat:92
+//     { 0 3 } [ "ab*bc" "abbc" find-regex ] unit-test ;
+//
+// test: basic-93
+//     // basic.dat:92
+//     { 0 6 } [ "ab*bc" "abbbbc" find-regex ] unit-test ;
+
+test: regex++-90
+    // regex++.dat:90
+    { 0 0 } [ "a*" "b" find-regex ] unit-test ;
+
+test: regex++-91
+    // regex++.dat:91
+    { 0 1 } [ "ab*" "a" find-regex ] unit-test ;
+
+test: regex++-92
+    // regex++.dat:92
+    { 0 2 } [ "ab*" "ab" find-regex ] unit-test ;
+
+test: regex++-93
+    // regex++.dat:93
+    { 3 10 } [ "ab*" "sssabbbbbbsss" find-regex ] unit-test ;
+
+test: regex++-94
+    // regex++.dat:94
+    { 0 1 } [ "ab*c*" "a" find-regex ] unit-test ;
+
+test: regex++-95
+    // regex++.dat:95
+    { 0 4 } [ "ab*c*" "abbb" find-regex ] unit-test ;
+
+test: regex++-96
+    // regex++.dat:96
+    { 0 4 } [ "ab*c*" "accc" find-regex ] unit-test ;
+
+test: regex++-97
+    // regex++.dat:97
+    { 0 5 } [ "ab*c*" "abbcc" find-regex ] unit-test ;
+
+test: regex++-98
+    // regex++.dat:98
+    // vscode atom "Invalid regular expression: /*a/: Nothing to repeat"
+    { nil nil } [ "*a" "!" find-regex ] unit-test ;
+
+test: regex++-99
+    // regex++.dat:99
+    { 0 2 } [ "\n*" "\n\n" find-regex ] unit-test ;
+
+test: regex++-100
+    // regex++.dat:100
+    { 0 2 } [ "\\**" "**" find-regex ] unit-test ;
+
+test: regex++-101
+    // regex++.dat:101
+    { 0 1 } [ "\\*" "*" find-regex ] unit-test ;
+
+test: regex++-104
+    // regex++.dat:104
+    { nil nil } [ "ab+" "a" find-regex ] unit-test ;
+
+test: regex++-105
+    // regex++.dat:105
+    { 0 2 } [ "ab+" "ab" find-regex ] unit-test ;
+
+test: regex++-106
+    // regex++.dat:106
+    { 3 10 } [ "ab+" "sssabbbbbbsss" find-regex ] unit-test ;
+
+test: regex++-107
+    // regex++.dat:107
+    { nil nil } [ "ab+c+" "a" find-regex ] unit-test ;
+
+test: regex++-108
+    // regex++.dat:108
+    { nil nil } [ "ab+c+" "abbb" find-regex ] unit-test ;
+
+test: regex++-109
+    // regex++.dat:109
+    { nil nil } [ "ab+c+" "accc" find-regex ] unit-test ;
+
+test: regex++-110
+    // regex++.dat:110
+    { 0 5 } [ "ab+c+" "abbcc" find-regex ] unit-test ;
+
+test: regex++-111
+    // regex++.dat:111
+    // vscode atom "Invalid regular expression: /+a/: Nothing to repeat"
+    { nil nil } [ "+a" "!" find-regex ] unit-test ;
+
+test: regex++-112
+    // regex++.dat:112
+    { 0 2 } [ "\n+" "\n\n" find-regex ] unit-test ;
+
+test: regex++-113
+    // regex++.dat:113
+    { 0 1 } [ "\\+" "+" find-regex ] unit-test ;
+
+test: regex++-114
+    // regex++.dat:114
+    { 0 1 } [ "\\+" "++" find-regex ] unit-test ;
+
+test: regex++-115
+    // regex++.dat:115
+    { 0 2 } [ "\\++" "++" find-regex ] unit-test ;
+
+test: regex++-117
+    // regex++.dat:117
+    // vscode atom "Invalid regular expression: /+a/: Nothing to repeat"
+    { nil nil } [ "+" "+" find-regex ] unit-test ;
+
+test: regex++-118
+    // regex++.dat:118
+    { nil nil } [ "\\+" "!" find-regex ] unit-test ;
+
+test: regex++-119
+    // regex++.dat:119
+    { nil nil } [ "a\\+" "aa" find-regex ] unit-test ;
+
+test: regex++-123
+    // regex++.dat:123
+    { 0 0 } [ "a?" "b" find-regex ] unit-test ;
+
+test: regex++-124
+    // regex++.dat:124
+    { 0 1 } [ "ab?" "a" find-regex ] unit-test ;
+
+test: regex++-125
+    // regex++.dat:125
+    { 0 2 } [ "ab?" "ab" find-regex ] unit-test ;
+
+test: regex++-126
+    // regex++.dat:126
+    { 3 5 } [ "ab?" "sssabbbbbbsss" find-regex ] unit-test ;
+
+test: regex++-127
+    // regex++.dat:127
+    { 0 1 } [ "ab?c?" "a" find-regex ] unit-test ;
+
+test: regex++-128
+    // regex++.dat:128
+    { 0 2 } [ "ab?c?" "abbb" find-regex ] unit-test ;
+
+test: regex++-129
+    // regex++.dat:129
+    { 0 2 } [ "ab?c?" "accc" find-regex ] unit-test ;
+
+test: regex++-130
+    // regex++.dat:130
+    { 0 3 } [ "ab?c?" "abcc" find-regex ] unit-test ;
+
+test: regex++-131
+    // regex++.dat:131
+    { nil nil } [ "?a" "!" find-regex ] unit-test ;
+
+test: regex++-132
+    // regex++.dat:132
+    { 0 1 } [ "\n?" "\n\n" find-regex ] unit-test ;
+
+test: regex++-133
+    // regex++.dat:133
+    { 0 1 } [ "\\?" "?" find-regex ] unit-test ;
+
+test: regex++-134
+    // regex++.dat:134
+    { 0 1 } [ "\\?" "??" find-regex ] unit-test ;
+
+test: regex++-135
+    // regex++.dat:135
+    { 0 1 } [ "\\??" "??" find-regex ] unit-test ;
+
+test: regex++-137
+    // regex++.dat:137
+    // vscode atom "Invalid regular expression: /?/: Nothing to repeat"
+    { nil nil } [ "?" "?" find-regex ] unit-test ;
+
+test: regex++-138
+    // regex++.dat:138
+    { nil nil } [ "\\?" "!" find-regex ] unit-test ;
+
+test: regex++-139
+    // regex++.dat:139
+    { nil nil } [ "a\\?" "aa" find-regex ] unit-test ;
+
+test: regex++-140
+    // regex++.dat:140
+    { nil nil } [ "a\\?" "b" find-regex ] unit-test ;
+
+test: regex++-280
+    // regex++.dat:280
+    { 0 2 } [ "^ab" "ab" find-regex ] unit-test ;
+
+test: regex++-281
+    // regex++.dat:281
+    { nil nil } [ "^ab" "xxabxx" find-regex ] unit-test ;
