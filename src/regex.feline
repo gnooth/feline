@@ -171,14 +171,7 @@ defer match-here
     result [ result ] ?return
 
     // must backtrack
-    n 1- n!
-    text-index 1- text-index!
-
-    [
-        [ n 0> ]
-        [ text-index op match-char ]
-        both?
-    ] [
+    [ n 0> ] [
         text-index 1- text-index!
         n 1- n!
         text-index regex-index match-here [

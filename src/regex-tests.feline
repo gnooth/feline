@@ -138,17 +138,17 @@ test: basic-90
     // basic.dat:90
     { 0 3 } [ "ab*c" "abc" find-regex ] unit-test ;
 
-// test: basic-91
-//     // basic.dat:91
-//     { 0 3 } [ "ab*bc" "abc" find-regex ] unit-test ;
-//
-// test: basic-92
-//     // basic.dat:92
-//     { 0 3 } [ "ab*bc" "abbc" find-regex ] unit-test ;
-//
-// test: basic-93
-//     // basic.dat:92
-//     { 0 6 } [ "ab*bc" "abbbbc" find-regex ] unit-test ;
+test: basic-91
+    // basic.dat:91
+    { 0 3 } [ "ab*bc" "abc" find-regex ] unit-test ;
+
+test: basic-92
+    // basic.dat:92
+    { 0 4 } [ "ab*bc" "abbc" find-regex ] unit-test ;
+
+test: basic-93
+    // basic.dat:92
+    { 0 6 } [ "ab*bc" "abbbbc" find-regex ] unit-test ;
 
 test: regex++-90
     // regex++.dat:90
