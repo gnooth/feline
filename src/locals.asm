@@ -18,8 +18,8 @@ file __FILE__
 ; maximum number of local variables in a definition
 %define MAX_LOCALS      8
 
-; ### local_get
-code local_get, 'local_get', SYMBOL_INTERNAL    ; index -> value
+; ### local-get
+code local_get, 'local-get'             ; index -> value
         _check_index
         mov     rbx, [r14 + rbx * BYTES_PER_CELL]
         next
@@ -139,8 +139,8 @@ code local_getter, 'local-getter'       ; index -> symbol
         next
 endcode
 
-; ### local_set
-code local_set, 'local_set', SYMBOL_INTERNAL            ; value index -> void
+; ### local-set
+code local_set, 'local-set'             ; value index -> void
         _check_index
         _cells
         add     rbx, r14
