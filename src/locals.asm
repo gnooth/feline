@@ -293,7 +293,7 @@ endcode
 asm_global locals_count_, 0
 
 ; ### locals-count
-code locals_count, 'locals-count'       ; void -> n
+code locals_count, 'locals-count'       ; void -> fixnum
         _dup
         mov     rbx, [locals_count_]
         _tag_fixnum
@@ -463,6 +463,12 @@ code add_local_setter, 'add-local-setter'       ; string -> void
         _tagged_if .2
         _ error_duplicate_local_name
         _then .2                        ; -> string
+
+        _ locals_count
+        _verify_fixnum
+        _over
+        _ locals
+        _ hashtable_set_at
 
         _ locals_count
         _ local_setter
