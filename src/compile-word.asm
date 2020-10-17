@@ -843,21 +843,35 @@ code compile_epilog, 'compile-epilog'
         _drop
         mov     [exit_address_], rax
 
-        _ locals_count                  ; -> tagged-fixnum
+        _ locals_count                  ; -> fixnum
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
-        sar     rbx, FIXNUM_TAG_BITS
+        sar     rbx, FIXNUM_TAG_BITS    ; rbx: raw locals count
         jz      drop                    ; nothing to do if locals-count is 0
 
         ; we have locals
+        ; rbx: raw locals count
+        shl     rbx, 3                  ; rbx: raw number of bytes
+
+        cmp     rbx, 128
+        jge     .1
+
+        ; number of bytes < 128
+        _emit_byte 0x48
+        _emit_byte 0x83
+        _emit_byte 0xc4
+        _tag_fixnum
+        _ emit_byte
+        jmp     .2
+
+.1:
+        ; number of bytes >= 128
         _emit_byte 0x48
         _emit_byte 0x81
         _emit_byte 0xc4
-
-        ; -> raw-count (in rbx)
-        shl     rbx, 3                  ; convert cells to bytes
         _ emit_raw_dword                ; add rsp, number of bytes
 
+.2:
         ; -> empty
         _emit_byte 0x41
         _emit_byte 0x5e                 ; pop r14
