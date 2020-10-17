@@ -753,24 +753,38 @@ endcode
 ; ### compile-prolog
 code compile_prolog, 'compile-prolog'
 
-        _ locals_count                  ; -> tagged-fixnum
+        _ locals_count                  ; -> fixnum
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
-        sar     rbx, FIXNUM_TAG_BITS
-        jz      drop                    ; nothing to do if locals-count is 0
+        sar     rbx, FIXNUM_TAG_BITS    ; rbx: raw locals count
+        jz      drop                    ; nothing to do if locals count is 0
 
         ; we have locals
         _emit_byte 0x41
         _emit_byte 0x56                 ; push r14
 
+        ; rbx: raw locals count
+        shl     rbx, 3                  ; rbx: raw number of bytes
+
+        cmp     rbx, 128
+        jge     .1
+
+        ; number of bytes < 128
+        _emit_byte 0x48
+        _emit_byte 0x83
+        _emit_byte 0xec
+        _tag_fixnum
+        _ emit_byte                     ; sub rsp, number of bytes
+        jmp     .2
+
+.1:
+        ; number of bytes >= 128
         _emit_byte 0x48
         _emit_byte 0x81
         _emit_byte 0xec
-
-        ; -> raw-count (in rbx)
-        shl     rbx, 3                  ; convert cells to bytes
         _ emit_raw_dword                ; sub rsp, number of bytes
 
+.2:
         _emit_byte 0x49
         _emit_byte 0x89
         _emit_byte 0xe6                 ; mov r14, rsp
