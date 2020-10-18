@@ -25,120 +25,6 @@ code local_get, 'local-get'             ; index -> value
         next
 endcode
 
-; ### local_0_get
-inline local_0_get, 'local_0_get', SYMBOL_INTERNAL      ; -> value
-        _dup
-        mov     rbx, [r14]
-endinline
-
-; ### local_1_get
-inline local_1_get, 'local_1_get', SYMBOL_INTERNAL      ; -> value
-        _dup
-        mov     rbx, [r14 + BYTES_PER_CELL]
-endinline
-
-; ### local_2_get
-inline local_2_get, 'local_2_get', SYMBOL_INTERNAL      ; -> value
-        _dup
-        mov     rbx, [r14 + BYTES_PER_CELL * 2]
-endinline
-
-; ### local_3_get
-inline local_3_get, 'local_3_get', SYMBOL_INTERNAL      ; -> value
-        _dup
-        mov     rbx, [r14 + BYTES_PER_CELL * 3]
-endinline
-
-; ### local_4_get
-inline local_4_get, 'local_4_get', SYMBOL_INTERNAL      ; -> value
-        _dup
-        mov     rbx, [r14 + BYTES_PER_CELL * 4]
-endinline
-
-; ### local_5_get
-inline local_5_get, 'local_5_get', SYMBOL_INTERNAL      ; -> value
-        _dup
-        mov     rbx, [r14 + BYTES_PER_CELL * 5]
-endinline
-
-; ### local_6_get
-inline local_6_get, 'local_6_get', SYMBOL_INTERNAL      ; -> value
-        _dup
-        mov     rbx, [r14 + BYTES_PER_CELL * 6]
-endinline
-
-; ### local_7_get
-inline local_7_get, 'local_7_get', SYMBOL_INTERNAL      ; -> value
-        _dup
-        mov     rbx, [r14 + BYTES_PER_CELL * 7]
-endinline
-
-asm_global local_getters_, NIL
-
-; ### local-getters
-code local_getters, 'local-getters'     ; -> vector
-        _dup
-        mov     rbx, [local_getters_]
-        next
-endcode
-
-; ### initialize_local_getters
-code initialize_local_getters, 'initialize_local_getters', SYMBOL_INTERNAL
-        _lit 16
-        _ new_vector_untagged
-        mov     [local_getters_], rbx
-        _drop
-
-        _lit local_getters_
-        _ gc_add_root
-
-        _dup
-        mov     rbx, [local_getters_]
-
-        _symbol local_0_get
-        _over
-        _ vector_push
-
-        _symbol local_1_get
-        _over
-        _ vector_push
-
-        _symbol local_2_get
-        _over
-        _ vector_push
-
-        _symbol local_3_get
-        _over
-        _ vector_push
-
-        _symbol local_4_get
-        _over
-        _ vector_push
-
-        _symbol local_5_get
-        _over
-        _ vector_push
-
-        _symbol local_6_get
-        _over
-        _ vector_push
-
-        _symbol local_7_get
-        _over
-        _ vector_push
-
-        _drop
-
-        next
-endcode
-
-; ### local-getter
-code local_getter, 'local-getter'       ; index -> symbol
-        _ local_getters
-        _ vector_nth
-        next
-endcode
-
 ; ### local-set
 code local_set, 'local-set'             ; value index -> void
         _check_index
@@ -147,128 +33,6 @@ code local_set, 'local-set'             ; value index -> void
         mov     rax, [rbp]
         mov     [rbx], rax
         _2drop
-        next
-endcode
-
-; ### local_0_set
-inline local_0_set, 'local_0_set', SYMBOL_INTERNAL      ; value -> void
-        _debug_?enough_1
-        mov     [r14], rbx
-        _drop
-endinline
-
-; ### local_1_set
-inline local_1_set, 'local_1_set', SYMBOL_INTERNAL      ; value -> void
-        _debug_?enough_1
-        mov     [r14 + BYTES_PER_CELL], rbx
-        _drop
-endinline
-
-; ### local_2_set
-inline local_2_set, 'local_2_set', SYMBOL_INTERNAL      ; value -> void
-        _debug_?enough_1
-        mov     [r14 + BYTES_PER_CELL * 2], rbx
-        _drop
-endinline
-
-; ### local_3_set
-inline local_3_set, 'local_3_set', SYMBOL_INTERNAL      ; value -> void
-        _debug_?enough_1
-        mov     [r14 + BYTES_PER_CELL * 3], rbx
-        _drop
-endinline
-
-; ### local_4_set
-inline local_4_set, 'local_4_set', SYMBOL_INTERNAL      ; value -> void
-        _debug_?enough_1
-        mov     [r14 + BYTES_PER_CELL * 4], rbx
-        _drop
-endinline
-
-; ### local_5_set
-inline local_5_set, 'local_5_set', SYMBOL_INTERNAL      ; value -> void
-        _debug_?enough_1
-        mov     [r14 + BYTES_PER_CELL * 5], rbx
-        _drop
-endinline
-
-; ### local_6_set
-inline local_6_set, 'local_6_set', SYMBOL_INTERNAL      ; value -> void
-        _debug_?enough_1
-        mov     [r14 + BYTES_PER_CELL * 6], rbx
-        _drop
-endinline
-
-; ### local_7_set
-inline local_7_set, 'local_7_set', SYMBOL_INTERNAL      ; value -> void
-        _debug_?enough_1
-        mov     [r14 + BYTES_PER_CELL * 7], rbx
-        _drop
-endinline
-
-asm_global local_setters_, NIL
-
-; ### local-setters
-code local_setters, 'local-setters'     ; -> vector
-        _dup
-        mov     rbx, [local_setters_]
-        next
-endcode
-
-; ### initialize_local_setters
-code initialize_local_setters, 'initialize_local_setters', SYMBOL_INTERNAL
-        _lit 16
-        _ new_vector_untagged
-        mov     [local_setters_], rbx
-        _drop
-
-        _lit local_setters_
-        _ gc_add_root
-
-        _dup
-        mov     rbx, [local_setters_]
-
-        _symbol local_0_set
-        _over
-        _ vector_push
-
-        _symbol local_1_set
-        _over
-        _ vector_push
-
-        _symbol local_2_set
-        _over
-        _ vector_push
-
-        _symbol local_3_set
-        _over
-        _ vector_push
-
-        _symbol local_4_set
-        _over
-        _ vector_push
-
-        _symbol local_5_set
-        _over
-        _ vector_push
-
-        _symbol local_6_set
-        _over
-        _ vector_push
-
-        _symbol local_7_set
-        _over
-        _ vector_push
-
-        _drop
-
-        next
-endcode
-
-; ### local-setter
-code local_setter, 'local-setter'       ; index -> symbol
-        _ local_setters
-        _ vector_nth
         next
 endcode
 
@@ -308,27 +72,10 @@ code set_locals_count, 'set-locals-count' ; n -> void
         next
 endcode
 
-asm_global local_names_, NIL
-
-; ### local-names
-code local_names, 'local-names'
-        _dup
-        mov     rbx, [local_names_]
-        next
-endcode
-
 ; ### cold_initialize_locals
 code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
-
         _lit locals_
         _ gc_add_root
-
-        _lit local_names_
-        _ gc_add_root
-
-        _ initialize_local_getters
-        _ initialize_local_setters
-
         next
 endcode
 
@@ -341,11 +88,6 @@ code initialize_locals, 'initialize-locals'
         _drop
 
         mov     qword [locals_count_], 0
-
-        _lit MAX_LOCALS * 2
-        _ new_hashtable_untagged
-        mov     [local_names_], rbx
-        _drop
 
         mov     qword [using_locals?_], TRUE
 
@@ -432,16 +174,9 @@ code add_local, 'add-local'             ; string -> void
         _then .2                        ; -> string
 
         _ locals_count
-        _over
+        _swap
         _ locals
         _ hashtable_set_at              ; -> string
-
-        _ locals_count
-        _ local_getter
-        _ verify_symbol
-        _swap
-        _ local_names
-        _ hashtable_set_at              ; -> void
 
         add     qword [locals_count_], 1
 
@@ -458,7 +193,7 @@ code add_local_setter, 'add-local-setter'       ; string -> void
 .1:
         ; is this already a local name?
         _dup
-        _ local_names
+        _ locals
         _ hashtable_at
         _tagged_if .2
         _ error_duplicate_local_name
@@ -466,16 +201,9 @@ code add_local_setter, 'add-local-setter'       ; string -> void
 
         _ locals_count
         _verify_fixnum
-        _over
+        _swap
         _ locals
         _ hashtable_set_at
-
-        _ locals_count
-        _ local_setter
-        _ verify_symbol
-        _swap
-        _ local_names
-        _ hashtable_set_at              ; -> void
 
         next
 endcode
@@ -484,7 +212,6 @@ endcode
 code forget_locals, 'forget-locals'
         mov     qword [locals_], NIL
         mov     qword [locals_count_], 0
-        mov     qword [local_names_], NIL
         mov     qword [using_locals?_], NIL
         next
 endcode

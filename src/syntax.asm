@@ -117,12 +117,21 @@ endcode
 ; ### process-token
 code process_token, 'process-token'     ; string -> void
         _ using_locals?
-        _tagged_if .1
-        _dup
-        _ local_names
+        _tagged_if .1                   ; -> string
+        _dup                            ; -> string string
+        _ locals
         _ hashtable_at_star
         _tagged_if .2
-        _nip
+        _verify_fixnum
+        _ maybe_add                     ; -> string
+        _ string_last_char
+        _lit tagged_char('!')
+        _eq?
+        _tagged_if .2a
+        _tick local_set
+        _else .2a
+        _tick local_get
+        _then .2a
         _ maybe_add
         _return
         _else .2
@@ -921,7 +930,9 @@ code define_immutable_local, ':>', SYMBOL_IMMEDIATE
         _ locals
         _ hashtable_at
         _verify_fixnum                  ; -> index
-        _ local_setter
+        _ current_definition
+        _ vector_push
+        _tick local_set
         _ current_definition
         _ vector_push
 
@@ -945,7 +956,9 @@ code define_mutable_local, '!>', SYMBOL_IMMEDIATE
         _ locals
         _ hashtable_at
         _verify_fixnum
-        _ local_setter
+        _ current_definition
+        _ vector_push
+        _tick local_set
         _ current_definition
         _ vector_push
 
@@ -976,7 +989,9 @@ code local, 'local', SYMBOL_IMMEDIATE
         _ locals
         _ hashtable_at
         _verify_fixnum
-        _ local_setter
+        _ current_definition
+        _ vector_push
+        _tick local_set
         _ current_definition
         _ vector_push
 

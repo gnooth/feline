@@ -292,7 +292,7 @@ public
     0x48 emit-byte
     0x83 emit-byte
     0xfb emit-byte
-    0x00 emit-byte
+    0x00 emit-byte                      // cmp rbx, NIL
     emit-drop                           // drop
     0x74 emit-byte                      // je
     0x07 emit-byte                      // $+7
@@ -500,43 +500,69 @@ public
 
     pending length 0? [ op compile-primitive ] ?return
 
-    op {
-        { local_0_set [ 0 ] }
-        { local_1_set [ 1 ] }
-        { local_2_set [ 2 ] }
-        { local_3_set [ 3 ] }
-        { local_4_set [ 4 ] }
-        { local_5_set [ 5 ] }
-        { local_6_set [ 6 ] }
-        { local_7_set [ 7 ] }
-    } case :> n
+    pending-last-value :> n
+    pending-remove-last
 
-    pending-last-value :> x
+    local x
 
+    pending length 0> [
+        pending-last-value x!
+        pending-remove-last
+        flush-pending
+
+        0x48 emit-byte
+        0xb8 emit-byte
+        x object->integer emit-qword        // mov rax, imm64
+
+        0x49 emit-byte
+        0x89 emit-byte
+        n 0? [
+            0x06 emit-byte                  // mov [r14], rax
+        ] [
+            0x46 emit-byte
+            0x08 n * emit-byte              // mov [r14 + BYTES_PER_CELL * n], rax
+        ] if
+    ] [
+        flush-pending
+
+        0x49 emit-byte
+        0x89 emit-byte
+        n 0? [
+            0x1e emit-byte                  // mov [r14], rbx
+        ] [
+            0x5e emit-byte
+            0x08 n * emit-byte              // mov [r14 + BYTES_PER_CELL * n], rbx
+        ] if
+
+        emit-drop
+    ] if ;
+
+' compile-local-set ' local-set symbol-set-compiler
+
+: compile-local-get ( node )
+
+    node node-operator :> op
+
+    op ' local-get assert-eq
+
+    pending length 0? [ op compile-primitive ] ?return
+
+    pending-last-value :> n
     pending-remove-last
     flush-pending
 
-    0x48 emit-byte
-    0xb8 emit-byte
-    x object->integer emit-qword        // mov rax, imm64
+    emit-dup
 
     0x49 emit-byte
-    0x89 emit-byte
+    0x8b emit-byte
     n 0? [
-        0x06 emit-byte                  // mov [r14], rax
+        0x1e emit-byte                  // mov rbx, [r14]
     ] [
-        0x46 emit-byte
-        0x08 n * emit-byte              // mov [r14 + BYTES_PER_CELL * n], rax
+        0x5e emit-byte
+        0x08 n * emit-byte              // mov rbx, [r14 + BYTES_PER_CELL * n]
     ] if ;
 
-' compile-local-set ' local_0_set symbol-set-compiler
-' compile-local-set ' local_1_set symbol-set-compiler
-' compile-local-set ' local_2_set symbol-set-compiler
-' compile-local-set ' local_3_set symbol-set-compiler
-' compile-local-set ' local_4_set symbol-set-compiler
-' compile-local-set ' local_5_set symbol-set-compiler
-' compile-local-set ' local_6_set symbol-set-compiler
-' compile-local-set ' local_7_set symbol-set-compiler
+' compile-local-get ' local-get symbol-set-compiler
 
 : no-cond
     "no cond" error ;
