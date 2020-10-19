@@ -15,9 +15,6 @@
 
 file __FILE__
 
-; maximum number of local variables in a definition
-%define MAX_LOCALS      8
-
 ; ### local-get
 code local_get, 'local-get'             ; index -> value
         _check_index
@@ -82,7 +79,7 @@ endcode
 ; ### initialize-locals
 code initialize_locals, 'initialize-locals'
 
-        _lit MAX_LOCALS
+        _lit 16
         _ new_hashtable_untagged
         mov     [locals_], rbx
         _drop
@@ -160,11 +157,6 @@ endcode
 ; ### add-local
 code add_local, 'add-local'             ; string -> void
 
-        cmp     qword [locals_count_], MAX_LOCALS
-        jb      .1
-        _error "too many locals"
-
-.1:
         ; is there already a local with this name?
         _dup
         _ locals
@@ -186,12 +178,7 @@ endcode
 ; ### add-local-setter
 code add_local_setter, 'add-local-setter'       ; string -> void
 
-        cmp     qword [locals_count_], MAX_LOCALS
-        jb      .1
-        _error "too many locals"
-
-.1:
-        ; is this already a local name?
+        ; is there already a local with this name?
         _dup
         _ locals
         _ hashtable_at

@@ -21,15 +21,19 @@ test-1
     'f' :> x6
     'g' :> x7
     'h' :> x8
-    // MAX_LOCALS is 8
-//     'i' :> x9
-//     'j' :> x10
-//     'k' :> x11
-//     'l' :> x12
-//     'm' :> x13
-//     'n' :> x14
-//     'o' :> x15
-//     'p' :> x16
+    'i' :> x9
+    'j' :> x10
+    'k' :> x11
+    'l' :> x12
+    'm' :> x13
+    'n' :> x14
+    'o' :> x15
+    'p' :> x16
+    'q' :> x17
+    'r' :> x18
+    's' :> x19
+    't' :> x20
+
     x1 'a' assert-eq
     x2 'b' assert-eq
     x3 'c' assert-eq
@@ -38,16 +42,18 @@ test-1
     x6 'f' assert-eq
     x7 'g' assert-eq
     x8 'h' assert-eq
-    // MAX_LOCALS is 8
-//     x9 'i' assert-eq
-//     x10 'j' assert-eq
-//     x11 'k' assert-eq
-//     x12 'l' assert-eq
-//     x13 'm' assert-eq
-//     x14 'n' assert-eq
-//     x15 'o' assert-eq
-//     x16 'p' assert-eq
-    ;
+    x9 'i' assert-eq
+    x10 'j' assert-eq
+    x11 'k' assert-eq
+    x12 'l' assert-eq
+    x13 'm' assert-eq
+    x14 'n' assert-eq
+    x15 'o' assert-eq
+    x16 'p' assert-eq
+    x17 'q' assert-eq
+    x18 'r' assert-eq
+    x19 's' assert-eq
+    x20 't' assert-eq ;
 
 test: test-2
     %test-2 ;
