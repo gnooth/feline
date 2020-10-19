@@ -512,27 +512,43 @@ public
 
         0x48 emit-byte
         0xb8 emit-byte
-        x object->integer emit-qword        // mov rax, imm64
+        x object->integer emit-qword    // mov rax, imm64
 
         0x49 emit-byte
         0x89 emit-byte
-        n 0? [
-            0x06 emit-byte                  // mov [r14], rax
-        ] [
-            0x46 emit-byte
-            0x08 n * emit-byte              // mov [r14 + BYTES_PER_CELL * n], rax
-        ] if
+
+        {
+            { [ n 0? ] [
+                0x06 emit-byte          // mov [r14], rax
+            ] }
+            { [ n 16 < ] [
+                0x46 emit-byte
+                0x08 n * emit-byte      // mov [r14 + BYTES_PER_CELL * n], rax
+            ] }
+            [
+                0x86 emit-byte
+                0x08 n * emit-int32
+            ]
+        } cond
     ] [
         flush-pending
 
         0x49 emit-byte
         0x89 emit-byte
-        n 0? [
-            0x1e emit-byte                  // mov [r14], rbx
-        ] [
-            0x5e emit-byte
-            0x08 n * emit-byte              // mov [r14 + BYTES_PER_CELL * n], rbx
-        ] if
+
+        {
+            { [ n 0? ] [
+                0x1e emit-byte          // mov [r14], rbx
+            ] }
+            { [ n 16 < ] [
+                0x5e emit-byte
+                0x08 n * emit-byte      // mov [r14 + BYTES_PER_CELL * n], rbx
+            ] }
+            [
+                0x9e emit-byte
+                0x08 n * emit-int32
+            ]
+        } cond
 
         emit-drop
     ] if ;
@@ -555,12 +571,20 @@ public
 
     0x49 emit-byte
     0x8b emit-byte
-    n 0? [
-        0x1e emit-byte                  // mov rbx, [r14]
-    ] [
-        0x5e emit-byte
-        0x08 n * emit-byte              // mov rbx, [r14 + BYTES_PER_CELL * n]
-    ] if ;
+
+    {
+        { [ n 0? ] [
+            0x1e emit-byte              // mov [r14], rax
+        ] }
+        { [ n 16 < ] [
+            0x5e emit-byte
+            0x08 n * emit-byte          // mov [r14 + BYTES_PER_CELL * n], rax
+        ] }
+        [
+            0x9e emit-byte
+            0x08 n * emit-int32
+        ]
+    } cond ;
 
 ' compile-local-get ' local-get symbol-set-compiler
 
