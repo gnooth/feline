@@ -371,6 +371,15 @@ global regop    // REGister or OPcode extension (depending on the instruction)
                 ]
             } case
         ] }
+        { 2 [
+            // 32-bit displacement
+            modrm-rm {
+                { 6 [
+                    modrm-rm register-rm dbase!
+                    next-int32 ddisp!
+                ] }
+            } case
+        ] }
         { 3 [ modrm-rm register-rm dreg! ] }
     } case
     .inst ;
@@ -467,6 +476,15 @@ global regop    // REGister or OPcode extension (depending on the instruction)
                 modrm-rm register-rm sbase!
                 next-signed-byte sdisp!
             ] if
+        ] }
+        { 2 [
+            // 32-bit displacement
+            modrm-rm {
+                { 6 [
+                    modrm-rm register-rm sbase!
+                    next-int32 sdisp!
+                ] }
+            } case
         ] }
     } case
     .inst ;
@@ -1121,7 +1139,6 @@ last-word 0x89 install-handler
                 ] }
                 [
                     // default case
-                    ?nl "got to here" print
                     drop
                     sib-base register-rm sbase!
                     sib-index register-index sindex!
