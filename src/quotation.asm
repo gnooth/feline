@@ -30,10 +30,6 @@ file __FILE__
         _this_slot1
 %endmacro
 
-%macro  _this_quotation_set_array 0     ; array ->
-        _this_set_slot1
-%endmacro
-
 %macro  _quotation_raw_code_address 0   ; quotation -> raw-code-address
         _slot2
 %endmacro
@@ -44,10 +40,6 @@ file __FILE__
 
 %macro  _this_quotation_set_raw_code_address 0  ; raw-code-address -> void
         _this_set_slot2
-%endmacro
-
-%macro  _quotation_raw_code_size 0              ; quotation -> raw-code-size
-        _slot3
 %endmacro
 
 %macro  _quotation_set_raw_code_size 0          ; raw-code-size quotation -> void
@@ -240,12 +232,17 @@ code quotation_set_raw_code_address, 'quotation_set_raw_code_address', SYMBOL_IN
 endcode
 
 ; ### quotation-set-code-address
-code quotation_set_code_address, 'quotation-set-code-address'
-; tagged-address quotation -> void
-        _swap
-        _check_fixnum
-        _swap
+code quotation_set_code_address, 'quotation-set-code-address' ; fixnum quotation -> void
+        mov     rax, [rbp]
+        test    al, FIXNUM_TAG
+        jz      .not_a_fixnum
+        sar     qword [rbp], FIXNUM_TAG_BITS
         _ quotation_set_raw_code_address
+        next
+.not_a_fixnum:
+        mov     rbx, [rbp]
+        _nip
+        _ error_not_fixnum
         next
 endcode
 
@@ -253,19 +250,25 @@ endcode
 code quotation_code_size, 'quotation-code-size'
 ; quotation -> code-size
         _ check_quotation
-        _quotation_raw_code_size
+        mov     rbx, [rbx + QUOTATION_RAW_CODE_SIZE_OFFSET]
         _tag_fixnum
         next
 endcode
 
 ; ### quotation-set-code-size
-code quotation_set_code_size, 'quotation-set-code-size'
-; tagged-size quotation -> void
+code quotation_set_code_size, 'quotation-set-code-size' ; fixnum quotation -> void
         _ check_quotation
-        _swap
-        _check_fixnum
-        _swap
-        _quotation_set_raw_code_size
+        mov     rax, [rbp]
+        test    al, FIXNUM_TAG
+        jz      .not_a_fixnum
+        sar     rax, FIXNUM_TAG_BITS
+        mov     [rbx + QUOTATION_RAW_CODE_SIZE_OFFSET], rax
+        _2drop
+        next
+.not_a_fixnum:
+        mov     rbx, [rbp]
+        _nip
+        _ error_not_fixnum
         next
 endcode
 
