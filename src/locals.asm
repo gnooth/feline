@@ -130,15 +130,6 @@ endcode
 
 ; ### maybe-initialize-locals
 code maybe_initialize_locals, 'maybe-initialize-locals'
-
-        _ accum
-        _ get
-        _ current_definition
-        _ eq?
-        _tagged_if_not .1
-        _error "ERROR: a local variable cannot be declared in this scope."
-        _then .1
-
         _ using_locals?
         _tagged_if_not .2
         _ initialize_locals
