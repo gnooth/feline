@@ -279,10 +279,33 @@ code format, 'format'                   ; arg(s) format-string -> output-string
         next
 endcode
 
+feline_global dprintf?, 'dprintf?', NIL
+
+; ### +dprintf
+code dprintf_on, '+dprintf'
+        _true
+        _tick dprintf?
+        _ symbol_set_value
+        next
+endcode
+
+; ### -dprintf
+code dprintf_off, '-dprintf'
+        _nil
+        _tick dprintf?
+        _ symbol_set_value
+        next
+endcode
+
 ; ### dprintf
 code dprintf, 'dprintf'                 ; arg(s) format-string -> void
-        _ ?nl
         _ format
+        _ dprintf?
+        _tagged_if .1
+        _ ?nl
         _ print
+        _else .1
+        _drop
+        _then .1
         next
 endcode
