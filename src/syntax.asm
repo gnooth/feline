@@ -930,11 +930,9 @@ code define_immutable_local, ':>', SYMBOL_IMMEDIATE
         _ locals
         _ hashtable_at
         _verify_fixnum                  ; -> index
-        _ current_definition
-        _ vector_push
+        _ add_to_definition
         _tick local_set
-        _ current_definition
-        _ vector_push
+        _ add_to_definition
 
         next
 endcode
@@ -956,11 +954,9 @@ code define_mutable_local, '!>', SYMBOL_IMMEDIATE
         _ locals
         _ hashtable_at
         _verify_fixnum
-        _ current_definition
-        _ vector_push
+        _ add_to_definition
         _tick local_set
-        _ current_definition
-        _ vector_push
+        _ add_to_definition
 
         next
 endcode
@@ -983,17 +979,14 @@ code local, 'local', SYMBOL_IMMEDIATE
         _ add_local
 
         _nil
-        _ current_definition
-        _ vector_push
+        _ add_to_definition
 
         _ locals
         _ hashtable_at
         _verify_fixnum
-        _ current_definition
-        _ vector_push
+        _ add_to_definition
         _tick local_set
-        _ current_definition
-        _ vector_push
+        _ add_to_definition
 
         next
 endcode
