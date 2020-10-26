@@ -15,12 +15,14 @@
 
 file __FILE__
 
-; 4 cells: object header, array, raw code address, raw code size
-%define QUOTATION_SIZE                          4 * BYTES_PER_CELL
+; 6 cells: object header, array, raw code address, raw code size, parent, locals
+%define QUOTATION_SIZE                          6 * BYTES_PER_CELL
 
 %define QUOTATION_ARRAY_OFFSET                  8
 %define QUOTATION_RAW_CODE_ADDRESS_OFFSET       16
 %define QUOTATION_RAW_CODE_SIZE_OFFSET          24
+%define QUOTATION_PARENT_OFFSET                 32
+%define QUOTATION_LOCALS_OFFSET                 40
 
 %macro  _quotation_array 0              ; quotation -> array
         _slot1
@@ -48,6 +50,14 @@ file __FILE__
 
 %macro  _this_quotation_set_raw_code_size 0     ; raw-code-size -> void
         _this_set_slot3
+%endmacro
+
+%macro  _quotation_parent 0              ; ^quotation -> parent
+        _slot4
+%endmacro
+
+%macro  _quotation_locals 0              ; ^quotation -> locals
+        _slot5
 %endmacro
 
 ; ### quotation?
@@ -111,9 +121,30 @@ code verify_quotation, 'verify-quotation' ; quotation -> quotation
         next
 endcode
 
-; ### array>quotation
+; ### make-quotation
+code make_quotation, 'make-quotation'   ; void -> quotation
+
+        mov     arg0_register, QUOTATION_SIZE
+        _ feline_malloc                 ; returns address in rax
+
+        mov     qword [rax], TYPECODE_QUOTATION
+        mov     byte [rax + OBJECT_FLAGS_BYTE_OFFSET], OBJECT_ALLOCATED_BIT
+        mov     qword [rax + QUOTATION_ARRAY_OFFSET], nil
+        mov     qword [rax + QUOTATION_RAW_CODE_ADDRESS_OFFSET], 0
+        mov     qword [rax + QUOTATION_RAW_CODE_SIZE_OFFSET], 0
+        mov     qword [rax + QUOTATION_PARENT_OFFSET], 0
+        mov     qword [rax + QUOTATION_LOCALS_OFFSET], 0
+        _dup
+        mov     rbx, rax
+
+        ; return handle
+        _ new_handle                    ; -> handle
+
+        next
+endcode
+
+; ### array->quotation
 code array_to_quotation, 'array->quotation' ; array -> quotation
-; 4 cells: object header, array, raw code address, raw code size
 
         mov     arg0_register, QUOTATION_SIZE
         _ feline_malloc                 ; returns address in rax
@@ -123,6 +154,8 @@ code array_to_quotation, 'array->quotation' ; array -> quotation
         mov     qword [rax + QUOTATION_ARRAY_OFFSET], rbx
         mov     qword [rax + QUOTATION_RAW_CODE_ADDRESS_OFFSET], 0
         mov     qword [rax + QUOTATION_RAW_CODE_SIZE_OFFSET], 0
+        mov     qword [rax + QUOTATION_PARENT_OFFSET], 0
+        mov     qword [rax + QUOTATION_LOCALS_OFFSET], 0
         mov     rbx, rax
 
         ; return handle
@@ -165,6 +198,15 @@ endcode
 code quotation_array, 'quotation-array' ; quotation -> array
         _ check_quotation
         _quotation_array
+        next
+endcode
+
+; ### quotation-set-array
+code quotation_set_array, 'quotation-set-array' ; array quotation -> void
+        _ check_quotation
+        mov     rax, [rbp]
+        mov     [rbx + QUOTATION_ARRAY_OFFSET], rax
+        _2drop
         next
 endcode
 
@@ -269,6 +311,38 @@ code quotation_set_code_size, 'quotation-set-code-size' ; fixnum quotation -> vo
         mov     rbx, [rbp]
         _nip
         _ error_not_fixnum
+        next
+endcode
+
+; ### quotation-parent
+code quotation_parent, 'quotation-parent' ; quotation -> parent
+        _ check_quotation
+        mov     rbx, [rbx + QUOTATION_PARENT_OFFSET]
+        next
+endcode
+
+; ### quotation-set-parent
+code quotation_set_parent, 'quotation-set-parent' ; x quotation -> void
+        _ check_quotation
+        mov     rax, [rbp]
+        mov     [rbx + QUOTATION_PARENT_OFFSET], rax
+        _2drop
+        next
+endcode
+
+; ### quotation-locals
+code quotation_locals, 'quotation-locals' ; quotation -> locals
+        _ check_quotation
+        mov     rbx, [rbx + QUOTATION_LOCALS_OFFSET]
+        next
+endcode
+
+; ### quotation-set-locals
+code quotation_set_locals, 'quotation-set-locals' ; x quotation -> void
+        _ check_quotation
+        mov     rax, [rbp]
+        mov     [rbx + QUOTATION_LOCALS_OFFSET], rax
+        _2drop
         next
 endcode
 

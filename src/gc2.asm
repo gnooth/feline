@@ -275,7 +275,13 @@ endcode
 ; ### gc2_scan_quotation
 code gc2_scan_quotation, 'gc2_scan_quotation' ; ^quotation -> void
 
+        _dup
         _quotation_array
+        _ gc2_maybe_push_handle
+        _dup
+        _quotation_parent
+        _ gc2_maybe_push_handle
+        _quotation_locals
         _ gc2_maybe_push_handle
 
         next
