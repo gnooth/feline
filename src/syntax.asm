@@ -252,13 +252,41 @@ code rbrace, '}', SYMBOL_IMMEDIATE
         next
 endcode
 
+feline_global current_quotation, 'current-quotation', NIL
+
+; ### current-quotation!
+code set_current_quotation, 'current-quotation!' ; x -> void
+        mov [S_current_quotation_symbol_value], rbx
+        _drop
+        next
+endcode
+
 ; ### [
 code parse_quotation, '[', SYMBOL_IMMEDIATE
+
+        _ current_quotation
+        _tor
+
+        _ make_quotation
+        _ set_current_quotation
+
+        _rfetch
+        _ current_quotation
+        _ quotation_set_parent
+
         _quote "]"
         _ parse_until
         _ vector_to_array
-        _ array_to_quotation
+
+        _ current_quotation
+        _ quotation_set_array
+        _ current_quotation
+
         _ maybe_add
+
+        _rfrom
+        _ set_current_quotation
+
         next
 endcode
 
@@ -484,23 +512,33 @@ code symbol_set_locals_count, 'symbol-set-locals-count' ; n symbol -> void
 endcode
 
 ; ### :
-code colon, ':', SYMBOL_IMMEDIATE
+code colon, ':', SYMBOL_IMMEDIATE       ; void -> void
 
         _tick colon
         _ top_level_only
 
         _ parse_name                    ; -> symbol
+
+        _ make_quotation
+        _ set_current_quotation
+
         _ parse_definition              ; -> symbol vector
-        _ vector_to_array
-        _ array_to_quotation            ; -> symbol quotation
+        _ vector_to_array               ; -> symbol array
+        _ current_quotation             ; -> symbol array quotation
+        _ quotation_set_array           ; -> symbol
+
+        _ current_quotation
         _over
         _ symbol_set_def                ; -> symbol
 
         _ locals_count
         _over
-        _ symbol_set_locals_count
+        _ symbol_set_locals_count       ; -> symbol
 
-        _ compile_word
+        _nil
+        _ set_current_quotation         ; -> symbol
+
+        _ compile_word                  ; -> void
 
         next
 endcode
