@@ -129,11 +129,11 @@ code make_quotation, 'make-quotation'   ; void -> quotation
 
         mov     qword [rax], TYPECODE_QUOTATION
         mov     byte [rax + OBJECT_FLAGS_BYTE_OFFSET], OBJECT_ALLOCATED_BIT
-        mov     qword [rax + QUOTATION_ARRAY_OFFSET], nil
+        mov     qword [rax + QUOTATION_ARRAY_OFFSET], NIL
         mov     qword [rax + QUOTATION_RAW_CODE_ADDRESS_OFFSET], 0
         mov     qword [rax + QUOTATION_RAW_CODE_SIZE_OFFSET], 0
-        mov     qword [rax + QUOTATION_PARENT_OFFSET], 0
-        mov     qword [rax + QUOTATION_LOCALS_OFFSET], 0
+        mov     qword [rax + QUOTATION_PARENT_OFFSET], NIL
+        mov     qword [rax + QUOTATION_LOCALS_OFFSET], NIL
         _dup
         mov     rbx, rax
 
@@ -154,8 +154,8 @@ code array_to_quotation, 'array->quotation' ; array -> quotation
         mov     qword [rax + QUOTATION_ARRAY_OFFSET], rbx
         mov     qword [rax + QUOTATION_RAW_CODE_ADDRESS_OFFSET], 0
         mov     qword [rax + QUOTATION_RAW_CODE_SIZE_OFFSET], 0
-        mov     qword [rax + QUOTATION_PARENT_OFFSET], 0
-        mov     qword [rax + QUOTATION_LOCALS_OFFSET], 0
+        mov     qword [rax + QUOTATION_PARENT_OFFSET], NIL
+        mov     qword [rax + QUOTATION_LOCALS_OFFSET], NIL
         mov     rbx, rax
 
         ; return handle
