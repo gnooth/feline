@@ -145,16 +145,26 @@ code error_duplicate_local_name, 'error-duplicate-local-name'
         next
 endcode
 
+; ### find-local
+code find_local, 'find-local'           ; string -> fixnum/nil
+        _ locals
+        _ hashtable_at
+        cmp     rbx, NIL
+        je      .1
+        _verify_fixnum
+.1:
+        next
+endcode
+
 ; ### add-local
 code add_local, 'add-local'             ; string -> void
 
         ; is there already a local with this name?
         _dup
-        _ locals
-        _ hashtable_at
-        _tagged_if .2
+        _ find_local
+        _tagged_if .1
         _ error_duplicate_local_name
-        _then .2                        ; -> string
+        _then .1                        ; -> string
 
         _ locals_count
         _swap
@@ -167,15 +177,14 @@ code add_local, 'add-local'             ; string -> void
 endcode
 
 ; ### add-local-setter
-code add_local_setter, 'add-local-setter'       ; string -> void
+code add_local_setter, 'add-local-setter' ; string -> void
 
         ; is there already a local with this name?
         _dup
-        _ locals
-        _ hashtable_at
-        _tagged_if .2
+        _ find_local
+        _tagged_if .1
         _ error_duplicate_local_name
-        _then .2                        ; -> string
+        _then .1                        ; -> string
 
         _ locals_count
         _verify_fixnum

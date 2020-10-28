@@ -117,28 +117,31 @@ endcode
 ; ### process-token
 code process_token, 'process-token'     ; string -> void
         _ using_locals?
-        _tagged_if .1                   ; -> string
+        cmp     rbx, NIL
+        _drop
+        je      .1
         _dup                            ; -> string string
-        _ locals
-        _ hashtable_at_star
-        _tagged_if .2
-        _verify_fixnum
+        _ find_local                    ; -> string fixnum/nil
+        cmp     rbx, NIL
+        je      .1a
         _ maybe_add                     ; -> string
         _ string_last_char
-        _lit tagged_char('!')
-        _eq?
-        _tagged_if .2a
+        cmp     rbx, tagged_char('!')
+        _drop
+        jne     .1b
         _tick local_set
-        _else .2a
+        jmp     .1c
+.1b:
         _tick local_get
-        _then .2a
+        jmp     .1c
+.1c:
         _ maybe_add
         _return
-        _else .2
-        _drop
-        _then .2
-        _then .1
 
+.1a:
+        _drop
+
+.1:
         _ token_string_literal?
         _tagged_if .3
         _ maybe_add
@@ -965,10 +968,10 @@ code define_immutable_local, ':>', SYMBOL_IMMEDIATE
 .1:
         _dup
         _ add_local
-        _ locals
-        _ hashtable_at
-        _verify_fixnum                  ; -> index
+
+        _ find_local                    ; -> index
         _ add_to_definition
+
         _tick local_set
         _ add_to_definition
 
@@ -989,10 +992,10 @@ code define_mutable_local, '!>', SYMBOL_IMMEDIATE
 
         _dup
         _ add_local
-        _ locals
-        _ hashtable_at
-        _verify_fixnum
+
+        _ find_local
         _ add_to_definition
+
         _tick local_set
         _ add_to_definition
 
@@ -1019,10 +1022,9 @@ code local, 'local', SYMBOL_IMMEDIATE
         _nil
         _ add_to_definition
 
-        _ locals
-        _ hashtable_at
-        _verify_fixnum
+        _ find_local
         _ add_to_definition
+
         _tick local_set
         _ add_to_definition
 
