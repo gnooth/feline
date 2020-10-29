@@ -881,7 +881,8 @@ endcode
 
 ; ### add-named-parameter
 code add_named_parameter, 'add-named-parameter' ; string ->
-        _ add_local
+        _ add_local_name
+        _increment_locals_count
         next
 endcode
 
@@ -957,7 +958,7 @@ code define_immutable_local, ':>', SYMBOL_IMMEDIATE
         jne     .1
 
         _dup
-        _ add_local_setter              ; -> string
+        _ add_local_name                ; -> string
 
         _dup
         _ string_length
@@ -967,7 +968,8 @@ code define_immutable_local, ':>', SYMBOL_IMMEDIATE
 
 .1:
         _dup
-        _ add_local
+        _ add_local_name
+        _increment_locals_count
 
         _ find_local                    ; -> index
         _ add_to_definition
@@ -988,10 +990,11 @@ code define_mutable_local, '!>', SYMBOL_IMMEDIATE
         _dup
         _tagged_char('!')
         _ string_append_char
-        _ add_local_setter              ; -> string
+        _ add_local_name                ; -> string
 
         _dup
-        _ add_local
+        _ add_local_name
+        _increment_locals_count
 
         _ find_local
         _ add_to_definition
@@ -1014,10 +1017,11 @@ code local, 'local', SYMBOL_IMMEDIATE
         _dup
         _tagged_char('!')
         _ string_append_char
-        _ add_local_setter              ; -> string
+        _ add_local_name                ; -> string
 
         _dup
-        _ add_local
+        _ add_local_name
+        _increment_locals_count
 
         _nil
         _ add_to_definition

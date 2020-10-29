@@ -69,6 +69,10 @@ code set_locals_count, 'set-locals-count' ; n -> void
         next
 endcode
 
+%macro _increment_locals_count 0
+        add     qword [locals_count_], 1
+%endmacro
+
 ; ### cold_initialize_locals
 code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
         _lit locals_
@@ -156,8 +160,8 @@ code find_local, 'find-local'           ; string -> fixnum/nil
         next
 endcode
 
-; ### add-local
-code add_local, 'add-local'             ; string -> void
+; ### add-local-name
+code add_local_name, 'add-local-name'   ; string -> void
 
         ; is there already a local with this name?
         _dup
@@ -170,27 +174,6 @@ code add_local, 'add-local'             ; string -> void
         _swap
         _ locals
         _ hashtable_set_at              ; -> string
-
-        add     qword [locals_count_], 1
-
-        next
-endcode
-
-; ### add-local-setter
-code add_local_setter, 'add-local-setter' ; string -> void
-
-        ; is there already a local with this name?
-        _dup
-        _ find_local
-        _tagged_if .1
-        _ error_duplicate_local_name
-        _then .1                        ; -> string
-
-        _ locals_count
-        _verify_fixnum
-        _swap
-        _ locals
-        _ hashtable_set_at
 
         next
 endcode
