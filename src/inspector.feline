@@ -61,6 +61,8 @@ global inspected-object
     "array"
     { "raw-code-address" :raw }
     { "raw-code-size" :raw }
+    "parent"
+    "locals"
 } quotation builtin-type-set-layout
 
 {
