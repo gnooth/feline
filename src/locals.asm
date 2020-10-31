@@ -170,7 +170,7 @@ code add_local_name, 'add-local-name'   ; string -> void
         _ error_duplicate_local_name
         _then .1                        ; -> string
 
-%if 1
+%if 0
         _ locals_count                  ; -> string n
         _swap                           ; -> n string
         _ locals                        ; -> n string hashtable
