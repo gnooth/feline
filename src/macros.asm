@@ -25,7 +25,7 @@
         lea     rbp, [rbp - BYTES_PER_CELL]
 %endmacro
 
-%macro _drop 0
+%macro  _drop 0
         mov     rbx, [rbp]
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
@@ -907,6 +907,9 @@ section .text
 
         dq      NIL                     ; array
         dq      %1_code                 ; code address
+        dq      0                       ; code size
+        dq      NIL                     ; parent
+        dq      NIL                     ; locals
 
         section .text
         align   DEFAULT_CODE_ALIGNMENT
