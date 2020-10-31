@@ -346,6 +346,24 @@ code quotation_set_locals, 'quotation-set-locals' ; x quotation -> void
         next
 endcode
 
+; ### quotation-add-local-name
+code quotation_add_local_name, 'quotation-add-local-name' ; n string quotation -> void
+        _dup
+        _ quotation_locals
+        cmp     rbx, NIL
+        _drop                           ; -> n string quotation
+        jne     .1
+        _lit tagged_fixnum(8)
+        _ new_hashtable
+        _over
+        _ quotation_set_locals          ; -> n string quotation
+.1:
+        _ quotation_locals
+        _ verify_hashtable
+        _ hashtable_set_at
+        next
+endcode
+
 ; ### curry
 code curry, 'curry'                     ; x quot1 -> quot2
         _tor
