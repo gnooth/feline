@@ -680,10 +680,15 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE
         _return
         _then .2                        ; -> typecode generic-symbol
 
+        _ make_quotation
+        _ set_current_quotation
+
         _ symbol_def                    ; -> typecode gf
         _ parse_definition              ; -> typecode gf vector
         _ vector_to_array
-        _ array_to_quotation            ; -> typecode gf quotation
+        _ current_quotation
+        _ quotation_set_array
+        _ current_quotation
         _ make_method                   ; -> method
 
         _dup
@@ -698,6 +703,9 @@ code method_colon, 'method:', SYMBOL_IMMEDIATE
         _ locals_count
         _over                           ; -> method symbol n symbol
         _ symbol_set_locals_count       ; -> method symbol
+
+        _nil
+        _ set_current_quotation
 
         _ compile_word                  ; -> method
         _ install_method
