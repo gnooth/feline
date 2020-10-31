@@ -195,7 +195,7 @@ code destroy_quotation_unchecked, 'destroy_quotation_unchecked', SYMBOL_INTERNAL
 endcode
 
 ; ### quotation-array
-code quotation_array, 'quotation-array' ; quotation -> array
+code quotation_array, 'quotation-array' ; quotation -> array/nil
         _ check_quotation
         _quotation_array
         next
@@ -526,24 +526,30 @@ endcode
 
 ; ### quotation->string
 code quotation_to_string, 'quotation->string' ; quotation -> string
-        _ quotation_array
+        _ quotation_array               ; -> array/nil
 
+        _dup
+        _ array?
+        _tagged_if .1
         _quote "[ "
         _ string_to_sbuf
-        _swap
-        _quotation .1
+        _swap                           ; -> sbuf array/nil
+        _quotation .2
         _ object_to_string
         _over
         _ sbuf_append_string
         _lit tagged_char(32)
         _over
         _ sbuf_push
-        _end_quotation .1
+        _end_quotation .2
         _ array_each
         _tagged_char(']')
         _over
         _ sbuf_push
         _ sbuf_to_string
-
+        _else .1
+        _drop
+        _quote "[ ]"
+        _then .1
         next
 endcode
