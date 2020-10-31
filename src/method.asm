@@ -181,7 +181,7 @@ code make_method, 'make-method'          ; typecode gf callable -> method
         _dup
         _ callable?
         _tagged_if_not .1
-        _error "not a callable"
+        _ error_not_callable
         _then .1
 
         _this_method_set_callable       ; -> typecode gf
