@@ -170,10 +170,23 @@ code add_local_name, 'add-local-name'   ; string -> void
         _ error_duplicate_local_name
         _then .1                        ; -> string
 
-        _ locals_count
-        _swap
-        _ locals
+%if 1
+        _ locals_count                  ; -> string n
+        _swap                           ; -> n string
+        _ locals                        ; -> n string hashtable
         _ hashtable_set_at              ; -> string
+%else
+        _ locals_count                  ; -> string n
+        _over                           ; -> string n string
+        _ locals                        ; -> string n string hashtable
+        _ hashtable_set_at              ; -> string
+
+        _ locals_count                  ; -> string n
+        _swap                           ; -> n string
+        _ current_quotation             ; -> n string quotation
+        _ verify_quotation
+        _ quotation_add_local_name      ; -> void
+%endif
 
         next
 endcode
