@@ -42,15 +42,6 @@ code using_locals?, 'using-locals?'     ; -> ?
         next
 endcode
 
-asm_global locals_, NIL
-
-; ### locals
-code locals, 'locals'                   ; -> hashtable/nil
-        _dup
-        mov     rbx, [locals_]
-        next
-endcode
-
 asm_global locals_count_, 0
 
 ; ### locals-count
@@ -73,23 +64,10 @@ endcode
         add     qword [locals_count_], 1
 %endmacro
 
-; ### cold_initialize_locals
-code cold_initialize_locals, 'cold_initialize_locals', SYMBOL_INTERNAL
-        _lit locals_
-        _ gc_add_root
-        next
-endcode
-
 ; ### initialize-locals
 code initialize_locals, 'initialize-locals'
 
-        _lit 16
-        _ new_hashtable_untagged
-        mov     [locals_], rbx
-        _drop
-
         mov     qword [locals_count_], 0
-
         mov     qword [using_locals?_], TRUE
 
         ; check for return-if-no-locals
@@ -205,30 +183,16 @@ code add_local_name, 'add-local-name'   ; string -> void
         _ error_duplicate_local_name
         _then .1                        ; -> string
 
-%if 0
-        _ locals_count                  ; -> string n
-        _swap                           ; -> n string
-        _ locals                        ; -> n string hashtable
-        _ hashtable_set_at              ; -> string
-%else
-        _ locals_count                  ; -> string n
-        _over                           ; -> string n string
-        _ locals                        ; -> string n string hashtable
-        _ hashtable_set_at              ; -> string
-
         _ locals_count                  ; -> string n
         _swap                           ; -> n string
         _ current_quotation             ; -> n string quotation
-        _ verify_quotation
         _ quotation_add_local_name      ; -> void
-%endif
 
         next
 endcode
 
 ; ### forget-locals
 code forget_locals, 'forget-locals'
-        mov     qword [locals_], NIL
         mov     qword [locals_count_], 0
         mov     qword [using_locals?_], NIL
         next

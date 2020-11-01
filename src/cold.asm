@@ -226,8 +226,6 @@ code cold, 'cold', SYMBOL_INTERNAL      ; --
         _lit gc_roots_
         _ gc_add_root
 
-        _ cold_initialize_locals
-
         _ initialize_dynamic_scope
 
         _ initialize_vocabs
