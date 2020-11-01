@@ -331,7 +331,7 @@ code quotation_set_parent, 'quotation-set-parent' ; x quotation -> void
 endcode
 
 ; ### quotation-locals
-code quotation_locals, 'quotation-locals' ; quotation -> locals
+code quotation_locals, 'quotation-locals' ; quotation -> locals/nil
         _ check_quotation
         mov     rbx, [rbx + QUOTATION_LOCALS_OFFSET]
         next

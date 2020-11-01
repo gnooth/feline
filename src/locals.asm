@@ -149,14 +149,49 @@ code error_duplicate_local_name, 'error-duplicate-local-name'
         next
 endcode
 
-; ### find-local
-code find_local, 'find-local'           ; string -> fixnum/nil
-        _ locals
-        _ hashtable_at
-        cmp     rbx, NIL
-        je      .1
-        _verify_fixnum
+; ### find-local-step
+code find_local_step, 'find-local-step' ; string quotation -> index/nil
+        _lit tagged_fixnum(2)
+        _ ?enough
+
+        _ verify_quotation
+
+        _dup
+        _ quotation_locals              ; -> string quotation hashtable/nil
+        cmp     rbx, 0
+        jne     .1
+        _2nip
+        next
 .1:
+        ; -> string quotation hashtable
+        _nip
+        _ hashtable_at
+        next
+endcode
+
+; ### find-local
+code find_local, 'find-local'           ; string -> index/nil
+        _ current_quotation             ; -> string quotation/nil
+.top:
+        _dup                            ; -> string quotation/nil quotation/nil
+        _tagged_if .1
+        ; -> string quotation
+        _twodup                         ; -> string quotation string quotation
+        _ find_local_step               ; -> string quotation string fixnum/nil
+        _dup
+        _tagged_if .2
+        ; -> string quotation string fixnum
+        _2nip
+        _return
+        _then .2
+        ; -> string quotation nil
+        _drop
+        _ quotation_parent              ; -> string quotation/nil
+        jmp     .top
+        _else .1
+        _nil
+        _2nip
+        _then .1
         next
 endcode
 
