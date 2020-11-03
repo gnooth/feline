@@ -15,7 +15,7 @@
 
 file __FILE__
 
-; 2 cells: object header, wrapped
+; 2 cells: object header, wrapped object
 %define WRAPPER_SIZE                    2 * BYTES_PER_CELL
 
 %define WRAPPER_WRAPPED_OFFSET          8
@@ -43,28 +43,18 @@ code error_not_wrapper, 'error-not-wrapper' ; x ->
 endcode
 
 ; ### <wrapper>
-code new_wrapper, '<wrapper>'           ; obj -- wrapper
-; 2 cells: object header, wrapped object
-        _lit 2
-        _cells
-        _dup
-        _ allocate_object
-        push    this_register
-        mov     this_register, rbx
-        _swap
-        _ raw_erase_bytes
+code new_wrapper, '<wrapper>'           ; object -> wrapper
 
-        _this_object_set_raw_typecode TYPECODE_WRAPPER
+        mov     arg0_register, WRAPPER_SIZE
+        _ feline_malloc                 ; returns address in rax
 
-        _this_set_slot1
-
-        pushrbx
-        mov     rbx, this_register      ; -- wrapper
+        mov     qword [rax], TYPECODE_WRAPPER
+        mov     qword [rax + WRAPPER_WRAPPED_OFFSET], rbx
+        mov     rbx, rax
 
         ; return handle
-        _ new_handle                    ; -- handle
+        _ new_handle                    ; -> handle
 
-        pop     this_register
         next
 endcode
 
@@ -92,7 +82,7 @@ code wrapped, 'wrapped'                 ; wrapper -> wrapped
 endcode
 
 ; ### literalize
-code literalize, 'literalize'           ; obj -- wrapped
+code literalize, 'literalize'           ; obj -> wrapped
         _dup
         _ symbol?
         _tagged_if .1
@@ -112,7 +102,7 @@ code literalize, 'literalize'           ; obj -- wrapped
 endcode
 
 ; ### wrapper>string
-code wrapper_to_string, 'wrapper>string'        ; wrapper -- string
+code wrapper_to_string, 'wrapper>string' ; wrapper -> string
         _quote "' "
         _ string_to_sbuf
         _swap
