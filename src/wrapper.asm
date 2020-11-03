@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2017 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -14,6 +14,33 @@
 ; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 file __FILE__
+
+; 2 cells: object header, wrapped
+%define WRAPPER_SIZE                    2 * BYTES_PER_CELL
+
+%define WRAPPER_WRAPPED_OFFSET          8
+
+; ### check_wrapper
+code check_wrapper, 'check_wrapper'     ; wrapper -> ^wrapper
+        cmp     bl, HANDLE_TAG
+        jne     error_not_wrapper
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]
+        cmp     word [rbx], TYPECODE_WRAPPER
+        jne     .error
+        next
+.error:
+        mov     rbx, rax
+        jmp     error_not_wrapper
+endcode
+
+; ### error-not-wrapper
+code error_not_wrapper, 'error-not-wrapper' ; x ->
+        _quote "a wrapper"
+        _ format_type_error
+        next
+endcode
 
 ; ### <wrapper>
 code new_wrapper, '<wrapper>'           ; obj -- wrapper
@@ -42,30 +69,25 @@ code new_wrapper, '<wrapper>'           ; obj -- wrapper
 endcode
 
 ; ### wrapper?
-code wrapper?, 'wrapper?'               ; handle -- ?
-        _ deref                         ; -- raw-object/0
-        test    rbx, rbx
-        jz      .1
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_WRAPPER
-        jne     .1
-        mov     ebx, t_value
-        _return
-.1:
-        mov     ebx, f_value
+code wrapper?, 'wrapper?'               ; x -> x/nil
+; If x is a wrapper, return x unchanged. If x is not a wrapper, return nil.
+        cmp     bl, HANDLE_TAG
+        jne     .not_a_wrapper
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_WRAPPER
+        jne     .not_a_wrapper
+        next
+.not_a_wrapper:
+        mov     ebx, NIL
         next
 endcode
 
 ; ### wrapped
-code wrapped, 'wrapped'                 ; wrapper -- wrapped-object
-        _dup
-        _ wrapper?
-        _tagged_if .1
-        _handle_to_object_unsafe
-        _slot1
-        _else .1
-        _error "not a wrapper"
-        _then .1
+code wrapped, 'wrapped'                 ; wrapper -> wrapped
+        _ check_wrapper
+        mov     rbx, [rbx + WRAPPER_WRAPPED_OFFSET]
         next
 endcode
 

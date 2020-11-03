@@ -2639,7 +2639,7 @@ test: type-of-test-1
     ' dup type-of symbol assert-eq
     current-vocab type-of vocab assert-eq
     [ dup + ] type-of quotation assert-eq
-    ' dup <wrapper> dup wrapper? assert-true
+    ' dup <wrapper> dup wrapper? dup assert-eq
     type-of wrapper assert-eq
     3 [ + ] curry dup quotation? assert // quotation? returns its argument or nil
     type-of quotation assert-eq
