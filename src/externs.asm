@@ -17,6 +17,8 @@ extern malloc
 extern realloc
 extern free
 
+extern time
+
 %ifndef WIN64
 extern realpath
 %endif

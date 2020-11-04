@@ -88,3 +88,13 @@ code date_time, 'date-time'             ; -> string
         _ raw_free
         next
 endcode
+
+; ### os-time
+code os_time, 'os-time'                 ; -> fixnum
+        mov     arg0_register, 0
+        xcall   time
+        _dup
+        mov     rbx, rax
+        _tag_fixnum
+        next
+endcode
