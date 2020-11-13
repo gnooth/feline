@@ -1,40 +1,68 @@
 using: feline ;
 in: user
 
-var state0
-var state1
+var var0                                // state0
+var var1                                // state1
 
 : xorshift128+
-    state0 :> s1!
-    state1 :> s0!
-    s0 state0!
+    var0 :> s1!
+    var1 :> s0!
+    s0 var0!
     s1 23 lshift s1 bitxor s1!
     s1 17 rshift s1 bitxor s1!
     s1 s0 bitxor s1!
     s0 26 rshift s1 bitxor s1!
-    s1 state1!
-;
+    s1 var1! ;
 
-: test
+: test-vars
     gc
 
-    1 state0!
-    2 state1!
+    1 var0!
+    2 var1!
 
     [ 10000000 [ xorshift128+ ] times ] time
 
-    "state0 = " write state0 . nl
-    "state1 = " write state1 . nl
+    "state0 = " write var0 .
+    "state1 = " write var1 . ;
+
+// state0 = 2116950370223064412
+// state1 = 13984883008063501915
+
+// 2 threads
+: test2
+    [ test-vars ] make-thread thread-create
+    test-vars ;
+
+// 3 threads
+: test3
+    [ test-vars ] make-thread thread-create
+    [ test-vars ] make-thread thread-create
+    test-vars ;
+
+global global0
+global global1
+
+: xorshift128+-globals
+    global0 :> s1!
+    global1 :> s0!
+    s0 global0!
+    s1 23 lshift s1 bitxor s1!
+    s1 17 rshift s1 bitxor s1!
+    s1 s0 bitxor s1!
+    s0 26 rshift s1 bitxor s1!
+    s1 global1!
 ;
 
--- state0 = 2116950370223064412
--- state1 = 13984883008063501915
+: test-globals
+    gc
 
--- 2 threads
-: test2 [ test ] make-thread thread-create test ;
+    1 global0!
+    2 global1!
 
--- 3 threads
-: test3 [ test ] make-thread thread-create [ test ] make-thread thread-create test ;
+    1 2 [ 10000000 [ xorshift128+-globals ] times ] time
+    swap
+    "state0 = " write .
+    "state1 = " write . ;
 
 : xorshift128+-locals-only
     :> s0!
@@ -45,13 +73,11 @@ var state1
     s1 s0 bitxor s1!
     s0 26 rshift s1 bitxor s1!
 
-    s0 s1
-;
+    s0 s1 ;
 
 : test-locals-only
     gc
     1 2 [ 10000000 [ xorshift128+-locals-only ] times ] time
     swap
-    "state0 = " write . nl
-    "state1 = " write . nl
-;
+    "state0 = " write .
+    "state1 = " write . ;
