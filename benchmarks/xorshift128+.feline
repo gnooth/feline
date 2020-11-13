@@ -1,5 +1,5 @@
 using: feline ;
-in: user
+in: xorshift128+
 
 var var0                                // state0
 var var1                                // state1
@@ -50,8 +50,7 @@ global global1
     s1 17 rshift s1 bitxor s1!
     s1 s0 bitxor s1!
     s0 26 rshift s1 bitxor s1!
-    s1 global1!
-;
+    s1 global1! ;
 
 : test-globals
     gc
@@ -59,10 +58,9 @@ global global1
     1 global0!
     2 global1!
 
-    1 2 [ 10000000 [ xorshift128+-globals ] times ] time
-    swap
-    "state0 = " write .
-    "state1 = " write . ;
+    [ 10000000 [ xorshift128+-globals ] times ] time
+    "state0 = " write global0 .
+    "state1 = " write global1 . ;
 
 : xorshift128+-locals-only
     :> s0!
