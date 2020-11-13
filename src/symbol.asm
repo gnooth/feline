@@ -543,8 +543,8 @@ code symbol_set_prop, 'symbol-set-prop' ; value key symbol -> void
         next
 endcode
 
-; ### symbol-primitive?
-code symbol_primitive?, 'symbol-primitive?'     ; symbol -- ?
+; ### primitive?
+code primitive?, 'primitive?'           ; symbol -> ?
         _symbol_flags_bit SYMBOL_PRIMITIVE
         next
 endcode

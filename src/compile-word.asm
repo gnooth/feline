@@ -676,7 +676,7 @@ endcode
 ; ### inline-or-compile-call
 code inline_or_compile_call, 'inline-or-compile-call' ; word -> void
         _dup
-        _ symbol_primitive?
+        _ primitive?
         _tagged_if .1
         _ compile_primitive
         _else .1
