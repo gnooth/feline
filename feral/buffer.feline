@@ -194,7 +194,7 @@ in: editor
     parent buffer? assert
     local buf
     {
-        { [ parent listed? ] [ parent set-current-buffer ] }
+        { [ parent in-buffer-list? ] [ parent set-current-buffer ] }
         {
             // parent buffer is no longer in buffer list
             // there might be a different buffer for the same file
