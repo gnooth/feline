@@ -107,7 +107,7 @@ code bitnot, 'bitnot'                   ; x -> y
 endcode
 
 ; ### lshift
-code lshift, 'lshift'                   ; x n -- y
+code lshift, 'lshift'                   ; x n -> y
 ; shifts integer x to the left by n bits
 
         ; n must be >= 0
@@ -116,23 +116,23 @@ code lshift, 'lshift'                   ; x n -- y
         ; "When the destination is 64 bits wide, the processor masks the upper
         ; two bits of the count, providing a count in the range of 0 to 63."
         cmp     rbx, 63
-        ja      .error
+        jg      .error
 
-        mov     ecx, ebx
-        poprbx
+        push    rbx
+        _drop
 
         _ integer_to_raw_bits
+
+        pop     rcx
 
         test    rbx, rbx
         jns     .unsigned
         shl     rbx, cl
-        _ normalize
-        _return
+        jmp     normalize
 
 .unsigned:
         shl     rbx, cl
-        _ normalize_unsigned
-        _return
+        jmp     normalize_unsigned
 
 .error:
         ; REVIEW julia and lua return 0 in this situation
