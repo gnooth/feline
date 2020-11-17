@@ -77,15 +77,15 @@ test: 2over-test-1
 2over-test-1
 
 test: fixnum?-test-1
-    most-negative-fixnum fixnum? assert-true
-    -3 fixnum? assert-true
-    -2 fixnum? assert-true
-    -1 fixnum? assert-true
-    0 fixnum? assert-true
-    1 fixnum? assert-true
-    2 fixnum? assert-true
-    3 fixnum? assert-true
-    most-positive-fixnum fixnum? assert-true
+    most-negative-fixnum dup fixnum? assert-eq
+    -3 dup fixnum? assert-eq
+    -2 dup fixnum? assert-eq
+    -1 dup fixnum? assert-eq
+    0 dup fixnum? assert-eq
+    1 dup fixnum? assert-eq
+    2 dup fixnum? assert-eq
+    3 dup fixnum? assert-eq
+    most-positive-fixnum dup fixnum? assert-eq
     "test" fixnum? assert-false
     ' dup fixnum? assert-false
     { 1 2 3 } fixnum? assert-false
@@ -95,8 +95,7 @@ fixnum?-test-1
 
 test: fixnum-test-1
     1 2 + 3 assert=
-    1 2 + fixnum? assert-true
-;
+    1 2 + dup fixnum? assert-eq ;
 
 fixnum-test-1
 
@@ -107,7 +106,7 @@ test: fixnum-test-2
 fixnum-test-2
 
 test: fixnum-test-3
-    0 fixnum? assert-true
+    0 dup fixnum? assert-eq
     0 0 assert=
     1 0 = assert-false
     -1 0 = assert-false
@@ -911,11 +910,11 @@ string>number-test-4
 
 test: string>number-test-5
     most-positive-fixnum number>string string>number
-    dup fixnum? assert-true
+    dup fixnum? assert
     most-positive-fixnum assert-eq
 
     most-negative-fixnum number>string string>number
-    dup fixnum? assert-true
+    dup fixnum? assert
     most-negative-fixnum assert-eq
 
     most-positive-fixnum 1 + number>string string>number
@@ -937,8 +936,8 @@ test: '-test
 
 test: hashcode-test-1
     "test"
-    [ string-hashcode fixnum? assert-true ] keep
-    [ hashcode dup fixnum? assert-true ] keep
+    [ string-hashcode fixnum? assert ] keep
+    [ hashcode dup fixnum? assert ] keep
     string-hashcode assert-eq ;
 
 hashcode-test-1
@@ -1016,10 +1015,9 @@ test: hashtable-test-4
     ht hashtable-keys length n1 assert-eq
     ht hashtable-keys [ dup string? assert-eq ] each
     ht hashtable-values length n1 assert-eq
-    ht hashtable-values [ fixnum? assert-true ] each
+    ht hashtable-values [ fixnum? assert ] each
 
-    f ht!
-;
+    nil ht! ;
 
 hashtable-test-4
 
@@ -1635,14 +1633,13 @@ test: slice-test-1
 slice-test-1
 
 test: index?-test-1
-    0 index? assert-true
-    1 index? assert-true
-    most-positive-fixnum index? assert-true
+    0 dup index? assert-eq
+    1 dup index? assert-eq
+    most-positive-fixnum dup index? assert-eq
     -1 index? assert-false
     most-negative-fixnum index? assert-false
     "test" index? assert-false
-    { } index? assert-false
-;
+    { } index? assert-false ;
 
 index?-test-1
 
@@ -1806,12 +1803,12 @@ test: negate-test-1
 
     most-positive-fixnum 4611686018427387903 assert-eq
     most-positive-fixnum negate -4611686018427387903 assert-eq
-    most-positive-fixnum 1 + negate dup fixnum? assert-true -4611686018427387904 assert-eq
-    most-positive-fixnum 1- negate dup fixnum? assert-true -4611686018427387902 assert-eq
+    most-positive-fixnum 1 + negate dup fixnum? assert -4611686018427387904 assert-eq
+    most-positive-fixnum 1- negate dup fixnum? assert -4611686018427387902 assert-eq
 
     most-negative-fixnum -4611686018427387904 assert-eq
     most-negative-fixnum negate dup int64? assert-true 4611686018427387904 assert=
-    most-negative-fixnum 1+ negate dup fixnum? assert-true 4611686018427387903 assert-eq
+    most-negative-fixnum 1+ negate dup fixnum? assert 4611686018427387903 assert-eq
     most-negative-fixnum 1 - negate dup int64? assert-true 4611686018427387905 assert=
 
     most-positive-int64 9223372036854775807 assert=
@@ -2321,7 +2318,7 @@ test: fixnum-1+-test-1
     -1 fixnum-1+  0 assert-eq
 
     most-negative-fixnum fixnum-1+
-    [ fixnum? assert-true ]
+    [ fixnum? assert ]
     [ most-negative-fixnum 1 fixnum-fixnum+ assert= ]
     [ most-negative-fixnum 1 + assert= ]
     tri
@@ -2342,7 +2339,7 @@ test: fixnum-1--test-1
     -1 fixnum-1- -2 assert-eq
 
     most-positive-fixnum fixnum-1-
-    [ fixnum? assert-true ]
+    [ fixnum? assert ]
     [ most-positive-fixnum fixnum>int64 1 int64-fixnum- assert= ]
     [ most-positive-fixnum 1 - assert= ]
     tri
@@ -2803,7 +2800,7 @@ test: lshift-test-1
 
     -1 60 lshift -1152921504606846976 assert-eq
     -1 61 lshift -2305843009213693952 assert-eq
-    -1 62 lshift dup fixnum? assert-true -4611686018427387904 assert-eq
+    -1 62 lshift dup fixnum? assert -4611686018427387904 assert-eq
     -1 63 lshift dup int64? assert-true -9223372036854775808 assert=
 
     most-positive-fixnum 1 lshift dup int64? assert-true dup 9223372036854775806 assert=
@@ -2821,22 +2818,21 @@ test: rshift-test-1
     8 3 rshift 1 assert-eq
 
     most-positive-fixnum 4611686018427387903 assert-eq
-    most-positive-fixnum 1 rshift dup fixnum? assert-true 2305843009213693951 assert-eq
-    most-positive-fixnum 17 rshift dup fixnum? assert-true 35184372088831 assert-eq
-    most-positive-fixnum 23 rshift dup fixnum? assert-true 549755813887 assert-eq
+    most-positive-fixnum 1 rshift dup fixnum? assert 2305843009213693951 assert-eq
+    most-positive-fixnum 17 rshift dup fixnum? assert 35184372088831 assert-eq
+    most-positive-fixnum 23 rshift dup fixnum? assert 549755813887 assert-eq
 
     most-negative-fixnum -4611686018427387904 assert-eq
-    most-negative-fixnum 1 rshift dup fixnum? assert-true -2305843009213693952 assert-eq
+    most-negative-fixnum 1 rshift dup fixnum? assert -2305843009213693952 assert-eq
 
     most-positive-int64 9223372036854775807 assert=
-    most-positive-int64 1 rshift dup fixnum? assert-true 4611686018427387903 assert-eq
+    most-positive-int64 1 rshift dup fixnum? assert 4611686018427387903 assert-eq
 
     most-negative-int64 -9223372036854775808 assert=
-    most-negative-int64 1 rshift dup fixnum? assert-true -4611686018427387904 assert-eq
+    most-negative-int64 1 rshift dup fixnum? assert -4611686018427387904 assert-eq
 
     max-uint64 18446744073709551615 assert=
-    max-uint64 1 rshift 9223372036854775807 assert=
-;
+    max-uint64 1 rshift 9223372036854775807 assert= ;
 
 rshift-test-1
 

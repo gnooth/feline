@@ -73,13 +73,16 @@ code most_negative_fixnum, 'most-negative-fixnum'
 endcode
 
 ; ### fixnum?
-code fixnum?, 'fixnum?'                 ; x -> ?
+inline fixnum?, 'fixnum?'               ; x -> x/nil
+; Returns x unchanged if x is a fixnum. Otherwise, returns nil.
+%if NIL = 0
+        xor     eax, eax                ; rax: nil
+%else
+        mov     eax, NIL
+%endif
         test    bl, FIXNUM_TAG
-        mov     eax, TRUE
-        mov     ebx, NIL
-        cmovnz  ebx, eax
-        next
-endcode
+        cmovz   rbx, rax
+endinline
 
 ; ### verify-fixnum
 code verify_fixnum, 'verify-fixnum'     ; fixnum -> fixnum
@@ -112,15 +115,19 @@ code check_index, 'check_index'         ; non-negative-fixnum -> untagged-fixnum
 endcode
 
 ; ### index?
-code index?, 'index?'                   ; x -> ?
+code index?, 'index?'                   ; x -> x/nil
+; Returns x unchanged if x is a non-negative fixnum. Otherwise, returns nil.
         test    bl, FIXNUM_TAG
         jz      .1
         test    rbx, rbx
         js      .1
-        mov     ebx, TRUE
         next
 .1:
+%if NIL = 0
+        xor     ebx, ebx                ; rax: nil
+%else
         mov     ebx, NIL
+%endif
         next
 endcode
 
