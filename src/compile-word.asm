@@ -149,6 +149,14 @@ code make_literal_node, 'make-literal-node' ; literal -> node
         next
 endcode
 
+; ### make-literal-node/2
+code make_literal_node_2, 'make-literal-node/2' ; literal type -> node
+        _nil                            ; operator
+        _swap                           ; -> literal nil type
+        _ three_array
+        next
+endcode
+
 ; ### make-operator-node
 code make_operator_node, 'make-operator-node' ; operator -> node
         _nil                            ; literal value
