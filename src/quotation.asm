@@ -15,14 +15,14 @@
 
 file __FILE__
 
-; 6 cells: object header, array, raw code address, raw code size, parent, locals
+; 6 cells: object header, array, raw code address, raw code size, parent, local names
 %define QUOTATION_SIZE                          6 * BYTES_PER_CELL
 
 %define QUOTATION_ARRAY_OFFSET                  8
 %define QUOTATION_RAW_CODE_ADDRESS_OFFSET       16
 %define QUOTATION_RAW_CODE_SIZE_OFFSET          24
 %define QUOTATION_PARENT_OFFSET                 32
-%define QUOTATION_LOCALS_OFFSET                 40
+%define QUOTATION_LOCAL_NAMES_OFFSET            40
 
 %macro  _quotation_array 0              ; quotation -> array
         _slot1
@@ -36,27 +36,27 @@ file __FILE__
         _slot2
 %endmacro
 
-%macro  _quotation_set_raw_code_address 0       ; raw-code-address quotation -> void
+%macro  _quotation_set_raw_code_address 0 ; raw-code-address quotation -> void
         _set_slot2
 %endmacro
 
-%macro  _this_quotation_set_raw_code_address 0  ; raw-code-address -> void
+%macro  _this_quotation_set_raw_code_address 0 ; raw-code-address -> void
         _this_set_slot2
 %endmacro
 
-%macro  _quotation_set_raw_code_size 0          ; raw-code-size quotation -> void
+%macro  _quotation_set_raw_code_size 0  ; raw-code-size quotation -> void
         _set_slot3
 %endmacro
 
-%macro  _this_quotation_set_raw_code_size 0     ; raw-code-size -> void
+%macro  _this_quotation_set_raw_code_size 0 ; raw-code-size -> void
         _this_set_slot3
 %endmacro
 
-%macro  _quotation_parent 0              ; ^quotation -> parent
+%macro  _quotation_parent 0             ; ^quotation -> parent
         _slot4
 %endmacro
 
-%macro  _quotation_locals 0              ; ^quotation -> locals
+%macro  _quotation_local_names 0        ; ^quotation -> locals
         _slot5
 %endmacro
 
@@ -133,7 +133,7 @@ code make_quotation, 'make-quotation'   ; void -> quotation
         mov     qword [rax + QUOTATION_RAW_CODE_ADDRESS_OFFSET], 0
         mov     qword [rax + QUOTATION_RAW_CODE_SIZE_OFFSET], 0
         mov     qword [rax + QUOTATION_PARENT_OFFSET], NIL
-        mov     qword [rax + QUOTATION_LOCALS_OFFSET], NIL
+        mov     qword [rax + QUOTATION_LOCAL_NAMES_OFFSET], NIL
         _dup
         mov     rbx, rax
 
@@ -155,7 +155,7 @@ code array_to_quotation, 'array->quotation' ; array -> quotation
         mov     qword [rax + QUOTATION_RAW_CODE_ADDRESS_OFFSET], 0
         mov     qword [rax + QUOTATION_RAW_CODE_SIZE_OFFSET], 0
         mov     qword [rax + QUOTATION_PARENT_OFFSET], NIL
-        mov     qword [rax + QUOTATION_LOCALS_OFFSET], NIL
+        mov     qword [rax + QUOTATION_LOCAL_NAMES_OFFSET], NIL
         mov     rbx, rax
 
         ; return handle
@@ -330,18 +330,18 @@ code quotation_set_parent, 'quotation-set-parent' ; x quotation -> void
         next
 endcode
 
-; ### quotation-locals
-code quotation_locals, 'quotation-locals' ; quotation -> locals/nil
+; ### quotation-local-names
+code quotation_local_names, 'quotation-local_names' ; quotation -> hashtable/nil
         _ check_quotation
-        mov     rbx, [rbx + QUOTATION_LOCALS_OFFSET]
+        mov     rbx, [rbx + QUOTATION_LOCAL_NAMES_OFFSET]
         next
 endcode
 
-; ### quotation-set-locals
-code quotation_set_locals, 'quotation-set-locals' ; x quotation -> void
+; ### quotation-set-local-names
+code quotation_set_local_names, 'quotation-set-local-names' ; x quotation -> void
         _ check_quotation
         mov     rax, [rbp]
-        mov     [rbx + QUOTATION_LOCALS_OFFSET], rax
+        mov     [rbx + QUOTATION_LOCAL_NAMES_OFFSET], rax
         _2drop
         next
 endcode
@@ -349,16 +349,16 @@ endcode
 ; ### quotation-add-local-name
 code quotation_add_local_name, 'quotation-add-local-name' ; n string quotation -> void
         _dup
-        _ quotation_locals
+        _ quotation_local_names
         cmp     rbx, NIL
         _drop                           ; -> n string quotation
         jne     .1
         _lit tagged_fixnum(8)
         _ new_hashtable
         _over
-        _ quotation_set_locals          ; -> n string quotation
+        _ quotation_set_local_names     ; -> n string quotation
 .1:
-        _ quotation_locals
+        _ quotation_local_names
         _ verify_hashtable
         _ hashtable_set_at
         next

@@ -135,7 +135,7 @@ code find_local_step, 'find-local-step' ; string quotation -> index/nil
         _ verify_quotation
 
         _dup
-        _ quotation_locals              ; -> string quotation hashtable/nil
+        _ quotation_local_names         ; -> string quotation hashtable/nil
         cmp     rbx, 0
         jne     .1
         _2nip

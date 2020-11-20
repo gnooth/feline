@@ -281,7 +281,7 @@ code gc2_scan_quotation, 'gc2_scan_quotation' ; ^quotation -> void
         _dup
         _quotation_parent
         _ gc2_maybe_push_handle
-        _quotation_locals
+        _quotation_local_names
         _ gc2_maybe_push_handle
 
         next
