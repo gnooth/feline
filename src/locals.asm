@@ -25,10 +25,8 @@ endcode
 ; ### local-set
 code local_set, 'local-set'             ; value index -> void
         _check_index
-        _cells
-        add     rbx, r14
         mov     rax, [rbp]
-        mov     [rbx], rax
+        mov     [r14 + rbx * BYTES_PER_CELL], rax
         _2drop
         next
 endcode
