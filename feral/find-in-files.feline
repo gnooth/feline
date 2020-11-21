@@ -38,8 +38,7 @@ global extension
     outputline buf buffer-append-line
     outputline buf top-line<<
 
-    current-search whole-words-only>> [ "whole words only" ] [ "" ] if
-    "Options: %s" format make-line/1 outputline!
+    current-search search:options "Options: %s" format make-line/1 outputline!
     true :search-results-header outputline line-set-property
     outputline buf buffer-append-line
 
