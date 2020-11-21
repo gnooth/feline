@@ -29,6 +29,59 @@ private
 : regex?                                // -> ?
     current-search [ regex>> ] [ nil ] if* ;
 
+: options ( search )                    // search -> string
+    80 make-sbuf :> sb
+    search regex>> [
+        "regex" sb sbuf-append-string
+    ] when
+    search whole-words-only>> [
+        sb length 0? [ ", " sb sbuf-append-string ] unless
+        "whole words only" sb sbuf-append-string
+    ] when
+    search ignore-case>> [
+        sb length 0? [ ", " sb sbuf-append-string ] unless
+        "ignore case" sb sbuf-append-string
+    ] when
+    sb sbuf->string ;
+
+: default-options
+    16 make-sbuf :> sb
+    regex-default [
+        sb length 0? [ " [" sb sbuf-append-string ] when
+        'r' sb push
+    ] when
+    whole-words-only-default [
+        sb length 0? [ " [" sb sbuf-append-string ] when
+        'w' sb push
+    ] when
+    ignore-case-default [
+        sb length 0? [ " [" sb sbuf-append-string ] when
+        'i' sb push
+    ] when
+    sb length 0? [ ']' sb push ] unless
+    sb sbuf->string ;
+
+: short-options                         // void  -> string
+    current-search [
+        16 make-sbuf :> sb
+        current-search regex>> [
+            sb length 0? [ " [" sb sbuf-append-string ] unless
+            "r" sb push
+        ] when
+        current-search whole-words-only>> [
+            sb length 0? [ " [" sb sbuf-append-string ] unless
+            "w" sb push
+        ] when
+        current-search ignore-case>> [
+            sb length 0? [ " [" sb sbuf-append-string ] unless
+            "i" sb push
+        ] when
+        sb length 0? [ ']' sb push ] unless
+        sb sbuf->string
+    ] [
+        default-options
+    ] if ;
+
 : found ( pos )                         // position -> void
     reset-redo
 
@@ -282,12 +335,8 @@ use: regex
 public
 
 : make-prompt
-    {
-        { [ regex-default ] [ "Find regex: " ] }
-        { [ whole-words-only-default ] [ "Find word: " ] }
-        // default
-        [ "Find: " ]
-    } cond ;
+    short-options :> s
+    s length 0? [ "Find: " ] [ "Find" s + ": " + ] if ;
 
 : find-command
     "find" set-history
@@ -425,13 +474,6 @@ public
     ] if [ found ] [ not-found ] if*
     nil current-search! ;
 
-: options ( search )
-    {
-        { [ search whole-words-only>> ] [ "whole words only" ] }
-        { [ search regex>> ] [ "regex" ] }
-        [ "" ]
-    } cond ;
-
 : search-list-occurrences
     last-search nil? ?exit
 
@@ -503,50 +545,32 @@ public
     true repaint?! ;
 
 : toggle-whole-words-only
-    local prompt
-    local offset
-
     current-buffer minibuffer? [
         current-context :find-prompt eq? [
             whole-words-only-default not whole-words-only-default!
-            dot-offset minibuffer-prompt length - offset!
-            whole-words-only-default "Find word: " "Find: " ? prompt!
+            dot-offset minibuffer-prompt length - :> offset
+            "Find" short-options + ": " + :> prompt
             prompt minibuffer-user-text + minibuffer-set-text
             prompt minibuffer-set-prompt
             offset prompt length + dot-offset!
         ] when
-    ] [
-        whole-words-only-default not whole-words-only-default!
-        whole-words-only-default "Match whole words only" "Match any occurrence" ?
-        message
-    ] if ;
+    ] when ;
 
 : toggle-ignore-case
     ignore-case-default not ignore-case-default!
     ignore-case-default "Ignore case" "Match case" ? message ;
 
 : toggle-regex
-    local prompt
-    local offset
-
     current-buffer minibuffer? [
         current-context :find-prompt eq? [
             regex-default not regex-default!
-            dot-offset minibuffer-prompt length - offset!
-            regex-default [
-                "Find regex: "
-            ] [
-                whole-words-only-default "Find word: " "Find: " ?
-            ] if prompt!
+            dot-offset minibuffer-prompt length - :> offset
+            "Find" short-options + ": " + :> prompt
             prompt minibuffer-user-text + minibuffer-set-text
             prompt minibuffer-set-prompt
             offset prompt length + dot-offset!
         ] when
-    ] [
-        regex-default not regex-default!
-        regex-default "Match regex" "Match literal string" ?
-        message
-    ] if ;
+    ] when ;
 
 global replacement
 
