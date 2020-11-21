@@ -34,7 +34,15 @@ use: regex
     16 make-vector :> v
 
     :search-results-header line line-get-property [
-        text 0 color-header make-segment/3 v push v
+        ": " text substring-start !> n
+        n [
+            n 2 &+ n!
+            n text string-head 0 color-header make-segment/3 v push
+            n text string-tail n color-text make-segment/3 v push
+        ] [
+            text 0 color-header make-segment/3 v push
+        ] if
+        v
     ] ?return
 
     [ :source-file line line-get-property ]
