@@ -242,13 +242,6 @@ code error_not_uint64, 'error-not-uint64'       ; x --
         next
 endcode
 
-; ### error-not-int64
-code error_not_int64, 'error-not-int64' ; x --
-        _quote "an int64"
-        _ format_type_error
-        next
-endcode
-
 ; ### error-not-integer
 code error_not_integer, 'error-not-integer'     ; x --
         _quote "an integer"

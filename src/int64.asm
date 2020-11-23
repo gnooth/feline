@@ -36,52 +36,54 @@ file __FILE__
 %endmacro
 
 ; ### int64?
-code int64?, 'int64?'                   ; handle -> ?
-        _ deref                         ; -> raw-object/0
-        test    rbx, rbx
-        jz      .1
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_INT64
-        jne     .1
-        mov     ebx, t_value
-        _return
-.1:
-        mov     ebx, f_value
+code int64?, 'int64?'                   ; x -> x/nil
+; If x is an int64, returns x. If x is not an int64, returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .no
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_INT64
+        jne     .no
+        next
+.no:
+        mov     ebx, NIL
         next
 endcode
 
 ; ### verify-int64
-code verify_int64, 'verify-int64'       ; x -> x
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_INT64
-        jne     .error
-        _drop
-        _return
-.error:
-        _drop                           ; -> x
-        jmp     error_not_int64
+code verify_int64, 'verify-int64'       ; int64 -> int64
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
+        jne     error_not_int64
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_INT64
+        jne     error_not_int64
         next
 endcode
 
 ; ### check_int64
-code check_int64, 'check_int64'         ; handle -> raw-int64
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_INT64
+code check_int64, 'check_int64'         ; int64 -> raw-int64
+        cmp     bl, HANDLE_TAG
+        jne     error_not_int64
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]
+        cmp     word [rbx], TYPECODE_INT64
         jne     .error
-        _nip
         _int64_raw_value
         next
 .error:
-        _drop
-        _ error_not_int64
+        mov     rbx, rax
+        jmp     error_not_int64
+endcode
+
+; ### error-not-int64
+code error_not_int64, 'error-not-int64' ; x ->
+        _quote "an int64"
+        _ format_type_error
         next
 endcode
 

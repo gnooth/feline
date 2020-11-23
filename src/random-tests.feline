@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ in: random-tests
 ;
 
 test: test-1
-    10 [ random-int64 int64? assert-true ] times ;
+    10 [ random-int64 dup int64? assert-eq ] times ;
 
 test-1
 
