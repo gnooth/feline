@@ -78,7 +78,7 @@ global instance
         iter string-iterator-next char!
         char
     ] [
-        state {
+        state match {
             :neutral => [
                 char iter scan-neutral state!
                 state { :block-comment :line-comment } member-eq? [
@@ -100,7 +100,7 @@ global instance
                 ?nl "c-mode-format-line unsupported state " write state .
                 "unsupported" error
             ]
-        } match
+        }
     ] while
 
     start-index iter string-iterator-index text substring

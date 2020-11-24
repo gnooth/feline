@@ -273,8 +273,8 @@ endcode
 
 feline_symbol any, '_'
 
-; ### match
-code match, 'match'                     ; x array ->
+; ### match*
+code match_star, 'match*'               ; x array ->
         _ check_array
         push    this_register
         mov     this_register, rbx      ; this_register: ^array
@@ -323,6 +323,30 @@ code match, 'match'                     ; x array ->
 
 .exit:
         pop     this_register
+        next
+endcode
+
+; ### match
+code match, 'match', SYMBOL_IMMEDIATE
+
+        _ must_parse_token
+
+        _quote "{"
+        _ equal?
+        cmp     rbx, NIL
+        _drop
+        jne     .1
+        _error "no {"
+
+.1:
+        _quote "}"
+        _ parse_until
+        _ vector_to_array
+        _ maybe_add
+
+        _tick match_star
+        _ maybe_add
+
         next
 endcode
 

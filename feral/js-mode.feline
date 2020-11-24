@@ -144,9 +144,9 @@ global last-token
         iter string-iterator-next char!
         char
     ] [
-        state {
+        state match {
             :neutral => [
-                char {
+                char match {
                     '"' =>  [
                         iter string-iterator-index end!
                         start end iter string-iterator-string substring
@@ -194,7 +194,7 @@ global last-token
                             iter string-iterator-index start!
                         ] when
                     ]
-                } match
+                }
             ]
             :block-comment => [
                 char iter c-mode:scan-block-comment state!
@@ -205,7 +205,7 @@ global last-token
                 ] when
             ]
             _ => [ ]
-        } match
+        }
     ] while
 
     iter string-iterator-string length end!

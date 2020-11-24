@@ -97,7 +97,7 @@ comment-start length constant comment-start-length
     dot-offset old-offset eq? ?exit
     dot-offset old-offset dot-line-text string-substring :> abbrev
     old-offset dot-offset!
-    abbrev {
+    abbrev match {
         "if"        => [ abbrev expand-2 ]
         "if*"       => [ abbrev expand-2 ]
         "recover"   => [ abbrev expand-2 ]
@@ -108,7 +108,7 @@ comment-start length constant comment-start-length
         "when*"     => [ abbrev expand-1 ]
         "while"     => [ abbrev expand-2 ]
         _           => [ abbrev "No expansion for %S" format message ]
-    } match ;
+    } ;
 
 : non-blank?                            // string -> ?
     1 ?enough

@@ -349,10 +349,10 @@ global in-vocab
 
 : scan-current-buffer                   // void -> hashtable
     current-buffer filename>> sourcefile!
-    sourcefile file-name-extension {
+    sourcefile file-name-extension match {
         ".asm"      => [ scan-asm-buffer ]
         ".feline"   => [ scan-feline-buffer ]
-    } match ;
+    } ;
 
 public
 
