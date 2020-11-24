@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -612,11 +612,10 @@ code lexer_parse_quoted_string, 'lexer-parse-quoted-string'     ; lexer -> strin
 endcode
 
 ; ### lexer-parse-token
-code lexer_parse_token, 'lexer-parse-token'     ; lexer -> string/f
+code lexer_parse_token, 'lexer-parse-token' ; lexer -> string/nil
         _dup
-        _ lexer_skip_blank              ; -> lexer index/f
-
-        cmp     rbx, f_value
+        _ lexer_skip_blank              ; -> lexer index/nil
+        cmp     rbx, NIL
         jne     .1
         _nip
         next
@@ -648,30 +647,23 @@ code lexer_parse_token, 'lexer-parse-token'     ; lexer -> string/f
 
         ; check for comment
         _dup
-        _quote "--"
-        _ stringequal?
-        _over
         _quote "//"
         _ stringequal?
-        _ feline_or
-        _tagged_if .3
-
-        _drop                           ; -> lexer
-        _dup
-        _ lexer_next_line
+        _tagged_if .3                   ; -> lexer substring
+        ; single-line comment starting
+        ; rbx: substring
+        ; [rbp]: lexer
+        mov     rbx, [rbp]              ; -> lexer lexer
+        _ lexer_next_line               ; -> lexer
         jmp     lexer_parse_token       ; recurse!
-
         _else .3
-
         ; not a comment
-        _nip
-
+        _nip                            ; -> substring
         _then .3
-
         next
 
 .exit:
-        mov     rbx, f_value
+        mov     ebx, NIL
         _2nip
         next
 endcode
