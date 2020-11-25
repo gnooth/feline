@@ -235,13 +235,6 @@ code error_not_sbuf, 'error-not-sbuf'   ; x --
         next
 endcode
 
-; ### error-not-uint64
-code error_not_uint64, 'error-not-uint64'       ; x --
-        _quote "a uint64"
-        _ format_type_error
-        next
-endcode
-
 ; ### error-not-integer
 code error_not_integer, 'error-not-integer'     ; x --
         _quote "an integer"

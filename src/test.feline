@@ -799,7 +799,7 @@ test: decimal>unsigned-test-1
 
     "4611686018427387903"  decimal>unsigned most-positive-fixnum assert-eq
     "9223372036854775807"  decimal>unsigned dup int64? over assert-eq most-positive-int64 assert=
-    "18446744073709551615" decimal>unsigned dup uint64? assert-true max-uint64 assert=
+    "18446744073709551615" decimal>unsigned dup uint64? over assert-eq max-uint64 assert=
 
     64 [ 2 swap lshift dup number>string decimal>unsigned assert= ] each-integer
 
@@ -1815,7 +1815,7 @@ test: negate-test-1
     most-positive-int64 negate dup int64? over assert-eq -9223372036854775807 assert=
 
     most-negative-int64 -9223372036854775808 assert=
-    most-negative-int64 negate dup uint64? assert-true dup 9223372036854775808 assert=
+    most-negative-int64 negate dup uint64? over assert-eq dup 9223372036854775808 assert=
     negate dup int64? over assert-eq most-negative-int64 assert=
     most-negative-int64 1 + negate dup int64? over assert-eq 9223372036854775807 assert=
 ;
@@ -2796,7 +2796,7 @@ test: lshift-test-1
     1 60 lshift 1152921504606846976 assert-eq
     1 61 lshift 2305843009213693952 assert-eq
     1 62 lshift dup int64? over assert-eq 4611686018427387904 assert=
-    1 63 lshift dup uint64? assert-true 9223372036854775808 assert=
+    1 63 lshift dup uint64? over assert-eq 9223372036854775808 assert=
 
     -1 60 lshift -1152921504606846976 assert-eq
     -1 61 lshift -2305843009213693952 assert-eq

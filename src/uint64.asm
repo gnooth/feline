@@ -34,35 +34,54 @@ file __FILE__
 %endmacro
 
 ; ### uint64?
-code uint64?, 'uint64?'                 ; handle -- ?
-        _ deref                         ; -- raw-object/0
-        test    rbx, rbx
-        jz      .1
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_UINT64
-        jne     .1
-        mov     ebx, t_value
-        _return
-.1:
-        mov     ebx, f_value
+code uint64?, 'uint64?'                 ; x -> x/nil
+; If x is a uint64, returns x. If x is not a uint64, returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .no
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_UINT64
+        jne     .no
+        next
+.no:
+        mov     ebx, NIL
+        next
+endcode
+
+; ### verify-uint64
+code verify_uint64, 'verify-uint64'     ; uint64 -> uint64
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
+        jne     error_not_uint64
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_UINT64
+        jne     error_not_uint64
         next
 endcode
 
 ; ### check_uint64
-code check_uint64, 'check_uint64'       ; handle -- raw-uint64
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_UINT64
+code check_uint64, 'check_uint64'       ; uint64 -> raw-uint64
+        cmp     bl, HANDLE_TAG
+        jne     error_not_uint64
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]
+        cmp     word [rbx], TYPECODE_UINT64
         jne     .error
-        _nip
         _uint64_raw_value
         next
 .error:
-        _drop
-        _ error_not_uint64
+        mov     rbx, rax
+        jmp     error_not_uint64
+endcode
+
+; ### error-not-uint64
+code error_not_uint64, 'error-not-uint64' ; x ->
+        _quote "a uint64"
+        _ format_type_error
         next
 endcode
 
