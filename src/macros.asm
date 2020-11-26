@@ -924,18 +924,26 @@ section .text
 %endmacro
 
 %macro  _eq? 0                          ; obj1 obj2 -> ?
+%if NIL = 0
+        xor     eax, eax                ; rax: nil
+%else
+        mov     eax, NIL
+%endif
         cmp     rbx, [rbp]
-        mov     eax, TRUE
-        mov     ebx, NIL
-        cmove   ebx, eax
+        mov     ebx, TRUE
+        cmovne  ebx, eax
         lea     rbp, [rbp + BYTES_PER_CELL]
 %endmacro
 
 %macro  _eq? 1                          ; obj -> ?
+%if NIL = 0
+        xor     eax, eax                ; rax: nil
+%else
+        mov     eax, NIL
+%endif
         cmp     rbx, %1
-        mov     eax, TRUE
-        mov     ebx, NIL
-        cmove   ebx, eax
+        mov     ebx, TRUE
+        cmovne  ebx, eax
 %endmacro
 
 %macro  _rdtsc 0                        ; -- uint64
