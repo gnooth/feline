@@ -292,7 +292,7 @@ public
     0x48 emit-byte
     0x83 emit-byte
     0xfb emit-byte
-    0x00 emit-byte                      // cmp rbx, NIL
+    0x00 emit-byte                      // cmp rbx, nil
     emit-drop                           // drop
     0x74 emit-byte                      // je
     0x07 emit-byte                      // $+7
@@ -634,7 +634,7 @@ public
     pending-remove-last
     flush-pending
 
-    array ' quotation? find  :> default-quotation :> default-index
+    array ' quotation? find :> default-quotation :> default-index
 
     default-quotation [
         default-index 0> [ default-index 29 * pc + 5 + ] [ pc 5 + ] if
@@ -659,6 +659,90 @@ public
 
 ' compile-cond ' cond symbol-set-compiler
 
+: compile-literal*
+// Like compile-literal, but always compiles a qword.
+    dup wrapper? [ wrapped ] when
+    emit-dup
+    object->integer
+    0x48 emit-byte
+    0xbb emit-byte
+    emit-qword ;
+
+: compile-match*-step                   // object quotation end-address -> void
+    :>  end-address :> quotation :> object
+
+    object compile-literal*
+    ' match? symbol-code-address compile-call-address
+
+    0x48 emit-byte
+    0x83 emit-byte
+    0xfb emit-byte
+    0x00 emit-byte                      // cmp rbx, nil
+    emit-drop                           // drop
+    0x74 emit-byte                      // jz
+    0x12 emit-byte                      // $+18
+    emit-drop
+    quotation quotation-code-address compile-call-address
+
+    end-address pc 5 + - :> delta
+    delta 0? [
+        0xe9 emit-byte
+        delta emit-int32
+    ] unless ;
+
+: compile-match* ( node )
+
+    pending length 0? [ ' match* compile-call-symbol ] ?return
+
+    pending-last-value verify-array :> array
+
+    array length :> len
+
+    len 0? len odd? or [ ' match* compile-call-symbol ] ?return
+
+    pending-remove-last
+    flush-pending
+
+    len even? assert
+
+    local default-index
+    len 2/ [
+        :> j
+        j 2 * array nth _ eq? [ j default-index! ] when
+    ] each-integer
+
+    default-index "default-index = %s" dprintf
+
+    default-index [
+        default-index 55 * pc + 13 +
+    ] [
+        len 2/ 55 * pc + 5 +
+    ] if :> end-address
+
+    default-index len 2/ or [
+
+        2 * :> i
+        i
+        i array nth
+        i 1+ array nth
+        "i = %d    %s %s" dprintf
+
+        i array nth
+        i 1+ array nth
+        end-address
+        compile-match*-step
+
+    ] each-integer
+
+    default-index [
+        emit-drop
+        2 * 1+ array nth callable-code-address compile-call-address
+    ] [
+        [ "no match"  error ] callable-code-address compile-call-address
+    ] if* ;
+
+' compile-match* ' match* symbol-set-compiler
+
 : compile-char-code ( node )
     pending length 0? [ ' char-code compile-call-symbol ] ?return
 
@@ -682,7 +766,7 @@ public
 
     last-value object->integer max-int32 <= [
         0xbb emit-byte
-        last-value object->integer feline:integer_to_raw_bits tag-fixnum emit-int32
+        last-value object->integer integer->raw-bits tag-fixnum emit-int32
     ] [
         0x48 emit-byte
         0xbb emit-byte
