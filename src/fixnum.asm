@@ -743,20 +743,28 @@ code fixnum_negate, 'fixnum-negate'     ; n -> -n
 endcode
 
 ; ### odd?
-code odd?, 'odd?'                       ; n -> ?
+code odd?, 'odd?'                       ; n -> n/nil
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
+%if NIL = 0
+        xor     eax, eax                ; rax: nil
+%else
         mov     eax, NIL
+%endif
         test    rbx, (1 << FIXNUM_TAG_BITS)
         cmovz   rbx, rax
         next
 endcode
 
 ; ### even?
-code even?, 'even?'                     ; n -> ?
+code even?, 'even?'                     ; n -> n/nil
         test    bl, FIXNUM_TAG
         jz      error_not_fixnum
+%if NIL = 0
+        xor     eax, eax                ; rax: nil
+%else
         mov     eax, NIL
+%endif
         test    rbx, (1 << FIXNUM_TAG_BITS)
         cmovnz  rbx, rax
         next
