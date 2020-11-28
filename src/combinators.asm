@@ -273,6 +273,18 @@ endcode
 
 feline_symbol any, '_'
 
+; ### match?
+code match?, 'match?'                   ; x y -> x ?
+        cmp     rbx, [rbp]
+        jne     .1
+        mov     ebx, TRUE
+        next
+.1:
+        _over
+        _ equal?
+        next
+endcode
+
 ; ### match*
 code match_star, 'match*'               ; x array ->
         _ check_array
