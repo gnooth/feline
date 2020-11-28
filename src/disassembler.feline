@@ -326,35 +326,31 @@ global regop    // REGister or OPcode extension (depending on the instruction)
     set-instruction-size
     !modrm-byte
     modrm-reg register-reg sreg!
-    modrm-mod {
-        { 0 [
-            modrm-rm {
-                { 4 [
+    modrm-mod match {
+        0 => [
+            modrm-rm match {
+                4 => [
                     !sib-byte
-                    sib-base {
-                        { 5 [
+                    sib-base match {
+                        5 => [
                             next-int32 ddisp!
                             t memory-operand?!
-                        ] }
-                        [
-                            // default case
-                            drop
+                        ]
+                        _ => [
                             sib-base register-rm dbase!
                             sib-index register-index dindex!
                             sib-scale dscale!
                         ]
-                    } case
-                ] }
-                [
-                    // default case
-                    drop
+                    }
+                ]
+                _ => [
                     modrm-rm register-rm dbase!
                 ]
-            } case
-        ] }
-        { 1 [
-            modrm-rm {
-                { 4 [
+            }
+        ]
+        1 => [
+            modrm-rm match {
+                4 => [
                     !sib-byte
                     sib-base register-rm dbase!
                     sib-index 4 eq? [
@@ -362,26 +358,24 @@ global regop    // REGister or OPcode extension (depending on the instruction)
                     ] unless
                     sib-scale dscale!
                     next-signed-byte ddisp!
-                ] }
-                [
-                    // default case
-                    drop
+                ]
+                _ => [
                     next-signed-byte ddisp!
                     modrm-rm register-rm dbase!
                 ]
-            } case
-        ] }
-        { 2 [
+            }
+        ]
+        2 => [
             // 32-bit displacement
-            modrm-rm {
-                { 6 [
+            modrm-rm match {
+                6 => [
                     modrm-rm register-rm dbase!
                     next-int32 ddisp!
-                ] }
-            } case
-        ] }
-        { 3 [ modrm-rm register-rm dreg! ] }
-    } case
+                ]
+            }
+        ]
+        3 => [ modrm-rm register-rm dreg! ]
+    }
     .inst ;
 
 : al,imm8                               // mnemonic -> void
