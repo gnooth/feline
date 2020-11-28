@@ -30,9 +30,8 @@ code bitand, 'bitand'                   ; x y -> z
         next
 endcode
 
-; ### integer_to_raw_bits
-code integer_to_raw_bits, 'integer_to_raw_bits', SYMBOL_INTERNAL
-; x -- y
+; ### integer->raw-bits
+code integer_to_raw_bits, 'integer->raw-bits' ; x -> raw-bits
 
         test    bl, FIXNUM_TAG
         jz      .1
