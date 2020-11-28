@@ -4763,7 +4763,7 @@ string-validate-slice-test
 
 symbol: kablooey
 
-: %match-test
+: %match-test-1
     match {
         0 => [ "zero" ]
         1 => [ "one" ]
@@ -4775,17 +4775,42 @@ symbol: kablooey
         _ => [ "none of the above" ]
     } ;
 
-test: match-test
-    { "zero" } [ 0 %match-test ] unit-test
-    { "one" } [ 1 %match-test ] unit-test
-    { "two" } [ 2 %match-test ] unit-test
-    { "minus one" } [ -1 %match-test ] unit-test
-    { "KEYWORD" } [ :keyword %match-test ] unit-test
-    { "TABOULI" } [ "tabouli" %match-test ] unit-test
-    { "KABLOOEY" } [ kablooey %match-test ] unit-test
-    { "none of the above" } [ "I'm not there!" %match-test ] unit-test ;
+test: match-test-1
+    { "zero" } [ 0 %match-test-1 ] unit-test
+    { "one" } [ 1 %match-test-1 ] unit-test
+    { "two" } [ 2 %match-test-1 ] unit-test
+    { "minus one" } [ -1 %match-test-1 ] unit-test
+    { "KEYWORD" } [ :keyword %match-test-1 ] unit-test
+    { "TABOULI" } [ "tabouli" %match-test-1 ] unit-test
+    { "KABLOOEY" } [ kablooey %match-test-1 ] unit-test
+    { "none of the above" } [ "I'm not there!" %match-test-1 ] unit-test ;
 
-match-test
+match-test-1
+
+: %match-test-2
+    match {
+        0 => [ "zero" ]
+        1 => [ "one" ]
+        2 => [ "two" ]
+        -1 => [ "minus one" ]
+        :keyword => [ "KEYWORD" ]
+        "tabouli" => [ "TABOULI" ]
+        kablooey => [ "KABLOOEY" ]
+        // no default
+    } ;
+
+test: match-test-2
+    { "zero" } [ 0 %match-test-2 ] unit-test
+    { "one" } [ 1 %match-test-2 ] unit-test
+    { "two" } [ 2 %match-test-2 ] unit-test
+    { "minus one" } [ -1 %match-test-2 ] unit-test
+    { "KEYWORD" } [ :keyword %match-test-2 ] unit-test
+    { "TABOULI" } [ "tabouli" %match-test-2 ] unit-test
+    { "KABLOOEY" } [ kablooey %match-test-2 ] unit-test
+
+    [ "I'm not there!" %match-test-2 ] assert-must-fail ;
+
+match-test-2
 
 test: bit-array-test
     [ -1 make-bit-array ] assert-must-fail
