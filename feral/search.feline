@@ -66,15 +66,15 @@ private
         16 make-sbuf :> sb
         current-search regex>> [
             sb length 0? [ " [" sb sbuf-append-string ] unless
-            "r" sb push
+            'r' sb push
         ] when
         current-search whole-words-only>> [
             sb length 0? [ " [" sb sbuf-append-string ] unless
-            "w" sb push
+            'w' sb push
         ] when
         current-search ignore-case>> [
             sb length 0? [ " [" sb sbuf-append-string ] unless
-            "i" sb push
+            'i' sb push
         ] when
         sb length 0? [ ']' sb push ] unless
         sb sbuf->string
