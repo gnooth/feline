@@ -206,10 +206,15 @@ endcode
 code add_code_size, 'add-code-size'     ; accum node -> accum
 ; FIXME arbitrary for now
         _ node_operator
+        _dup
         _tick cond
         _eq?
+        _swap
+        _tick match_star
+        _eq?
+        _ feline_or
         _tagged_if .1
-        _lit 256
+        _lit 512
         _else .1
         _lit 25
         _then .1
