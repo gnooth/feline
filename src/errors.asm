@@ -160,13 +160,6 @@ code error_not_fixnum_hashtable, 'error-not-fixnum-hashtable' ; x --
         next
 endcode
 
-; ### error-not-mutex
-code error_not_mutex, 'error-not-mutex'         ; x --
-        _quote "a mutex"
-        _ format_type_error
-        next
-endcode
-
 ; ### error-not-stream
 code error_not_stream, 'error-not-stream'       ; x --
         _quote "a stream"

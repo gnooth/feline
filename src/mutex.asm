@@ -1,4 +1,4 @@
-; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -24,17 +24,22 @@ file __FILE__
 %define mutex_owner_slot        qword [rbx + BYTES_PER_CELL * mutex_slot_owner]
 
 ; ### mutex?
-code mutex?, 'mutex?'                   ; handle -- ?
-        _ deref                         ; -- raw-object/0
-        test    rbx, rbx
-        jz      .1
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_MUTEX
-        jne     .1
-        mov     ebx, t_value
-        _return
-.1:
-        mov     ebx, f_value
+code mutex?, 'mutex?'                   ; mutex -> mutex/nil
+; If x is a mutex, returns x unchanged. If x is not a mutex, returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .not_a_mutex
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_MUTEX
+        jne     .not_a_mutex
+        next
+.not_a_mutex:
+%if NIL = 0
+        xor     ebx, ebx
+%else
+        mov     ebx, NIL
+%endif
         next
 endcode
 
@@ -42,33 +47,34 @@ endcode
 code check_mutex, 'check_mutex', SYMBOL_INTERNAL ; x -> ^mutex
         cmp     bl, HANDLE_TAG
         jne     error_not_mutex
-        mov     rdx, rbx                ; save x for error reporting
-        _handle_to_object_unsafe        ; -> ^object
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_MUTEX
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]
+        cmp     word [rbx], TYPECODE_MUTEX
         jne     .error
         next
 .error:
-        mov     rbx, rdx
-        _ error_not_mutex
-        next
+        mov     rbx, rax
+        jmp     error_not_mutex
 endcode
 
 ; ### verify-mutex
-code verify_mutex, 'verify-mutex'       ; handle -- handle
-; returns argument unchanged
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_MUTEX
-        jne     .error
-        _drop
+code verify_mutex, 'verify-mutex'       ; mutex -> mutex
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
+        jne     error_not_mutex
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_MUTEX
+        jne     error_not_mutex
         next
-.error:
-        _drop
-        _ error_not_mutex
+endcode
+
+; ### error-not-mutex
+code error_not_mutex, 'error-not-mutex' ; x ->
+        _quote "a mutex"
+        _ format_type_error
         next
 endcode
 
