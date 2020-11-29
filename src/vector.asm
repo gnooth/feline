@@ -89,7 +89,11 @@ code vector?, 'vector?'                 ; x -> x/nil
         jne     .not_a_vector
         next
 .not_a_vector:
+%if NIL = 0
+        xor     ebx, ebx
+%else
         mov     ebx, NIL
+%endif
         next
 endcode
 
