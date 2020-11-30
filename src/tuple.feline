@@ -84,8 +84,7 @@ global generic-writer                   // -> symbol
     ' over
     generic-writer
     2array array->quotation setter symbol-set-def
-    setter compile-word
-;
+    setter compile-word ;
 
 : define-accessors
     slots [
@@ -94,8 +93,7 @@ global generic-writer                   // -> symbol
             [ define-generic-writer ]
             [ define-setter ]
         } cleave
-    ] each
-;
+    ] each ;
 
 : define-tuple-predicate
     tuple-name "?" string-append new-symbol-in-current-vocab
@@ -106,20 +104,17 @@ global generic-writer                   // -> symbol
     3array array->quotation
 
     over symbol-set-def
-    compile-word
-;
+    compile-word ;
 
 : define-tuple-type
-    tuple-symbol slots make-tuple-type type-typecode tuple-typecode!
-;
+    tuple-symbol slots make-tuple-type type-typecode tuple-typecode! ;
 
 : parse-tuple-slots
-    10 <vector>
+    10 make-vector
     [ must-parse-token dup ";" string=? ] [ suffix! ] until
     drop
     vector->array
-    [ 1+ make-slot ] map-index slots!
-;
+    [ 1+ make-slot ] map-index slots! ;
 
 public
 
@@ -129,5 +124,4 @@ public
     parse-tuple-slots
     define-tuple-type
     define-accessors
-    define-tuple-predicate
-;
+    define-tuple-predicate ;
