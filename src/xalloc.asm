@@ -24,6 +24,22 @@ asm_global code_space_limit_, 0
 
 %ifdef USE_XALLOC
 
+; ### code-space-free
+code code_space_free, 'code-space-free' ; void -> fixnum
+        _dup
+        mov     rbx, [code_space_free_]
+        _ tag_fixnum
+        next
+endcode
+
+; ### set-code-space-free
+code set_code_space_free, 'set-code-space-free' ; fixnum -> void
+        _check_fixnum
+        mov     [code_space_free_], rbx
+        _drop
+        next
+endcode
+
 ; ### xalloc
 code xalloc, 'xalloc'                   ; raw-size -> raw-address
         mov     rax, [code_space_free_]
