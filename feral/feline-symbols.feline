@@ -154,6 +154,7 @@ global in-vocab
     "generic.asm"
     "gtkui.asm"
     "handles.asm"
+    "hashtable-common.asm"
     "hashtable.asm"
     "io.asm"
     "iterator.asm"
@@ -201,8 +202,7 @@ global in-vocab
     "vector.asm"
     "winui.asm"
     "wrapper.asm"
-    "fixnum-hashtable.asm"
-    "hashtable-common.asm"
+    "xalloc.asm"
 } constant asm-files
 
 {
