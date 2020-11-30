@@ -566,6 +566,17 @@ code twoslash, '2/' ; fixnum -> fixnum
         next
 endcode
 
+; ### 2*
+code twostar, '2*' ; fixnum -> fixnum
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        shl     rbx, 1
+        jo      error_fixnum_overflow
+        and     bl, 0b11111101
+        or      bl, FIXNUM_TAG
+        next
+endcode
+
 ; ### int64-fixnum/i
 code int64_fixnum_divide_truncate, 'int64-fixnum/i' ; x y -> z
         _check_fixnum
