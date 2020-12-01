@@ -16,6 +16,10 @@
 file __FILE__
 
 ; 3 cells: object header, raw value, owner
+%define MUTEX_SIZE                      3 * BYTES_PER_CELL
+
+%define MUTEX_RAW_VALUE_OFFSET          8
+%define MUTEX_SLOT_OWNER_OFFSET         16
 
 %define mutex_slot_raw_value    1
 %define mutex_slot_owner        2
@@ -85,7 +89,7 @@ code make_mutex, 'make-mutex'
         mov     qword [rbx], TYPECODE_MUTEX
         xcall   os_mutex_init
         mov     mutex_raw_value_slot, rax
-        mov     mutex_owner_slot, f_value
+        mov     mutex_owner_slot, NIL
         _ new_handle
         next
 endcode
@@ -97,64 +101,75 @@ code destroy_mutex, 'destroy_mutex', SYMBOL_INTERNAL
         _ raw_free
 
         ; zero out object header
-        xor     eax, eax
-        mov     [rbx], rax
+        mov     qword [rbx], 0
 
         _ raw_free
         next
 endcode
 
 ; ### mutex-owner
-code mutex_owner, 'mutex-owner'         ; mutex -- thread/f
+code mutex_owner, 'mutex-owner'         ; mutex -> thread/nil
         _ check_mutex
         _slot mutex_slot_owner
         next
 endcode
 
 ; ### mutex-lock
-code mutex_lock, 'mutex-lock'           ; mutex -- ?
+code mutex_lock, 'mutex-lock'           ; mutex -> ?
         _ check_mutex
         mov     arg0_register, mutex_raw_value_slot
         xcall   os_mutex_lock
-        cmp     rax, f_value
+        cmp     rax, NIL
         je      .1
         xcall   os_current_thread
         mov     mutex_owner_slot, rax
-        mov     ebx, t_value
-        _return
+        mov     ebx, TRUE
+        next
 .1:
-        mov     ebx, f_value
+%if NIL = 0
+        xor     ebx, ebx
+%else
+        mov     ebx, NIL
+%endif
         next
 endcode
 
 ; ### mutex-trylock
-code mutex_trylock, 'mutex-trylock'     ; mutex -- ?
+code mutex_trylock, 'mutex-trylock'     ; mutex -> ?
         _ check_mutex
         mov     arg0_register, mutex_raw_value_slot
         xcall   os_mutex_trylock
-        cmp     rax, f_value
+        cmp     rax, NIL
         je      .1
         xcall   os_current_thread
         mov     mutex_owner_slot, rax
-        mov     ebx, t_value
-        _return
+        mov     ebx, TRUE
+        next
 .1:
-        mov     ebx, f_value
+%if NIL = 0
+        xor     ebx, ebx
+%else
+        mov     ebx, NIL
+%endif
         next
 endcode
 
 ; ### mutex-unlock
-code mutex_unlock, 'mutex-unlock'       ; mutex -- ?
+code mutex_unlock, 'mutex-unlock'       ; mutex -> ?
         _ check_mutex
         mov     arg0_register, mutex_raw_value_slot
         xcall   os_mutex_unlock
-        cmp     rax, f_value
+        cmp     rax, NIL
         je      .1
-        mov     mutex_owner_slot, f_value
-        mov     ebx, t_value
-        _return
+        mov     mutex_owner_slot, NIL
+        mov     ebx, TRUE
+        next
 .1:
-        mov     ebx, f_value
+%if NIL = 0
+        xor     ebx, ebx
+%else
+        mov     ebx, NIL
+%endif
         next
 endcode
 
