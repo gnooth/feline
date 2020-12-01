@@ -512,6 +512,12 @@ code callable_raw_code_address, 'callable_raw_code_address', SYMBOL_INTERNAL
 
 .compile_quotation:
         ; rbx: handle
+
+;         _quote "callable_raw_code_address calling compile_quotation"
+;         _ dprintf
+;         _dup
+;         _ dot_object
+
         _ compile_quotation             ; -> quotation
         _ quotation_raw_code_address
         next
