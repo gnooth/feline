@@ -15,12 +15,6 @@
 
 file __FILE__
 
-; ### allocate-object
-code allocate_object, 'allocate-object' ; size -- object
-        _ raw_allocate
-        next
-endcode
-
 ; ### raw_allocate_cells
 code raw_allocate_cells, 'raw_allocate_cells', SYMBOL_INTERNAL
 ; n -- address
