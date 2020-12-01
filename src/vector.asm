@@ -181,7 +181,7 @@ code vector_set_length, 'vector-set-length' ; tagged-new-length handle -> void
         _this_vector_raw_length
         _ugt
         _if .2                          ; -> new-length
-        ; initialize new cells to f
+        ; initialize new cells to nil
         _dup
         _this_vector_raw_length
         _register_do_range .3
@@ -838,9 +838,9 @@ code vector_?pop, 'vector-?pop'         ; handle -> element/nil
 endcode
 
 ; ### vector-pop*
-code vector_pop_star, 'vector-pop*'     ; handle ->
+code vector_pop_star, 'vector-pop*'     ; vector ->
 
-        _ check_vector                  ; -> vector
+        _ check_vector                  ; -> ^vector
 
         push    this_register
         mov     this_register, rbx
