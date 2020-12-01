@@ -27,6 +27,7 @@ in: feline-mode
     "=>"
     "["
     "]"
+    "_"
     "constant"
     "defer"
     "forget"
