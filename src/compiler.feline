@@ -607,7 +607,7 @@ public
     0x48 emit-byte
     0x83 emit-byte
     0xfb emit-byte
-    0x00 emit-byte                      // cmp rbx, 0
+    0x00 emit-byte                      // cmp rbx, nil
     emit-drop
     0x74 emit-byte                      // jz
     0x0a emit-byte                      // $+10
@@ -617,10 +617,9 @@ public
     delta 0? [
         0xe9 emit-byte
         delta emit-int32
-    ] unless
-;
+    ] unless ;
 
-: cond-step
+: cond-step                             // array-or-quotation end-address -> void
     over array? [ cond-step-array ] [ cond-step-default ] if ;
 
 : compile-cond ( node )
@@ -642,24 +641,21 @@ public
         array length 29 * pc + 5 +
     ] if :> cond-end-address
 
-    cond-end-address ' cond-step curry :> callable
-
     default-index [
-        [ array nth callable call ] each-integer
+        [ array nth cond-end-address cond-step ] each-integer
     ] [
-        array callable each
+        array [ cond-end-address cond-step ] each
     ] if*
 
     default-quotation [
         callable-code-address compile-call-address
     ] [
         ' no-cond callable-code-address compile-call-address
-    ] if*
-;
+    ] if* ;
 
 ' compile-cond ' cond symbol-set-compiler
 
-: compile-literal*
+: compile-literal*                      // x -> void
 // Like compile-literal, but always compiles a qword.
     dup wrapper? [ wrapped ] when
     emit-dup
@@ -708,10 +704,8 @@ public
     local default-index
     len 2/ [
         :> j
-        j 2 * array nth _ eq? [ j default-index! ] when
+        j 2* array nth _ eq? [ j default-index! ] when
     ] each-integer
-
-    default-index "default-index = %s" dprintf
 
     default-index [
         default-index 55 * pc + 13 +
@@ -720,18 +714,11 @@ public
     ] if :> end-address
 
     default-index len 2/ or [
-
-        2 * :> i
-        i
-        i array nth
-        i 1+ array nth
-        "i = %d    %s %s" dprintf
-
+        2* :> i
         i array nth
         i 1+ array nth
         end-address
         compile-match*-step
-
     ] each-integer
 
     default-index [
