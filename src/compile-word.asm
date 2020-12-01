@@ -15,6 +15,63 @@
 
 file __FILE__
 
+asm_global compiler_lock_, 0
+
+%macro  _compiler_lock 0
+        _dup
+        mov     rbx, [compiler_lock_]
+%endmacro
+
+; ### initialize_compiler_lock
+code initialize_compiler_lock, 'initialize_compiler_lock', SYMBOL_INTERNAL ; void -> void
+        _ make_mutex
+        _ verify_mutex
+        mov     [compiler_lock_], rbx
+        _drop
+        _lit compiler_lock_
+        _ gc_add_root
+        next
+endcode
+
+; ### trylock_compiler
+code trylock_compiler, 'trylock_compiler', SYMBOL_INTERNAL ; -> ?
+        _compiler_lock
+
+        test    rbx, rbx
+        jnz      .1
+        mov     ebx, TRUE
+        next
+
+.1:
+        _ mutex_trylock
+        next
+endcode
+
+; ### lock-compiler
+code lock_compiler, 'lock-compiler'     ; void -> void
+        _ trylock_compiler
+        cmp     rbx, NIL
+        _drop
+        je      lock_compiler
+        next
+endcode
+
+; ### unlock-compiler
+code unlock_compiler, 'unlock-compiler' ; void -> void
+
+        cmp     qword [compiler_lock_], 0
+        jz      .exit
+
+        _compiler_lock
+        _ mutex_unlock
+        _tagged_if_not .2
+        _error "mutex_unlock failed"
+        _then .2
+
+.exit:
+        _rep_return
+endcode
+
 ; tuple: compiler-context
 ;     pc
 ;     origin
@@ -127,11 +184,24 @@ code pending_remove_last, 'pending-remove-last' ; void -> void
         next
 endcode
 
+asm_global last_allocation_, NIL
+
+; ### last-allocation
+code last_allocation, "last-allocation" ; void -> fixnum
+        _dup
+        mov     rbx, [last_allocation_]
+        next
+endcode
+
 ; ### initialize-code-block
 code initialize_code_block, 'initialize-code-block' ; size -> address
         _check_fixnum
         _ raw_allocate_executable       ; -> raw-address
         _tag_fixnum
+
+        mov     rax, rbx
+        xchg    [last_allocation_], rax
+
         next
 endcode
 
@@ -666,6 +736,8 @@ endcode
 
 ; ### initialize_compiler
 code initialize_compiler, 'initialize_compiler'
+        _ initialize_compiler_lock
+
         _tick compile_?exit_locals
         _tick ?exit_locals
         _ symbol_set_compiler
@@ -895,6 +967,8 @@ endcode
 ; ### primitive-compile-quotation
 code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> void
 
+        _ lock_compiler
+
         _ new_context
 
         _debug_?enough 1
@@ -921,7 +995,7 @@ code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> v
         _ initialize_code_block         ; -> tagged-address
         _dup
         _ set_origin
-        _ set_pc
+        _ set_pc                        ; -> void
 
         ; prolog
         _ compile_prolog
@@ -949,9 +1023,23 @@ code primitive_compile_quotation, 'primitive-compile-quotation' ; quotation -> v
         _check_fixnum
         _this_quotation_set_raw_code_size
 
+        _ origin
+        _ last_allocation
+        _eq?
+        _tagged_if .2
+        _ pc
+        _untag_fixnum
+        add     rbx, 0x0f
+        and     bl, 0xf0
+        _tag_fixnum
+        _ set_code_space_free
+        _then .2
+
         pop     this_register
 
         _ restore_context
+
+        _ unlock_compiler
 
         next
 endcode
@@ -1041,15 +1129,6 @@ code build_worklist, 'build-worklist'   ; word -> void
         _ add_quotation_and_children
         next
 endcode
-
-; : compile-word                          // symbol -> void
-;     1 ?enough verify-symbol :> word
-;     word process-definition
-;     worklist vector-reverse! drop
-;     worklist vector-pop*
-;     0 set-locals-count
-;     worklist [ primitive-compile-quotation ] each
-;     word primitive-compile-word ;
 
 ; ### process-worklist
 code process_worklist, 'process-worklist' ; void -> void
