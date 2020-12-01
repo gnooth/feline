@@ -48,7 +48,7 @@ public
     "tokenize.feline"
     "accept.feline"
     "help.feline"
-} [ load-system-file ] each
+} ' load-system-file each
 
 private
 
