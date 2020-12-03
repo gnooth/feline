@@ -4900,4 +4900,28 @@ test: alphanumeric?-test
 
 alphanumeric?-test
 
+test: u8?-test
+    { } [
+        256 [ dup u8? assert-eq ] each-integer
+        -1 u8? assert-false
+        257 u8? assert-false
+        most-positive-fixnum u8? assert-false
+        most-negative-fixnum u8? assert-false
+        "test" u8? assert-false
+    ] unit-test ;
+
+u8?-test
+
+test: verify-u8-test
+    { } [
+        256 [ dup verify-u8 assert-eq ] each-integer
+        [ -1 verify-u8 ] assert-must-fail
+        [ 257 verify-u8 ] assert-must-fail
+        [ most-positive-fixnum verify-u8 ] assert-must-fail
+        [ most-negative-fixnum verify-u8 ] assert-must-fail
+        [ "test" verify-u8 ] assert-must-fail
+    ] unit-test ;
+
+verify-u8-test
+
 ?nl "Reached end of test.feline" write-string

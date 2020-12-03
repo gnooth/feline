@@ -15,6 +15,44 @@
 
 file __FILE__
 
+; ### u8?
+code u8?, 'u8?'                         ; x -> x/nil
+; Returns x unchanged if x is a u8. Otherwise, returns nil.
+        test    bl, FIXNUM_TAG
+        jz      .no
+        mov     rax, rbx
+        sar     rax, FIXNUM_TAG_BITS
+        cmp     rax, 0xff
+        ja      .no
+        next
+.no:
+%if NIL = 0
+        xor     ebx, ebx
+%else
+        mov     ebx, NIL
+%endif
+        next
+endcode
+
+; ### verify-u8
+code verify_u8, 'verify-u8'             ; fixnum -> fixnum
+; Returns argument unchanged if it is a u8. Otherwise, signals an error.
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        mov     rax, rbx
+        sar     rax, FIXNUM_TAG_BITS
+        cmp     rax, 0xff
+        ja      error_not_u8
+        next
+endcode
+
+; ### error-not-u8
+code error_not_u8, 'error-not-u8'       ; x ->
+        _quote "an unsigned byte"
+        _ format_type_error
+        next
+endcode
+
 %define MAX_INT32        2147483647
 %define MIN_INT32       -2147483648
 
@@ -373,27 +411,29 @@ endcode
 code fixnum_minus, 'fixnum-'            ; x y -> z
 
         ; y must be a fixnum
-        _verify_fixnum
+        _verify_fixnum                  ; rbx: y
 
         ; dispatch on type of x
-        test    qword [rbp], FIXNUM_TAG
+        mov     rax, [rbp]              ; rax: x
+        test    rax, FIXNUM_TAG
         jz      .x_is_not_a_fixnum
 
         ; both x and y are fixnums
-        mov     rax, rbx                ; y in rax
-        mov     rbx, [rbp]              ; x in rbx
-        sar     rax, FIXNUM_TAG
-        sar     rbx, FIXNUM_TAG
+        sar     rax, FIXNUM_TAG_BITS    ; rax: x (untagged)
+        sar     rbx, FIXNUM_TAG_BITS    ; rbx: y (untagged)
         lea     rbp, [rbp + BYTES_PER_CELL]
-        sub     rbx, rax
+        neg     rbx
+        add     rbx, rax
         jmp     normalize
 
 .x_is_not_a_fixnum:
 
-        _over
-        _ object_raw_typecode
-        mov     rax, rbx
-        _drop                           ; -> x y
+        ; rax: x rbx: y
+        push    rbx
+        mov     rbx, rax                ; rbx: x
+        _ object_raw_typecode           ; rbx: raw typecode
+        mov     rax, rbx                ; rax: raw typecode
+        pop     rbx                     ; -> x y
 
         cmp     rax, TYPECODE_INT64
         je      int64_fixnum_minus
