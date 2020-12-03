@@ -34,6 +34,20 @@ code u8?, 'u8?'                         ; x -> x/nil
         next
 endcode
 
+; ### check_u8
+code check_u8, 'check_u8'               ; u8 -> untagged
+        test    bl, FIXNUM_TAG
+        jz      error_not_fixnum
+        mov     rax, rbx
+        sar     rbx, FIXNUM_TAG_BITS
+        cmp     rbx, 0xff
+        ja      .error
+        next
+.error:
+        mov     rbx, rax
+        jmp     error_not_u8
+endcode
+
 ; ### verify-u8
 code verify_u8, 'verify-u8'             ; fixnum -> fixnum
 ; Returns argument unchanged if it is a u8. Otherwise, signals an error.
@@ -48,7 +62,7 @@ endcode
 
 ; ### error-not-u8
 code error_not_u8, 'error-not-u8'       ; x ->
-        _quote "an unsigned byte"
+        _quote "a u8"
         _ format_type_error
         next
 endcode
