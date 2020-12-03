@@ -186,53 +186,6 @@ code file_read_unsafe, 'file-read-unsafe' ; buffer-address tagged-size fd -> tag
         next
 endcode
 
-; ### file-read-line
-code file_read_line, 'file-read-line'   ; fd -- string/f
-        _dup
-        _ file_read_char                ; -- fd char/f
-        cmp     rbx, NIL
-        jne     .1
-        _nip
-        next
-.1:                                     ; -- fd char
-        _lit 256
-        _ new_sbuf_untagged             ; -- fd char sbuf
-        _swap                           ; -- fd sbuf char
-        jmp     .3
-.2:
-        _over
-        _ file_read_char
-.3:
-        cmp     rbx, tagged_char(10)
-        je      .4
-        cmp     rbx, NIL
-        je      .4
-        _over
-        _ sbuf_push
-        jmp     .2
-.4:
-        _drop
-        _nip                            ; -- sbuf
-
-        ; check for cr preceding nl
-        _dup
-        _ sbuf_?last
-        _lit tagged_char(13)
-        _eq?
-        _tagged_if .5
-        _dup
-        _ sbuf_length
-        _lit tagged_fixnum(1)
-        _ fixnum_minus
-        _over
-        _ sbuf_shorten
-        _then .5
-
-        _ sbuf_to_string
-
-        next
-endcode
-
 ; ### file-create-write-fd
 code file_create_write_fd, 'file-create-write-fd'       ; string -- fd
         _ string_raw_data_address
