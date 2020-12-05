@@ -373,6 +373,11 @@ public
     nil >>ignore-case
     nil >>regex ;
 
+: find-under-update-history ( pattern ) // string -> void
+    "find" set-history
+    pattern update-history
+    nil current-history! ;
+
 : find-under
 // sublime find_under ctrl-f3
 // atom find-next-selected ctrl-f3
@@ -382,6 +387,8 @@ public
     :> pattern :> start
 
     pattern empty? ?exit
+
+    pattern find-under-update-history
 
     pattern find-under-make-search current-search!
 
@@ -410,6 +417,8 @@ public
     :> pattern :> start
 
     pattern empty? ?exit
+
+    pattern find-under-update-history
 
     pattern find-under-make-search current-search!
 
