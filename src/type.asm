@@ -256,6 +256,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL
         _add_type "equal-hashtable", TYPECODE_EQUAL_HASHTABLE
         _add_type "string-slice", TYPECODE_STRING_SLICE
         _add_type "bit-array", TYPECODE_BIT_ARRAY
+        _add_type "byte-vector", TYPECODE_BYTE_VECTOR
 
         next
 endcode

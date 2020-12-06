@@ -37,6 +37,7 @@ static_data_area:
 %include "object-macros.asm"
 %include "type.asm"
 %include "vector.asm"
+%include "byte-vector.asm"
 %include "handles.asm"
 %include "locals.asm"
 %include "hashtable-common.asm"

@@ -61,8 +61,9 @@ TYPECODE_FIXNUM_HASHTABLE       equ 31
 TYPECODE_EQUAL_HASHTABLE        equ 32
 TYPECODE_STRING_SLICE           equ 33
 TYPECODE_BIT_ARRAY              equ 34
+TYPECODE_BYTE_VECTOR            equ 35
 
-LAST_BUILTIN_TYPECODE           equ 34
+LAST_BUILTIN_TYPECODE           equ 35
 
 asm_global last_raw_typecode_, LAST_BUILTIN_TYPECODE + 1
 

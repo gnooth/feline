@@ -1,6 +1,6 @@
 # If you have the right tools installed (see below), just:
 #
-#       make
+#	make
 #
 # should do it, on both Windows and Linux.
 
@@ -22,7 +22,7 @@ BUILD = `date`
 ifeq ($(OS),Windows_NT)
 	CC = gcc
 else
-# 	CC = clang
+#	CC = clang
 	CC = gcc -no-pie
 endif
 
@@ -100,7 +100,7 @@ version.h: version.h.in
 	echo "#define REPOSITORY_VERSION \"$(REPOSITORY_VERSION)\"" >> version.h
 	echo "#define BUILD \"$(BUILD)\"" >> version.h
 
-main.o:	feline.h main.c
+main.o: feline.h main.c
 	$(CC) $(CFLAGS) -c -o main.o main.c
 
 os.o:	feline.h os.c
@@ -141,6 +141,7 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	bit-array.asm \
 	bitops.asm \
 	boolean.asm \
+	byte-vector.asm \
 	cold.asm \
 	color.asm \
 	combinators.asm \
@@ -226,13 +227,13 @@ feline.o: $(ASM_SOURCES)
 
 # Microsoft compiler and linker
 # main.obj: main.c
-# 	cl -Zi -c $(CFLAGS) main.c
+#	cl -Zi -c $(CFLAGS) main.c
 
 # feline.obj: $(ASM_SOURCES)
-# 	nasm $(ASMFLAGS) -g -fwin64 feline.asm
+#	nasm $(ASMFLAGS) -g -fwin64 feline.asm
 
 # feline.exe: main.obj feline.obj
-# 	link /subsystem:console /machine:x64 /largeaddressaware:no feline.obj  main.obj /out:feline.exe
+#	link /subsystem:console /machine:x64 /largeaddressaware:no feline.obj  main.obj /out:feline.exe
 
 clean:
 	-rm -f *.o *.obj

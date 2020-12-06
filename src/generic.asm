@@ -590,6 +590,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method length, TYPECODE_ARRAY, array_length
         _add_method length, TYPECODE_BIT_ARRAY, bit_array_length
         _add_method length, TYPECODE_VECTOR, vector_length_unsafe
+        _add_method length, TYPECODE_BYTE_VECTOR, byte_vector_length_unsafe
         _add_method length, TYPECODE_SLICE, slice_length
         _add_method length, TYPECODE_RANGE, range_length
         _add_method length, TYPECODE_QUOTATION, quotation_length
@@ -597,6 +598,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         ; push
         _initialize_generic_function push
         _add_method push, TYPECODE_VECTOR, vector_push
+        _add_method push, TYPECODE_BYTE_VECTOR, byte_vector_push
         _add_method push, TYPECODE_SBUF, sbuf_push
 
         ; nth
@@ -604,6 +606,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method nth, TYPECODE_ARRAY, array_nth
         _add_method nth, TYPECODE_BIT_ARRAY, bit_array_nth
         _add_method nth, TYPECODE_VECTOR, vector_nth
+        _add_method nth, TYPECODE_BYTE_VECTOR, byte_vector_nth
         _add_method nth, TYPECODE_STRING, string_nth
         _add_method nth, TYPECODE_SBUF, sbuf_nth
         _add_method nth, TYPECODE_SLICE, slice_nth
@@ -617,6 +620,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method nth_unsafe, TYPECODE_ARRAY, array_nth_unsafe
         _add_method nth_unsafe, TYPECODE_BIT_ARRAY, bit_array_nth_unsafe
         _add_method nth_unsafe, TYPECODE_VECTOR, vector_nth_unsafe
+        _add_method nth_unsafe, TYPECODE_BYTE_VECTOR, byte_vector_nth_unsafe
         _add_method nth_unsafe, TYPECODE_SLICE, slice_nth_unsafe
         _add_method nth_unsafe, TYPECODE_RANGE, range_nth_unsafe
         _add_method nth_unsafe, TYPECODE_QUOTATION, quotation_nth_unsafe
@@ -625,6 +629,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _initialize_generic_function set_nth
         _add_method set_nth, TYPECODE_ARRAY, array_set_nth
         _add_method set_nth, TYPECODE_VECTOR, vector_set_nth
+        _add_method set_nth, TYPECODE_BYTE_VECTOR, byte_vector_set_nth
 
         ; head
         _initialize_generic_function generic_head
@@ -804,6 +809,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method object_to_string, TYPECODE_STRING_OUTPUT_STREAM, string_output_stream_to_string
         _add_method object_to_string, TYPECODE_STRING_SLICE, quote_string_slice
         _add_method object_to_string, TYPECODE_BIT_ARRAY, bit_array_to_string
+        _add_method object_to_string, TYPECODE_BYTE_VECTOR, byte_vector_to_string
 
         _tick object_to_string_default
         _tick object_to_string

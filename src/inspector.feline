@@ -97,6 +97,12 @@ global inspected-object
     { "length" :raw }
 } string-slice builtin-type-set-layout
 
+{
+    { "length" :raw }
+    { "data address" :raw }
+    { "capacity" :rax }
+} byte-vector builtin-type-set-layout
+
 : print-slot ( object n )               // object n -> void
     object object-layout :> layout
     n layout nth :> slot
