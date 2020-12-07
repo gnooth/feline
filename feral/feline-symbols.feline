@@ -136,6 +136,7 @@ global in-vocab
     "bit-array.asm"
     "bitops.asm"
     "boolean.asm"
+    "byte-vector.asm"
     "cold.asm"
     "color.asm"
     "combinators.asm"
