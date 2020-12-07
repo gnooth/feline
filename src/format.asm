@@ -279,7 +279,7 @@ code format, 'format'                   ; arg(s) format-string -> output-string
         next
 endcode
 
-feline_global dprintf?, 'dprintf?', NIL
+feline_global dprintf?, 'dprintf?', TRUE
 
 ; ### +dprintf
 code dprintf_on, '+dprintf'
