@@ -29,6 +29,9 @@ private
 : regex?                                // -> ?
     current-search [ regex>> ] [ nil ] if* ;
 
+: ignore-case?                          // -> ?
+    current-search [ ignore-case>> ] [ nil ] if* ;
+
 : options ( search )                    // search -> string
     80 make-sbuf :> sb
     search regex>> [
@@ -553,31 +556,34 @@ public
     maybe-reframe
     true repaint?! ;
 
+private: set-prompt-with-options        // void -> void
+    dot-offset minibuffer-prompt length - :> offset
+    "Find" short-options + ": " + :> prompt
+    prompt minibuffer-user-text + minibuffer-set-text
+    prompt minibuffer-set-prompt
+    offset prompt length + dot-offset! ;
+
 : toggle-whole-words-only
     current-buffer minibuffer? [
         current-context :find-prompt eq? [
             whole-words-only-default not whole-words-only-default!
-            dot-offset minibuffer-prompt length - :> offset
-            "Find" short-options + ": " + :> prompt
-            prompt minibuffer-user-text + minibuffer-set-text
-            prompt minibuffer-set-prompt
-            offset prompt length + dot-offset!
+            set-prompt-with-options
         ] when
     ] when ;
 
 : toggle-ignore-case
-    ignore-case-default not ignore-case-default!
-    ignore-case-default "Ignore case" "Match case" ? message ;
+    current-buffer minibuffer? [
+        current-context :find-prompt eq? [
+            ignore-case-default not ignore-case-default!
+            set-prompt-with-options
+        ] when
+    ] when ;
 
 : toggle-regex
     current-buffer minibuffer? [
         current-context :find-prompt eq? [
             regex-default not regex-default!
-            dot-offset minibuffer-prompt length - :> offset
-            "Find" short-options + ": " + :> prompt
-            prompt minibuffer-user-text + minibuffer-set-text
-            prompt minibuffer-set-prompt
-            offset prompt length + dot-offset!
+            set-prompt-with-options
         ] when
     ] when ;
 
