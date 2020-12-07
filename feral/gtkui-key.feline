@@ -138,6 +138,7 @@ f3 ctrl shift           constant ctrl-shift-f3
 
 'b' char-code alt       constant alt-b
 'c' char-code alt       constant alt-c
+'i' char-code alt       constant alt-i
 'l' char-code alt       constant alt-l
 'r' char-code alt       constant alt-r
 'v' char-code alt       constant alt-v

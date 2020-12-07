@@ -173,6 +173,7 @@ VK_SPACE ctrl           constant ctrl-space
 
 'B' char-code alt       constant alt-b
 'C' char-code alt       constant alt-c
+'I' char-code alt       constant alt-i
 'L' char-code alt       constant alt-l
 'R' char-code alt       constant alt-r
 'V' char-code alt       constant alt-v
