@@ -77,9 +77,6 @@ global ctrl-k-map
     ' query-replace-command             feral-key:ctrl-h            m set-at
     ' repeat-search-forward             feral-key:f3                m set-at
     ' repeat-search-backward            feral-key:shift-f3          m set-at
-    ' toggle-whole-words-only           feral-key:alt-w             m set-at
-    ' toggle-ignore-case                feral-key:alt-c             m set-at
-    ' toggle-regex                      feral-key:alt-r             m set-at
     ' do-tab                            feral-key:tab               m set-at
     ' kill-line                         feral-key:ctrl-shift-delete m set-at
     ' undo                              feral-key:ctrl-z            m set-at
