@@ -107,7 +107,7 @@ global minibuffer-dispatch-hook
 
 : minibuffer-dispatch                   // fixnum/char -> void
 
-    current-buffer minibuffer assert-eq
+    current-buffer minibuffer? assert
 
     // REVIEW
     // call the hook function(s) with the argument still on the stack
