@@ -133,7 +133,7 @@ private
     ' end-of-buffer                     feral-key:ctrl-kp-end           m set-at
 
     ' search:toggle-whole-words-only    feral-key:alt-w                 m set-at
-    ' search:toggle-ignore-case         feral-key:alt-c                 m set-at
+    ' search:toggle-ignore-case         feral-key:alt-i                 m set-at
     ' search:toggle-regex               feral-key:alt-r                 m set-at
 
     // FIXME remove
