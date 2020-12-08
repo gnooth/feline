@@ -431,8 +431,10 @@ public
     ] unless
     pos search-backward-word
     // -> position/nil
-    [ found ]
     [
+        found
+        current-search last-search!
+    ] [
         // wrap around
         last-line [ pos line<< ] [ length pos offset<< ] bi
         pos search-backward-word
