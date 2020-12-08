@@ -927,8 +927,9 @@ tuple: search
     regex-match-end ;
 
 : make-search                           // pattern -> search
+    verify-string
     search make-instance
-    verify-string swap >>pattern
+    swap >>pattern
     whole-words-only-default >>whole-words-only
     ignore-case-default >>ignore-case
     regex-default >>regex
