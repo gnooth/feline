@@ -918,6 +918,7 @@ global regex-default
 
 tuple: search
     pattern
+    lower-case-pattern
     whole-words-only
     ignore-case
     identifier-char-function
@@ -926,12 +927,14 @@ tuple: search
     regex-match-end ;
 
 : make-search                           // pattern -> search
-    verify-string
     search make-instance
-    swap >>pattern
+    verify-string swap >>pattern
     whole-words-only-default >>whole-words-only
     ignore-case-default >>ignore-case
-    regex-default >>regex ;
+    regex-default >>regex
+
+    // -> search
+    ignore-case-default [ dup pattern>> string-downcase >>lower-case-pattern ] when ;
 
 global current-search
 
