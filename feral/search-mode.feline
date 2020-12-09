@@ -72,8 +72,11 @@ use: regex
         ] while
     ] [
         [
-            pattern text i
-            search whole-words-only>> [ find-word-from ] [ find-substring-from ] if
+            search whole-words-only>> [
+                pattern text i find-word-from
+            ] [
+                search text i search-find-substring-from
+            ] if
             dup j!
         ] [
             i j text substring i color-text make-segment/3 v push
