@@ -1035,6 +1035,9 @@ unuse: segments
     pattern string start end find-substring-in-range ;
 
 : search-find-substring-from ( search string start ) // search string start -> index/nil
+    search search? assert
+    string string? assert
+    start fixnum? assert
     search ignore-case>> [ search lower-case-pattern>> ] [ search pattern>> ] if :> pattern
     string length pattern length - 1+ :> end
     pattern string search ignore-case>> [ string-downcase ] when start end find-substring-in-range ;
@@ -1052,6 +1055,9 @@ unuse: segments
     result ;
 
 : find-word-from ( pattern string start ) // pattern string start -> index/nil
+
+    pattern string? assert
+
     pattern string-length :> pattern-length
     start !> index
     local found
