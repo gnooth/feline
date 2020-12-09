@@ -1031,8 +1031,13 @@ unuse: segments
     ] find-integer-in-range ;
 
 : find-substring-from ( pattern string start ) // pattern string start -> index/nil
-    string string-length pattern string-length - 1+ :> end
+    string length pattern length - 1+ :> end
     pattern string start end find-substring-in-range ;
+
+: search-find-substring-from ( search string start ) // search string start -> index/nil
+    search ignore-case>> [ search lower-case-pattern>> ] [ search pattern>> ] if :> pattern
+    string length pattern length - 1+ :> end
+    pattern string search ignore-case>> [ string-downcase ] when start end find-substring-in-range ;
 
 : delimited? ( string index pattern-length ) // string index pattern-length -> ?
     true !> result
