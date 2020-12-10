@@ -201,8 +201,9 @@ use: regex
     drop
     index [ line index make-position ] [ nil ] if ;
 
-: find-in-string ( search string start ) // search string start -> index/nil
-    search pattern>> :> pattern
+public: search-find-in-string ( search string start ) // search string start -> index/nil
+    search search? assert
+    search ignore-case>> [ search lower-case-pattern>> ] [ search pattern>> ] if :> pattern
     {
         {
             [ search whole-words-only>> ]
@@ -216,7 +217,7 @@ use: regex
             ]
         }
         // default
-        [ pattern string start find-substring-from ]
+        [ search string start search-find-substring-from ]
     } cond ;
 
 unuse: regex
