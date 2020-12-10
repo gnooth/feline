@@ -114,10 +114,6 @@ public: options ( search )              // search -> string
 : find-char-in-range ( char string start end ) // char string start end -> i/nil
     start end [ string string-nth-unsafe char eq? ] find-integer-in-range ;
 
-: find-substring-in-line ( pattern line ) // pattern line -> position/nil
-    pattern line text>> 0 find-substring-from
-    [ line swap make-position ] [ nil ] if* ;
-
 : search-find-substring-in-line ( search line ) // search line -> position/nil
     search line text>> 0 search-find-substring-from
     [ line swap make-position ] [ nil ] if* ;
