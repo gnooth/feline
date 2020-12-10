@@ -118,28 +118,11 @@ public: options ( search )              // search -> string
     search line text>> 0 search-find-substring-from
     [ line swap make-position ] [ nil ] if* ;
 
-: find-last-substring-in-range ( pattern string start end ) // string1 string2 start end -> i/nil
-    pattern unsafe-string-data-address :> pattern-data-address
-    string unsafe-string-data-address :> string-data-address
-    pattern string-length :> pattern-length
-
-    start string string-length pattern-length - 1+ end min [
-        string-data-address +
-        pattern-data-address
-        pattern-length unsafe-memequal
-    ] find-last-integer-in-range ;
-
-: find-last-substring-from ( pattern string from ) // pattern string from -> i/nil
-    pattern string 0
-    string string-length pattern string-length - 1+ from min
-    find-last-substring-in-range ;
-
-: find-last-substring-in-line ( pattern line ) // pattern line -> position/nil
-    pattern line text>> line length find-last-substring-from
+: search-find-last-substring-in-line ( search line ) // search line -> position/nil
+    search line text>> line length search-find-last-substring-from
     [ line swap make-position ] [ nil ] if* ;
 
 : search-forward ( startpos )           // position -> position/nil
-    // get pattern from current-search
     startpos line>> !> line
     startpos offset>> :> offset
 
@@ -161,20 +144,17 @@ public: options ( search )              // search -> string
     result ;
 
 : search-backward ( startpos )          // startpos -> position/nil
-    // get pattern from current-search
-    current-pattern :> pattern
-
     startpos line>> !> line
     startpos offset>> :> offset
 
-    pattern line text>> offset find-last-substring-from !> index
+    current-search line text>> offset search-find-last-substring-from !> index
     index [ line index make-position ] ?return
 
     line prev>> line!
     nil !> result
 
     [ line ] [
-        pattern line find-last-substring-in-line [
+        current-search line search-find-last-substring-in-line [
             result!
             nil line!
         ] [ line prev>> line! ] if*
