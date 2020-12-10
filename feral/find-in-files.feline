@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core feline accessors ;
+using: feral-core search feline accessors ;
 in: find-in-files
 
 private
@@ -38,7 +38,7 @@ global extension
     outputline buf buffer-append-line
     outputline buf top-line<<
 
-    current-search search:options "Options: %s" format make-line/1 outputline!
+    current-search options "Options: %s" format make-line/1 outputline!
     true :search-results-header outputline line-set-property
     outputline buf buffer-append-line
 
@@ -86,7 +86,7 @@ global extension
         1+ linenumber! // displayed line numbers are 1-based
         s!
 
-        current-search s 0 search:find-in-string offset!
+        current-search s 0 search-find-in-string offset!
 
         offset [
             // we found the pattern in this line
@@ -166,7 +166,7 @@ defer find-in-directory
 
     "find" history:set-history
 
-    search:make-prompt :> prompt
+    make-prompt :> prompt
 
     // REVIEW with-current-context
     :find-prompt current-context!
