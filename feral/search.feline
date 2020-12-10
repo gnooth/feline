@@ -32,7 +32,7 @@ private
 : ignore-case?                          // -> ?
     current-search [ ignore-case>> ] [ nil ] if* ;
 
-: options ( search )                    // search -> string
+public: options ( search )              // search -> string
     80 make-sbuf :> sb
     search regex>> [
         "regex" sb sbuf-append-string
@@ -116,6 +116,10 @@ private
 
 : find-substring-in-line ( pattern line ) // pattern line -> position/nil
     pattern line text>> 0 find-substring-from
+    [ line swap make-position ] [ nil ] if* ;
+
+: search-find-substring-in-line ( search line ) // search line -> position/nil
+    search line text>> 0 search-find-substring-from
     [ line swap make-position ] [ nil ] if* ;
 
 : find-last-substring-in-range ( pattern string start end ) // string1 string2 start end -> i/nil
