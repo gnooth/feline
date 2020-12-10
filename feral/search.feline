@@ -140,23 +140,23 @@ public: options ( search )              // search -> string
 
 : search-forward ( startpos )           // position -> position/nil
     // get pattern from current-search
-    current-pattern :> pattern
-
     startpos line>> !> line
     startpos offset>> :> offset
 
-    pattern line text>> offset find-substring-from !> index
+    current-search line text>> offset search-find-substring-from :> index
     index [ line index make-position ] ?return
 
     line next>> line!
     nil !> result
 
     [ line ] [
-        pattern line find-substring-in-line [
+        current-search line search-find-substring-in-line [
             result!
             nil line!
         ] [ line next>> line! ] if*
     ] while
+
+    result nil? result position? or assert
 
     result ;
 
@@ -218,17 +218,20 @@ public: search-find-in-string ( search string start ) // search string start -> 
 
 unuse: regex
 
-: find-in-line ( search line )          // search line -> position/nil
+: search-find-in-line ( search line )   // search line -> position/nil
+
+    search ignore-case>> [ search lower-case-pattern>> ] [ search pattern>> ] if :> pattern
+
     {
         {
             [ search whole-words-only>> ]
-            [ search pattern>> line find-word-in-line ]
+            [ pattern line find-word-in-line ]
         }
         {
             [ search regex>> ]
-            [ search pattern>> line find-regex-in-line ]
+            [ pattern line find-regex-in-line ]
         }
-        [ search pattern>> line find-substring-in-line ] // default
+        [ search line search-find-substring-in-line ] // default
     } cond ;
 
 : search-forward-word ( startpos )      // position -> position/nil
@@ -353,6 +356,7 @@ public
     nil current-context!
 
     pattern empty? ?exit
+
     pattern make-search current-search!
 
     regex-default [
@@ -504,7 +508,7 @@ public
 
     [ sourceline ] [
         // while
-        current-search sourceline find-in-line // -> position/nil
+        current-search sourceline search-find-in-line // -> position/nil
         [
             pos!
             buf [
