@@ -29,6 +29,7 @@ in: feline-mode
     "]"
     "_"
     "constant"
+    "constant:"
     "defer"
     "forget"
     "generic"
@@ -58,6 +59,7 @@ in: feline-mode
 {
     ":"
     "constant"
+    "constant:"
     "defer"
     "generic"
     "global"
