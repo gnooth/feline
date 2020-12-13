@@ -546,6 +546,61 @@ code colon, ':', SYMBOL_IMMEDIATE       ; void -> void
         next
 endcode
 
+; ### constant:
+code constant_colon, 'constant:', SYMBOL_IMMEDIATE ; void -> void
+
+        _tick constant_colon
+        _ top_level_only
+
+        _ parse_name                    ; -> symbol
+
+        _ make_quotation
+        _ set_current_quotation
+
+        _ parse_definition              ; -> symbol vector
+        _ vector_to_array               ; -> symbol array
+        _ current_quotation             ; -> symbol array quotation
+        _ quotation_set_array           ; -> symbol
+
+        _depth
+        _tor
+
+        _ current_quotation
+        _ call_quotation
+
+        _depth
+        _rfrom
+        _minus
+        cmp     rbx, 1
+        jne     .error
+
+        _drop                           ; -> symbol value
+
+        _nil
+        _ set_current_quotation         ; -> symbol value
+
+        _ one_quotation                 ; -> symbol quotation
+
+        _over
+        _ symbol_set_def                ; -> symbol
+
+        _dup
+        _symbol_set_flags_bit SYMBOL_CONSTANT
+        _dup
+        _symbol_set_flags_bit SYMBOL_INLINE
+
+        _ compile_word                  ; -> void
+
+        next
+
+.error:
+        _tag_fixnum
+        _quote "ERROR: wrong number of values (expected 1, got %d)"
+        _ format
+        _ error
+        next
+endcode
+
 ; ### private:
 code private_colon, 'private:', SYMBOL_IMMEDIATE
         _tick private_colon
