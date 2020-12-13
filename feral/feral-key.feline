@@ -1,4 +1,4 @@
-// Copyright (C) 2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,16 +16,16 @@
 using: feline ;
 in: feral-key
 
-0x01 constant alt-bit
-0x02 constant ctrl-bit
-0x04 constant shift-bit
+constant: alt-bit   0x01 ;
+constant: ctrl-bit  0x02 ;
+constant: shift-bit 0x04 ;
 
-alt-bit 16 lshift constant alt-mask
-ctrl-bit 16 lshift constant ctrl-mask
-shift-bit 16 lshift constant shift-mask
+constant: alt-mask   alt-bit   16 lshift ;
+constant: ctrl-mask  ctrl-bit  16 lshift ;
+constant: shift-mask shift-bit 16 lshift ;
 
-: alt alt-mask bitor ;
-: ctrl ctrl-mask bitor ;
+: alt   alt-mask   bitor ;
+: ctrl  ctrl-mask  bitor ;
 : shift shift-mask bitor ;
 
 : modifiers 16 rshift 0x7 bitand ;
