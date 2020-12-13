@@ -20,168 +20,168 @@ feral-config:gtkui? assert
 
 public
 
-0xfeef                  constant double-mouse-1 // GDK_KEY_Pointer_DblClick1
+constant: double-mouse-1    0xfeef ;    // GDK_KEY_Pointer_DblClick1
 
-0xff09                  constant tab
-0xff1b                  constant escape
+constant: tab       0xff09 ;
+constant: escape    0xff1b ;
 
-0xffff                  constant delete
-0xff9f                  constant kp-delete
-delete ctrl             constant ctrl-delete
-kp-delete ctrl          constant ctrl-kp-delete
-delete shift            constant shift-delete
-0xffae shift            constant shift-kp-delete        // GDK_KEY_KP_Decimal (0xffae)
-delete ctrl shift       constant ctrl-shift-delete
-0xffae ctrl shift       constant ctrl-shift-kp-delete   // GDK_KEY_KP_Decimal (0xffae)
+constant: delete                0xffff ;
+constant: kp-delete             0xff9f ;
+constant: ctrl-delete           delete ctrl ;
+constant: ctrl-kp-delete        kp-delete ctrl ;
+constant: shift-delete          delete shift ;
+constant: shift-kp-delete       0xffae shift ; // GDK_KEY_KP_Decimal (0xffae)
+constant: ctrl-shift-delete     delete ctrl shift ;
+constant: ctrl-shift-kp-delete  0xffae ctrl shift ; // GDK_KEY_KP_Decimal (0xffae)
 
-0xff50                  constant home
-0xff57                  constant end
-0xff51                  constant left
-0xff53                  constant right
-0xff52                  constant up
-0xff54                  constant down
-0xff55                  constant pageup
-0xff56                  constant pagedown
+constant: home          0xff50 ;
+constant: end           0xff57 ;
+constant: left          0xff51 ;
+constant: right         0xff53 ;
+constant: up            0xff52 ;
+constant: down          0xff54 ;
+constant: pageup        0xff55 ;
+constant: pagedown      0xff56 ;
 
-0xff95                  constant kp-home
-0xff9c                  constant kp-end
-0xff96                  constant kp-left
-0xff98                  constant kp-right
-0xff97                  constant kp-up
-0xff99                  constant kp-down
-0xff9a                  constant kp-pageup
-0xff9b                  constant kp-pagedown
+constant: kp-home       0xff95 ;
+constant: kp-end        0xff9c ;
+constant: kp-left       0xff96 ;
+constant: kp-right      0xff98 ;
+constant: kp-up         0xff97 ;
+constant: kp-down       0xff99 ;
+constant: kp-pageup     0xff9a ;
+constant: kp-pagedown   0xff9b ;
 
-0xff08                  constant backspace
-0xff0d                  constant enter
+constant: backspace     0xff08 ;
+constant: enter         0xff0d ;
 
-'/' char-code ctrl      constant ctrl-/
-'[' char-code ctrl      constant ctrl-[
-']' char-code ctrl      constant ctrl-]
+constant: ctrl-/ '/' char-code ctrl ;
+constant: ctrl-[ '[' char-code ctrl ;
+constant: ctrl-] ']' char-code ctrl ;
 
-backspace ctrl          constant ctrl-backspace
+constant: ctrl-backspace backspace ctrl ;
 
-home ctrl               constant ctrl-home
-end ctrl                constant ctrl-end
-up ctrl                 constant ctrl-up
-down ctrl               constant ctrl-down
-left ctrl               constant ctrl-left
-right ctrl              constant ctrl-right
+constant: ctrl-home     home ctrl ;
+constant: ctrl-end      end ctrl ;
+constant: ctrl-up       up ctrl ;
+constant: ctrl-down     down ctrl ;
+constant: ctrl-left     left ctrl ;
+constant: ctrl-right    right ctrl ;
 
-kp-home ctrl            constant ctrl-kp-home
-kp-end ctrl             constant ctrl-kp-end
-kp-up ctrl              constant ctrl-kp-up
-kp-down ctrl            constant ctrl-kp-down
-kp-left ctrl            constant ctrl-kp-left
-kp-right ctrl           constant ctrl-kp-right
+constant: ctrl-kp-home  kp-home ctrl ;
+constant: ctrl-kp-end   kp-end ctrl ;
+constant: ctrl-kp-up    kp-up ctrl ;
+constant: ctrl-kp-down  kp-down ctrl ;
+constant: ctrl-kp-left  kp-left ctrl ;
+constant: ctrl-kp-right kp-right ctrl ;
 
-left alt                constant alt-left
-kp-left alt             constant alt-kp-left
-right alt               constant alt-right
-kp-right alt            constant alt-kp-right
+constant: alt-left      left alt ;
+constant: alt-kp-left   kp-left alt ;
+constant: alt-right     right alt ;
+constant: alt-kp-right  kp-right alt ;
 
-down alt                constant alt-down
-kp-down alt             constant alt-kp-down
-up alt                  constant alt-up
-kp-up alt               constant alt-kp-up
+constant: alt-down      down alt ;
+constant: alt-kp-down   kp-down alt ;
+constant: alt-up        up alt ;
+constant: alt-kp-up     kp-up alt ;
 
-0xffbe                  constant f1
-0xffbf                  constant f2
-0xffc0                  constant f3
-0xffc1                  constant f4
-0xffc2                  constant f5
-0xffc3                  constant f6
-0xffc4                  constant f7
-0xffc5                  constant f8
-0xffc6                  constant f9
-0xffc7                  constant f10
-0xffc8                  constant f11
-0xffc9                  constant f12
+constant: f1    0xffbe ;
+constant: f2    0xffbf ;
+constant: f3    0xffc0 ;
+constant: f4    0xffc1 ;
+constant: f5    0xffc2 ;
+constant: f6    0xffc3 ;
+constant: f7    0xffc4 ;
+constant: f8    0xffc5 ;
+constant: f9    0xffc6 ;
+constant: f10   0xffc7 ;
+constant: f11   0xffc8 ;
+constant: f12   0xffc9 ;
 
-f3 ctrl                 constant ctrl-f3
+constant: ctrl-f3   f3 ctrl ;
 
-f3 shift                constant shift-f3
-f11 shift               constant shift-f11
-f12 shift               constant shift-f12
+constant: shift-f3  f3 shift ;
+constant: shift-f11 f11 shift ;
+constant: shift-f12 f12 shift ;
 
-left shift              constant shift-left
-right shift             constant shift-right
-up shift                constant shift-up
-down shift              constant shift-down
-home shift              constant shift-home
-end shift               constant shift-end
+constant: shift-left    left shift ;
+constant: shift-right   right shift ;
+constant: shift-up      up shift ;
+constant: shift-down    down shift ;
+constant: shift-home    home shift ;
+constant: shift-end     end shift ;
 
-left ctrl shift         constant ctrl-shift-left
-right ctrl shift        constant ctrl-shift-right
-up ctrl shift           constant ctrl-shift-up
-down ctrl shift         constant ctrl-shift-down
-home ctrl shift         constant ctrl-shift-home
-end ctrl shift          constant ctrl-shift-end
+constant: ctrl-shift-left   left ctrl shift ;
+constant: ctrl-shift-right  right ctrl shift ;
+constant: ctrl-shift-up     up ctrl shift ;
+constant: ctrl-shift-down   down ctrl shift ;
+constant: ctrl-shift-home   home ctrl shift ;
+constant: ctrl-shift-end    end ctrl shift ;
 
-f3 ctrl shift           constant ctrl-shift-f3
+constant: ctrl-shift-f3     f3 ctrl shift ;
 
-0x0004ffb4              constant shift-kp-left  // GDK_KEY_KP_4
-0x0004ffb6              constant shift-kp-right // GDK_KEY_KP_6
-0x0004ffb8              constant shift-kp-up    // GDK_KEY_KP_8
-0x0004ffb2              constant shift-kp-down  // GDK_KEY_KP_2
-0x0004ffb7              constant shift-kp-home  // GDK_KEY_KP_7
-0x0004ffb1              constant shift-kp-end   // GDK_KEY_KP_1
+constant: shift-kp-left         0x0004ffb4 ; // GDK_KEY_KP_4
+constant: shift-kp-right        0x0004ffb6 ; // GDK_KEY_KP_6
+constant: shift-kp-up           0x0004ffb8 ; // GDK_KEY_KP_8
+constant: shift-kp-down         0x0004ffb2 ; // GDK_KEY_KP_2
+constant: shift-kp-home         0x0004ffb7 ; // GDK_KEY_KP_7
+constant: shift-kp-end          0x0004ffb1 ; // GDK_KEY_KP_1
 
-0x0006ffb4              constant ctrl-shift-kp-left  // GDK_KEY_KP_4
-0x0006ffb6              constant ctrl-shift-kp-right // GDK_KEY_KP_6
-0x0006ffb8              constant ctrl-shift-kp-up    // GDK_KEY_KP_8
-0x0006ffb2              constant ctrl-shift-kp-down  // GDK_KEY_KP_2
-0x0006ffb7              constant ctrl-shift-kp-home  // GDK_KEY_KP_7
-0x0006ffb1              constant ctrl-shift-kp-end   // GDK_KEY_KP_1
+constant: ctrl-shift-kp-left    0x0006ffb4 ; // GDK_KEY_KP_4
+constant: ctrl-shift-kp-right   0x0006ffb6 ; // GDK_KEY_KP_6
+constant: ctrl-shift-kp-up      0x0006ffb8 ; // GDK_KEY_KP_8
+constant: ctrl-shift-kp-down    0x0006ffb2 ; // GDK_KEY_KP_2
+constant: ctrl-shift-kp-home    0x0006ffb7 ; // GDK_KEY_KP_7
+constant: ctrl-shift-kp-end     0x0006ffb1 ; // GDK_KEY_KP_1
 
-0x20 ctrl               constant ctrl-space
+constant: ctrl-space 0x20 ctrl ;
 
-'b' char-code alt       constant alt-b
-'c' char-code alt       constant alt-c
-'i' char-code alt       constant alt-i
-'l' char-code alt       constant alt-l
-'r' char-code alt       constant alt-r
-'v' char-code alt       constant alt-v
-'w' char-code alt       constant alt-w
-'x' char-code alt       constant alt-x
+constant: alt-b 'b' char-code alt ;
+constant: alt-c 'c' char-code alt ;
+constant: alt-i 'i' char-code alt ;
+constant: alt-l 'l' char-code alt ;
+constant: alt-r 'r' char-code alt ;
+constant: alt-v 'v' char-code alt ;
+constant: alt-w 'w' char-code alt ;
+constant: alt-x 'x' char-code alt ;
 
-'.' char-code alt       constant alt-.
-';' char-code alt       constant alt-;
-'/' char-code alt       constant alt-/
+constant: alt-. '.' char-code alt ;
+constant: alt-; ';' char-code alt ;
+constant: alt-/ '/' char-code alt ;
 
-f3 alt                  constant alt-f3
+constant: alt-f3 f3 alt ;
 
-'a' char-code ctrl      constant ctrl-a
-'b' char-code ctrl      constant ctrl-b
-'c' char-code ctrl      constant ctrl-c
-'d' char-code ctrl      constant ctrl-d
-'e' char-code ctrl      constant ctrl-e
-'f' char-code ctrl      constant ctrl-f
-'g' char-code ctrl      constant ctrl-g
-'h' char-code ctrl      constant ctrl-h
-'i' char-code ctrl      constant ctrl-i
-'j' char-code ctrl      constant ctrl-j
-'k' char-code ctrl      constant ctrl-k
-'l' char-code ctrl      constant ctrl-l
-'m' char-code ctrl      constant ctrl-m
-'n' char-code ctrl      constant ctrl-n
-'o' char-code ctrl      constant ctrl-o
-'p' char-code ctrl      constant ctrl-p
-'q' char-code ctrl      constant ctrl-q
-'r' char-code ctrl      constant ctrl-r
-'s' char-code ctrl      constant ctrl-s
-'t' char-code ctrl      constant ctrl-t
-'u' char-code ctrl      constant ctrl-u
-'v' char-code ctrl      constant ctrl-v
-'w' char-code ctrl      constant ctrl-w
-'x' char-code ctrl      constant ctrl-x
-'y' char-code ctrl      constant ctrl-y
-'z' char-code ctrl      constant ctrl-z
+constant: ctrl-a 'a' char-code ctrl ;
+constant: ctrl-b 'b' char-code ctrl ;
+constant: ctrl-c 'c' char-code ctrl ;
+constant: ctrl-d 'd' char-code ctrl ;
+constant: ctrl-e 'e' char-code ctrl ;
+constant: ctrl-f 'f' char-code ctrl ;
+constant: ctrl-g 'g' char-code ctrl ;
+constant: ctrl-h 'h' char-code ctrl ;
+constant: ctrl-i 'i' char-code ctrl ;
+constant: ctrl-j 'j' char-code ctrl ;
+constant: ctrl-k 'k' char-code ctrl ;
+constant: ctrl-l 'l' char-code ctrl ;
+constant: ctrl-m 'm' char-code ctrl ;
+constant: ctrl-n 'n' char-code ctrl ;
+constant: ctrl-o 'o' char-code ctrl ;
+constant: ctrl-p 'p' char-code ctrl ;
+constant: ctrl-q 'q' char-code ctrl ;
+constant: ctrl-r 'r' char-code ctrl ;
+constant: ctrl-s 's' char-code ctrl ;
+constant: ctrl-t 't' char-code ctrl ;
+constant: ctrl-u 'u' char-code ctrl ;
+constant: ctrl-v 'v' char-code ctrl ;
+constant: ctrl-w 'w' char-code ctrl ;
+constant: ctrl-x 'x' char-code ctrl ;
+constant: ctrl-y 'y' char-code ctrl ;
+constant: ctrl-z 'z' char-code ctrl ;
 
-'d' char-code ctrl shift    constant ctrl-shift-d
-'F' char-code ctrl shift    constant ctrl-shift-f
-'K' char-code ctrl shift    constant ctrl-shift-k
-'O' char-code ctrl shift    constant ctrl-shift-o
+constant: ctrl-shift-d 'd' char-code ctrl shift ;
+constant: ctrl-shift-f 'F' char-code ctrl shift ;
+constant: ctrl-shift-k 'K' char-code ctrl shift ;
+constant: ctrl-shift-o 'O' char-code ctrl shift ;
 
 : key-to-printable-char ( key )         // fixnum -> char/nil
     local result
