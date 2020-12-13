@@ -20,179 +20,179 @@ feral-config:winui? assert
 
 private
 
-0x01 constant VK_LBUTTON
+constant: VK_LBUTTON    0x01 ;
 
-0x08 constant VK_BACK
-0x09 constant VK_TAB
-0x0d constant VK_RETURN
-0x1b constant VK_ESCAPE
-0x20 constant VK_SPACE
-0x21 constant VK_PRIOR
-0x22 constant VK_NEXT
-0x23 constant VK_END
-0x24 constant VK_HOME
-0x25 constant VK_LEFT
-0x26 constant VK_UP
-0x27 constant VK_RIGHT
-0x28 constant VK_DOWN
+constant: VK_BACK       0x08 ;
+constant: VK_TAB        0x09 ;
+constant: VK_RETURN     0x0d ;
+constant: VK_ESCAPE     0x1b ;
+constant: VK_SPACE      0x20 ;
+constant: VK_PRIOR      0x21 ;
+constant: VK_NEXT       0x22 ;
+constant: VK_END        0x23 ;
+constant: VK_HOME       0x24 ;
+constant: VK_LEFT       0x25 ;
+constant: VK_UP         0x26 ;
+constant: VK_RIGHT      0x27 ;
+constant: VK_DOWN       0x28 ;
 
-0x2e constant VK_DELETE
+constant: VK_DELETE     0x2e ;
 
-0x61 constant VK_NUMPAD1
-0x62 constant VK_NUMPAD2
-0x63 constant VK_NUMPAD3
-0x64 constant VK_NUMPAD4
-0x65 constant VK_NUMPAD5
-0x66 constant VK_NUMPAD6
-0x67 constant VK_NUMPAD7
-0x68 constant VK_NUMPAD8
-0x69 constant VK_NUMPAD9
+constant: VK_NUMPAD1    0x61 ;
+constant: VK_NUMPAD2    0x62 ;
+constant: VK_NUMPAD3    0x63 ;
+constant: VK_NUMPAD4    0x64 ;
+constant: VK_NUMPAD5    0x65 ;
+constant: VK_NUMPAD6    0x66 ;
+constant: VK_NUMPAD7    0x67 ;
+constant: VK_NUMPAD8    0x68 ;
+constant: VK_NUMPAD9    0x69 ;
 
-0x70 constant VK_F1
-0x71 constant VK_F2
-0x72 constant VK_F3
-0x73 constant VK_F4
-0x74 constant VK_F5
-0x75 constant VK_F6
-0x76 constant VK_F7
-0x77 constant VK_F8
-0x78 constant VK_F9
-0x79 constant VK_F10
-0x7a constant VK_F11
-0x7b constant VK_F12
+constant: VK_F1         0x70 ;
+constant: VK_F2         0x71 ;
+constant: VK_F3         0x72 ;
+constant: VK_F4         0x73 ;
+constant: VK_F5         0x74 ;
+constant: VK_F6         0x75 ;
+constant: VK_F7         0x76 ;
+constant: VK_F8         0x77 ;
+constant: VK_F9         0x78 ;
+constant: VK_F10        0x79 ;
+constant: VK_F11        0x7a ;
+constant: VK_F12        0x7b ;
 
-0xba constant VK_OEM_1                  // ';' ':'
-0xbe constant VK_OEM_PERIOD
-0xbf constant VK_OEM_2                  // '/' '?'
-0xdb constant VK_OEM_4                  // '[' '{'
-0xdd constant VK_OEM_6                  // ']' '}'
+constant: VK_OEM_1      0xba ;          // ';' ':'
+constant: VK_OEM_PERIOD 0xbe ;
+constant: VK_OEM_2      0xbf ;          // '/' '?'
+constant: VK_OEM_4      0xdb ;          // '[' '{'
+constant: VK_OEM_6      0xdd ;          // ']' '}'
 
 public
 
-'A' char-code ctrl      constant ctrl-a
-'B' char-code ctrl      constant ctrl-b
-'C' char-code ctrl      constant ctrl-c
-'D' char-code ctrl      constant ctrl-d
-'E' char-code ctrl      constant ctrl-e
-'F' char-code ctrl      constant ctrl-f
-'G' char-code ctrl      constant ctrl-g
-'H' char-code ctrl      constant ctrl-h
-'I' char-code ctrl      constant ctrl-i
-'J' char-code ctrl      constant ctrl-j
-'K' char-code ctrl      constant ctrl-k
-'L' char-code ctrl      constant ctrl-l
-'M' char-code ctrl      constant ctrl-m
-'N' char-code ctrl      constant ctrl-n
-'O' char-code ctrl      constant ctrl-o
-'P' char-code ctrl      constant ctrl-p
-'Q' char-code ctrl      constant ctrl-q
-'R' char-code ctrl      constant ctrl-r
-'S' char-code ctrl      constant ctrl-s
-'T' char-code ctrl      constant ctrl-t
-'U' char-code ctrl      constant ctrl-u
-'V' char-code ctrl      constant ctrl-v
-'W' char-code ctrl      constant ctrl-w
-'X' char-code ctrl      constant ctrl-x
-'Y' char-code ctrl      constant ctrl-y
-'Z' char-code ctrl      constant ctrl-z
+constant: ctrl-a 'A' char-code ctrl ;
+constant: ctrl-b 'B' char-code ctrl ;
+constant: ctrl-c 'C' char-code ctrl ;
+constant: ctrl-d 'D' char-code ctrl ;
+constant: ctrl-e 'E' char-code ctrl ;
+constant: ctrl-f 'F' char-code ctrl ;
+constant: ctrl-g 'G' char-code ctrl ;
+constant: ctrl-h 'H' char-code ctrl ;
+constant: ctrl-i 'I' char-code ctrl ;
+constant: ctrl-j 'J' char-code ctrl ;
+constant: ctrl-k 'K' char-code ctrl ;
+constant: ctrl-l 'L' char-code ctrl ;
+constant: ctrl-m 'M' char-code ctrl ;
+constant: ctrl-n 'N' char-code ctrl ;
+constant: ctrl-o 'O' char-code ctrl ;
+constant: ctrl-p 'P' char-code ctrl ;
+constant: ctrl-q 'Q' char-code ctrl ;
+constant: ctrl-r 'R' char-code ctrl ;
+constant: ctrl-s 'S' char-code ctrl ;
+constant: ctrl-t 'T' char-code ctrl ;
+constant: ctrl-u 'U' char-code ctrl ;
+constant: ctrl-v 'V' char-code ctrl ;
+constant: ctrl-w 'W' char-code ctrl ;
+constant: ctrl-x 'X' char-code ctrl ;
+constant: ctrl-y 'Y' char-code ctrl ;
+constant: ctrl-z 'Z' char-code ctrl ;
 
-VK_LBUTTON              constant double-mouse-1
-VK_BACK                 constant backspace
-VK_TAB                  constant tab
-VK_RETURN               constant enter
-VK_ESCAPE               constant escape
-VK_DELETE               constant delete
-VK_HOME                 constant home
-VK_END                  constant end
-VK_LEFT                 constant left
-VK_RIGHT                constant right
-VK_UP                   constant up
-VK_DOWN                 constant down
-VK_PRIOR                constant pageup
-VK_NEXT                 constant pagedown
-VK_OEM_2 ctrl           constant ctrl-/
-VK_OEM_4 ctrl           constant ctrl-[
-VK_OEM_6 ctrl           constant ctrl-]
-VK_BACK ctrl            constant ctrl-backspace
-VK_DELETE ctrl          constant ctrl-delete
-VK_HOME ctrl            constant ctrl-home
-VK_END ctrl             constant ctrl-end
-VK_UP ctrl              constant ctrl-up
-VK_DOWN ctrl            constant ctrl-down
-VK_LEFT alt             constant alt-left
-VK_RIGHT alt            constant alt-right
-VK_LEFT ctrl            constant ctrl-left
-VK_RIGHT ctrl           constant ctrl-right
-VK_F3                   constant f3
-VK_F3 shift             constant shift-f3
-VK_F3 ctrl              constant ctrl-f3
-VK_F6                   constant f6
-VK_F11                  constant f11
-VK_F11 shift            constant shift-f11
-VK_F12                  constant f12
-VK_F12 shift            constant shift-f12
-VK_LEFT shift           constant shift-left
-VK_RIGHT shift          constant shift-right
-VK_UP shift             constant shift-up
-VK_DOWN shift           constant shift-down
-VK_HOME shift           constant shift-home
-VK_END shift            constant shift-end
+constant: double-mouse-1    VK_LBUTTON ;
+constant: backspace         VK_BACK ;
+constant: tab               VK_TAB ;
+constant: enter             VK_RETURN ;
+constant: escape            VK_ESCAPE ;
+constant: delete            VK_DELETE ;
+constant: home              VK_HOME ;
+constant: end               VK_END ;
+constant: left              VK_LEFT ;
+constant: right             VK_RIGHT ;
+constant: up                VK_UP ;
+constant: down              VK_DOWN ;
+constant: pageup            VK_PRIOR ;
+constant: pagedown          VK_NEXT ;
+constant: ctrl-/            VK_OEM_2 ctrl ;
+constant: ctrl-[            VK_OEM_4 ctrl ;
+constant: ctrl-]            VK_OEM_6 ctrl ;
+constant: ctrl-backspace    VK_BACK ctrl ;
+constant: ctrl-delete       VK_DELETE ctrl ;
+constant: ctrl-home         VK_HOME ctrl ;
+constant: ctrl-end          VK_END ctrl ;
+constant: ctrl-up           VK_UP ctrl ;
+constant: ctrl-down         VK_DOWN ctrl ;
+constant: alt-left          VK_LEFT alt ;
+constant: alt-right         VK_RIGHT alt ;
+constant: ctrl-left         VK_LEFT ctrl ;
+constant: ctrl-right        VK_RIGHT ctrl ;
+constant: f3                VK_F3 ;
+constant: shift-f3          VK_F3 shift ;
+constant: ctrl-f3           VK_F3 ctrl ;
+constant: f6                VK_F6 ;
+constant: f11               VK_F11 ;
+constant: shift-f11         VK_F11 shift ;
+constant: f12               VK_F12 ;
+constant: shift-f12         VK_F12 shift ;
+constant: shift-left        VK_LEFT shift ;
+constant: shift-right       VK_RIGHT shift ;
+constant: shift-up          VK_UP shift ;
+constant: shift-down        VK_DOWN shift ;
+constant: shift-home        VK_HOME shift ;
+constant: shift-end         VK_END shift ;
 
-VK_NUMPAD7              constant kp-home
-VK_NUMPAD1              constant kp-end
-VK_NUMPAD4              constant kp-left
-VK_NUMPAD6              constant kp-right
-VK_NUMPAD8              constant kp-up
-VK_NUMPAD2              constant kp-down
-VK_NUMPAD9              constant kp-pageup
-VK_NUMPAD3              constant kp-pagedown
+constant: kp-home           VK_NUMPAD7 ;
+constant: kp-end            VK_NUMPAD1 ;
+constant: kp-left           VK_NUMPAD4 ;
+constant: kp-right          VK_NUMPAD6 ;
+constant: kp-up             VK_NUMPAD8 ;
+constant: kp-down           VK_NUMPAD2 ;
+constant: kp-pageup         VK_NUMPAD9 ;
+constant: kp-pagedown       VK_NUMPAD3 ;
 
-VK_NUMPAD4 ctrl         constant ctrl-kp-left
-VK_NUMPAD6 ctrl         constant ctrl-kp-right
-VK_NUMPAD7 ctrl         constant ctrl-kp-home
-VK_NUMPAD1 ctrl         constant ctrl-kp-end
+constant: ctrl-kp-left      VK_NUMPAD4 ctrl ;
+constant: ctrl-kp-right     VK_NUMPAD6 ctrl ;
+constant: ctrl-kp-home      VK_NUMPAD7 ctrl ;
+constant: ctrl-kp-end       VK_NUMPAD1 ctrl ;
 
-VK_NUMPAD4 shift        constant shift-kp-left
-VK_NUMPAD6 shift        constant shift-kp-right
-VK_NUMPAD8 shift        constant shift-kp-up
-VK_NUMPAD2 shift        constant shift-kp-down
-VK_NUMPAD7 shift        constant shift-kp-home
-VK_NUMPAD1 shift        constant shift-kp-end
+constant: shift-kp-left     VK_NUMPAD4 shift ;
+constant: shift-kp-right    VK_NUMPAD6 shift ;
+constant: shift-kp-up       VK_NUMPAD8 shift ;
+constant: shift-kp-down     VK_NUMPAD2 shift ;
+constant: shift-kp-home     VK_NUMPAD7 shift ;
+constant: shift-kp-end      VK_NUMPAD1 shift ;
 
-VK_NUMPAD4 ctrl shift   constant ctrl-shift-kp-left
-VK_NUMPAD6 ctrl shift   constant ctrl-shift-kp-right
-VK_NUMPAD8 ctrl shift   constant ctrl-shift-kp-up
-VK_NUMPAD2 ctrl shift   constant ctrl-shift-kp-down
-VK_NUMPAD7 ctrl shift   constant ctrl-shift-kp-home
-VK_NUMPAD1 ctrl shift   constant ctrl-shift-kp-end
+constant: ctrl-shift-kp-left    VK_NUMPAD4 ctrl shift ;
+constant: ctrl-shift-kp-right   VK_NUMPAD6 ctrl shift ;
+constant: ctrl-shift-kp-up      VK_NUMPAD8 ctrl shift ;
+constant: ctrl-shift-kp-down    VK_NUMPAD2 ctrl shift ;
+constant: ctrl-shift-kp-home    VK_NUMPAD7 ctrl shift ;
+constant: ctrl-shift-kp-end     VK_NUMPAD1 ctrl shift ;
 
-VK_DELETE ctrl shift    constant ctrl-shift-delete
-VK_F3 ctrl shift        constant ctrl-shift-f3
+constant: ctrl-shift-delete     VK_DELETE ctrl shift ;
+constant: ctrl-shift-f3         VK_F3 ctrl shift ;
 
-VK_SPACE ctrl           constant ctrl-space
+constant: ctrl-space            VK_SPACE ctrl ;
 
-'B' char-code alt       constant alt-b
-'C' char-code alt       constant alt-c
-'I' char-code alt       constant alt-i
-'L' char-code alt       constant alt-l
-'R' char-code alt       constant alt-r
-'V' char-code alt       constant alt-v
-'W' char-code alt       constant alt-w
-'X' char-code alt       constant alt-x
+constant: alt-b 'B' char-code alt ;
+constant: alt-c 'C' char-code alt ;
+constant: alt-i 'I' char-code alt ;
+constant: alt-l 'L' char-code alt ;
+constant: alt-r 'R' char-code alt ;
+constant: alt-v 'V' char-code alt ;
+constant: alt-w 'W' char-code alt ;
+constant: alt-x 'X' char-code alt ;
 
-VK_OEM_PERIOD alt       constant alt-.
-VK_DOWN alt             constant alt-down
-VK_UP alt               constant alt-up
-VK_OEM_1 alt            constant alt-;
-VK_OEM_2 alt            constant alt-/
+constant: alt-.     VK_OEM_PERIOD alt ;
+constant: alt-down  VK_DOWN alt ;
+constant: alt-up    VK_UP alt ;
+constant: alt-;     VK_OEM_1 alt ;
+constant: alt-/     VK_OEM_2 alt ;
 
-VK_F3 alt               constant alt-f3
+constant: alt-f3    VK_F3 alt ;
 
-'D' char-code ctrl shift    constant ctrl-shift-d
-'F' char-code ctrl shift    constant ctrl-shift-f
-'K' char-code ctrl shift    constant ctrl-shift-k
-'L' char-code ctrl shift    constant ctrl-shift-l
-'O' char-code ctrl shift    constant ctrl-shift-o
+constant: ctrl-shift-d 'D' char-code ctrl shift ;
+constant: ctrl-shift-f 'F' char-code ctrl shift ;
+constant: ctrl-shift-k 'K' char-code ctrl shift ;
+constant: ctrl-shift-l 'L' char-code ctrl shift ;
+constant: ctrl-shift-o 'O' char-code ctrl shift ;
 
-VK_LEFT ctrl shift          constant ctrl-shift-left
-VK_RIGHT ctrl shift         constant ctrl-shift-right
+constant: ctrl-shift-left   VK_LEFT  ctrl shift ;
+constant: ctrl-shift-right  VK_RIGHT ctrl shift ;
