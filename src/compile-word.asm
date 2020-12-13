@@ -543,8 +543,8 @@ code add_forward_jump_address, 'add-forward-jump-address' ; tagged-address -> vo
         next
 endcode
 
-; ### inline-primitive
-code inline_primitive, 'inline-primitive' ; symbol -> void
+; ### inline-call-symbol
+code inline_call_symbol, 'inline-call-symbol' ; symbol -> void
         _dup
         _ symbol_code_address
         _swap
@@ -605,7 +605,7 @@ code compile_?exit_locals, 'compile-?exit-locals' ;  node -> void
 
         ; -> node
         _ node_operator
-        _ inline_primitive              ; -> empty
+        _ inline_call_symbol            ; -> void
 
         next
 endcode
@@ -653,7 +653,7 @@ code compile_?return_no_locals, 'compile-?return-no-locals' ; node -> void
 
         _swap
         _ node_operator
-        _ inline_primitive              ; -> call-address
+        _ inline_call_symbol            ; -> call-address
 
         _tick call_quotation
         _ symbol_code_address           ; -> call-address target-address
@@ -699,7 +699,7 @@ code compile_?return_locals, 'compile-?return-locals' ; node -> void
 
         _swap
         _ node_operator
-        _ inline_primitive              ; -> patch1-address
+        _ inline_call_symbol            ; -> patch1-address
 
         _tick call_quotation
         _ symbol_code_address           ; -> patch1-address call-target-address
@@ -707,22 +707,6 @@ code compile_?return_locals, 'compile-?return-locals' ; node -> void
         ; -> patch1-address call-target-address
         _ fix_call                      ; -> empty
 
-        next
-endcode
-
-; ### compile-primitive
-code compile_primitive, 'compile-primitive' ; symbol -> void
-        _dup
-%ifdef DEBUG
-        _ symbol_always_inline?
-%else
-        _ symbol_inline?
-%endif
-        _tagged_if .1
-        _ inline_primitive
-        _else .1
-        _ compile_call_symbol
-        _then .1
         next
 endcode
 
@@ -761,9 +745,13 @@ endcode
 ; ### inline-or-compile-call
 code inline_or_compile_call, 'inline-or-compile-call' ; word -> void
         _dup
-        _ primitive?
+%ifdef DEBUG
+        _ symbol_always_inline?
+%else
+        _ symbol_inline?
+%endif
         _tagged_if .1
-        _ compile_primitive
+        _ inline_call_symbol
         _else .1
         _ compile_call_symbol
         _then .1

@@ -371,13 +371,13 @@ public
 
 : compile-symbol-value ( node )         // node -> void
 
-    pending length 0? [ node node-operator compile-primitive ] ?return
+    pending length 0? [ node node-operator inline-or-compile-call ] ?return
     pending-last-value !> x
     x wrapper? [ x wrapped x! ] when
 
     x symbol? nil? [
         flush-pending
-        node node-operator compile-primitive
+        node node-operator inline-or-compile-call
     ] ?return
 
     // x is a symbol
@@ -498,7 +498,7 @@ public
 
     node node-operator :> op
 
-    pending length 0? [ op compile-primitive ] ?return
+    pending length 0? [ op inline-or-compile-call ] ?return
 
     pending-last-value :> n
     pending-remove-last
@@ -561,7 +561,7 @@ public
 
     op ' local-get assert-eq
 
-    pending length 0? [ op compile-primitive ] ?return
+    pending length 0? [ op inline-or-compile-call ] ?return
 
     pending-last-value :> n
     pending-remove-last
