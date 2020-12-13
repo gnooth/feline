@@ -20,9 +20,9 @@ private
 
 global entries
 
-40 constant directory-column
+constant: directory-column 40 ;
 
-directories:feral-directory "recent-files" path-append constant recent-files-filename
+constant: recent-files-filename directories:feral-directory "recent-files" path-append ;
 
 tuple: entry
     filename
