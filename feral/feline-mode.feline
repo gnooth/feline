@@ -26,9 +26,9 @@ global instance
 : identifier-char?                      // char -> ?
     char? [ '\s' neq? ] [ nil ] if* ;
 
-"// " constant comment-start
+constant: comment-start "// " ;
 
-comment-start length constant comment-start-length
+constant: comment-start-length comment-start length ;
 
 : toggle-line-comment
     dot-line-text :> text

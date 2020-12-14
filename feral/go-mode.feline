@@ -18,7 +18,7 @@ in: go-mode
 
 private
 
-{
+constant: syntax-words {
     "break"
     "case"
     "chan"
@@ -44,9 +44,9 @@ private
     "switch"
     "type"
     "var"
-} constant syntax-words
+} ;
 
-{
+constant: special-types {
     "bool"
     "string"
     "int" "int8" "int16" "int32" "int64"
@@ -55,7 +55,7 @@ private
     "rune"
     "float32" "float64"
     "complex64" "complex128"
-} constant special-types
+} ;
 
 global instance
 

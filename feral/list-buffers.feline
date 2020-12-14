@@ -18,11 +18,11 @@ in: list-buffers
 
 private
 
-"List Buffers" constant name
+constant: name "List Buffers" ;
 
-4 constant buffer-name-column
+constant: buffer-name-column 4 ;
 
-40 constant buffer-directory-column
+constant: buffer-directory-column 40 ;
 
 : list-buffers-select
     :buffer dot-line line-get-property :> selected-buffer

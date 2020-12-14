@@ -18,7 +18,8 @@ in: swift-mode
 
 private
 
-{
+// swift-mode/swift-mode-font-lock.el
+constant: syntax-words {
     // declarations
     "associatedtype" "class" "deinit" "enum" "extension" "fileprivate" "func"
     "import" "init" "inout" "internal" "let" "open" "operator" "private"
@@ -38,7 +39,7 @@ private
     "lowerThan" "mutating" "none" "nonmutating" "optional" "override" "postfix"
     "precedence" "precedencegroup" "prefix" "required" "right" "set" "unowned"
     "weak" "willSet"
-} constant syntax-words // swift-mode/swift-mode-font-lock.el
+} ;
 
 global instance
 

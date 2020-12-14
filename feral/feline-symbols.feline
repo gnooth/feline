@@ -123,7 +123,7 @@ global in-vocab
     sourcefile file-lines [ feline-symbols feline-process-line ] each-index
     nil in-vocab! ;
 
-{
+constant: asm-files {
     "feline.asm"
     "feline_home.asm"
     "externs.asm"
@@ -204,9 +204,9 @@ global in-vocab
     "winui.asm"
     "wrapper.asm"
     "xalloc.asm"
-} constant asm-files
+} ;
 
-{
+constant: feline-files {
     "accept.feline"
     "backtrace.feline"
     "boot.feline"
@@ -233,9 +233,9 @@ global in-vocab
     "tokenize.feline"
     "tuple.feline"
     "unit-test.feline"
-} constant feline-files
+} ;
 
-{
+constant: feral-files {
     "accept-string.feline"
     "ansi-color.feline"
     "asm-mode.feline"
@@ -301,7 +301,7 @@ global in-vocab
     "winui-key.feline"
     "winui-keymaps.feline"
     "winui-minibuffer.feline"
-} constant feral-files
+} ;
 
 : scan
     feral-config:get-feline-repository feline-home or :> repo

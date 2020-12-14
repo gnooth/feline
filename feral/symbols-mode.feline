@@ -20,7 +20,7 @@ private
 
 global instance
 
-": " constant line-number-suffix
+constant: line-number-suffix ": " ;
 
 : symbols-mode-format-line ( s ) // string -> segments
 

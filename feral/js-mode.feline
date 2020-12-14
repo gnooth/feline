@@ -18,7 +18,8 @@ in: js-mode
 
 private
 
-{
+// ECMAScript 6 (2015)
+constant: syntax-words {
     "break"
     "catch"
     "case"
@@ -53,7 +54,7 @@ private
     "while"
     "with"
     "yield"
-} constant syntax-words                 // ECMAScript 6 (2015)
+} ;
 
 global instance
 

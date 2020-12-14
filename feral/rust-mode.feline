@@ -18,7 +18,7 @@ in: rust-mode
 
 private
 
-{
+constant: syntax-words {
     "as"
     "async"
     "await"
@@ -56,9 +56,10 @@ private
     "use"
     "where"
     "while"
-} constant syntax-words
+} ;
 
-{
+// rust-mode.el
+constant: special-types {
     "u8"    "i8"
     "u16"   "i16"
     "u32"   "i32"
@@ -69,7 +70,7 @@ private
     "isize" "usize"
     "bool"
     "str"   "char"
-} constant special-types // rust-mode.el
+} ;
 
 global instance
 

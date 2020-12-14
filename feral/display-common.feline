@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,10 +18,10 @@ in: editor
 
 feral-config:winui? feral-config:gtkui? or assert
 
-192 192 192 make-colorref constant fg-default
-  0   0   0 make-colorref constant bg-default
- 64  64  64 make-colorref constant bg-selected
- 32  32  32 make-colorref constant bg-current-line
+constant: fg-default        192 192 192 make-colorref ;
+constant: bg-default          0   0   0 make-colorref ;
+constant: bg-selected        64  64  64 make-colorref ;
+constant: bg-current-line    32  32  32 make-colorref ;
 
 : bg-set-default bg-default textview-set-bg-color ;
 

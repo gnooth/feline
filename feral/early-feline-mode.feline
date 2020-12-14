@@ -16,7 +16,7 @@
 using: feline ;
 in: feline-mode
 
-{
+constant: syntax-words {
     "!>"
     "'"
     "("
@@ -54,9 +54,9 @@ in: feline-mode
     "vector{"
     "{"
     "}"
-} constant syntax-words
+} ;
 
-{
+constant: defining-words {
     ":"
     "constant"
     "constant:"
@@ -71,9 +71,9 @@ in: feline-mode
     "test:"
     "tuple:"
     "var"
-} constant defining-words
+} ;
 
-{
+constant: combinators {
     "&&"
     "2dip"
     "2tri"
@@ -119,4 +119,4 @@ in: feline-mode
     "while"
     "with-dynamic-scope"
     "||"
-} constant combinators
+} ;

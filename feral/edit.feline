@@ -250,7 +250,7 @@ in: editor
     ] with-compound-undo ;
 
 // FIXME should be configurable
-41 constant comment-column
+constant: comment-column 41 ;
 
 : reindent-comment                      // void -> void
 

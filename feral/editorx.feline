@@ -18,11 +18,11 @@ in: feral-config
 
 empty
 
-nil                     constant standalone?
+constant: standalone? nil ;
 
-win64? have-winui? and  constant winui?
-linux? have-gtkui? and  constant gtkui?
+constant: winui? win64? have-winui? and ;
+constant: gtkui? linux? have-gtkui? and ;
 
-winui? gtkui? or not    constant termui?
+constant: termui? winui? gtkui? or not ;
 
 feline-home "feral" path-append "feral-main.feline" path-append load
