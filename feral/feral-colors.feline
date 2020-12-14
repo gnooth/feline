@@ -36,46 +36,46 @@ in: feral-colors
     [ colorref-blue ]
     tri ;
 
-192 192 192 make-colorref constant color-text
-128 128   0 make-colorref constant color-comment
+constant: color-text            192 192 192 make-colorref ;
+constant: color-comment         128 128   0 make-colorref ;
 
-160 160   0 make-colorref constant color-header
+constant: color-header          160 160   0 make-colorref ;
 
-100 149 237 make-colorref constant color-syntax // cornflower blue
-100 149 237 make-colorref constant color-combinator
+constant: color-syntax          100 149 237 make-colorref ; // cornflower blue
+constant: color-combinator      100 149 237 make-colorref ;
 
-255 165   0 make-colorref constant color-name
-  0 170   0 make-colorref constant color-string
-255  69   0 make-colorref constant color-preprocessor
-210 105  30 make-colorref constant color-keyword
-153  77   0 make-colorref constant color-type
+constant: color-name            255 165   0 make-colorref ;
+constant: color-string            0 170   0 make-colorref ;
+constant: color-preprocessor    255  69   0 make-colorref ;
+constant: color-keyword         210 105  30 make-colorref ;
+constant: color-type            153  77   0 make-colorref ;
 
-128 128   0 make-colorref constant color-linenumber
- 77 166 255 make-colorref constant color-filename
+constant: color-linenumber      128 128   0 make-colorref ;
+constant: color-filename         77 166 255 make-colorref ;
 
-  0 153   0 make-colorref constant color-insertion
-153   0   0 make-colorref constant color-deletion
+constant: color-insertion         0 153   0 make-colorref ;
+constant: color-deletion        153   0   0 make-colorref ;
 
 #else
 
 using: ansi-color feline accessors ;
 in: feral-colors
 
-192 192 192 rgb-foreground-prefix constant color-text
-128 128   0 rgb-foreground-prefix constant color-comment
+constant: color-text            192 192 192 rgb-foreground-prefix ;
+constant: color-comment         128 128   0 rgb-foreground-prefix ;
 
-  0 255 255 rgb-foreground-prefix constant color-syntax
-255 165   0 rgb-foreground-prefix constant color-name
-  0 170   0 rgb-foreground-prefix constant color-string
-  0 153 153 rgb-foreground-prefix constant color-combinator
-255  69   0 rgb-foreground-prefix constant color-preprocessor
-210 105  30 rgb-foreground-prefix constant color-keyword
-153  77   0 rgb-foreground-prefix constant color-type
+constant: color-syntax            0 255 255 rgb-foreground-prefix ;
+constant: color-name            255 165   0 rgb-foreground-prefix ;
+constant: color-string            0 170   0 rgb-foreground-prefix ;
+constant: color-combinator        0 153 153 rgb-foreground-prefix ;
+constant: color-preprocessor    255  69   0 rgb-foreground-prefix ;
+constant: color-keyword         210 105  30 rgb-foreground-prefix ;
+constant: color-type            153  77   0 rgb-foreground-prefix ;
 
-128 128   0 rgb-foreground-prefix constant color-linenumber
- 77 166 255 rgb-foreground-prefix constant color-filename
+constant: color-linenumber      128 128   0 rgb-foreground-prefix ;
+constant: color-filename         77 166 255 rgb-foreground-prefix ;
 
-  0 153   0 rgb-foreground-prefix constant color-insertion
-153   0   0 rgb-foreground-prefix constant color-deletion
+constant: color-insertion         0 153   0 rgb-foreground-prefix ;
+constant: color-deletion        153   0   0 rgb-foreground-prefix ;
 
 #endif

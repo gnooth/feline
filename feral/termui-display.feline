@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,14 +25,14 @@ feral-config:winui? assert-false
 
 use: ansi-color
 
-192 192 192 rgb-foreground-prefix constant fg-default
-  0   0   0 rgb-background-prefix constant bg-default
- 64  64  64 rgb-background-prefix constant bg-selected
+constant: fg-default  192 192 192 rgb-foreground-prefix ;
+constant: bg-default    0   0   0 rgb-background-prefix ;
+constant: bg-selected  64  64  64 rgb-background-prefix ;
 
 : normal esc[ "m" write-string-escaped ;
 
-  0   0   0 rgb-foreground-prefix constant fg-mode-line
-192 192 192 rgb-background-prefix constant bg-mode-line
+constant: fg-mode-line   0   0   0 rgb-foreground-prefix ;
+constant: bg-mode-line 192 192 192 rgb-background-prefix ;
 
 use: mini
 
