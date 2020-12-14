@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,106 +20,106 @@ feral-config:termui? assert
 
 public
 
-0x01 code-char          constant ctrl-a
-0x02 code-char          constant ctrl-b
-0x03 code-char          constant ctrl-c
-0x04 code-char          constant ctrl-d
-0x05 code-char          constant ctrl-e
-0x06 code-char          constant ctrl-f
-0x07 code-char          constant ctrl-g
-0x08 code-char          constant ctrl-h
-0x09 code-char          constant ctrl-i
-0x0a code-char          constant ctrl-j
-0x0b code-char          constant ctrl-k
-0x0c code-char          constant ctrl-l
-0x0d code-char          constant ctrl-m
-0x0e code-char          constant ctrl-n
-0x0f code-char          constant ctrl-o
-0x10 code-char          constant ctrl-p
-0x11 code-char          constant ctrl-q
-0x12 code-char          constant ctrl-r
-0x13 code-char          constant ctrl-s
-0x14 code-char          constant ctrl-t
-0x15 code-char          constant ctrl-u
-0x16 code-char          constant ctrl-v
-0x17 code-char          constant ctrl-w
-0x18 code-char          constant ctrl-x
-0x19 code-char          constant ctrl-y
-0x1a code-char          constant ctrl-z
+constant: ctrl-a 0x01 code-char ;
+constant: ctrl-b 0x02 code-char ;
+constant: ctrl-c 0x03 code-char ;
+constant: ctrl-d 0x04 code-char ;
+constant: ctrl-e 0x05 code-char ;
+constant: ctrl-f 0x06 code-char ;
+constant: ctrl-g 0x07 code-char ;
+constant: ctrl-h 0x08 code-char ;
+constant: ctrl-i 0x09 code-char ;
+constant: ctrl-j 0x0a code-char ;
+constant: ctrl-k 0x0b code-char ;
+constant: ctrl-l 0x0c code-char ;
+constant: ctrl-m 0x0d code-char ;
+constant: ctrl-n 0x0e code-char ;
+constant: ctrl-o 0x0f code-char ;
+constant: ctrl-p 0x10 code-char ;
+constant: ctrl-q 0x11 code-char ;
+constant: ctrl-r 0x12 code-char ;
+constant: ctrl-s 0x13 code-char ;
+constant: ctrl-t 0x14 code-char ;
+constant: ctrl-u 0x15 code-char ;
+constant: ctrl-v 0x16 code-char ;
+constant: ctrl-w 0x17 code-char ;
+constant: ctrl-x 0x18 code-char ;
+constant: ctrl-y 0x19 code-char ;
+constant: ctrl-z 0x1a code-char ;
 
-0x09 code-char          constant tab
-0x1b code-char          constant escape
-0x7f code-char          constant del
+constant: tab    0x09 code-char ;
+constant: escape 0x1b code-char ;
+constant: del    0x7f code-char ;
 
 win64? #if
-0x08 code-char          constant backspace
-0x7f code-char          constant ctrl-backspace
-0x0d code-char          constant enter
+constant: backspace         0x08 code-char ;
+constant: ctrl-backspace    0x7f code-char ;
+constant: enter             0x0d code-char ;
 #else
-0x7f code-char          constant backspace
-0x08 code-char          constant ctrl-backspace
-0x0a code-char          constant enter
+constant: backspace         0x7f code-char ;
+constant: ctrl-backspace    0x08 code-char ;
+constant: enter             0x0a code-char ;
 #endif
 
 win64? #if
-0x8053                  constant delete
-0x8047                  constant home
-0x804f                  constant end
-0x804b                  constant left
-0x804d                  constant right
-0x8048                  constant up
-0x8050                  constant down
-0x8049                  constant pageup
-0x8051                  constant pagedown
-0x8093                  constant ctrl-delete
-0x8077                  constant ctrl-home
-0x8075                  constant ctrl-end
-0x808d                  constant ctrl-up
-0x8091                  constant ctrl-down
-0x8073                  constant ctrl-left
-0x8074                  constant ctrl-right
-0x809b                  constant alt-left
-0x809d                  constant alt-right
-0x803d                  constant f3
-0x8056                  constant shift-f3
-0x8060                  constant ctrl-f3
-0x8040                  constant f6
-0x8085                  constant f11
-0x8087                  constant shift-f11
-0x8086                  constant f12
-0x8088                  constant shift-f12
+constant: delete        0x8053 ;
+constant: home          0x8047 ;
+constant: end           0x804f ;
+constant: left          0x804b ;
+constant: right         0x804d ;
+constant: up            0x8048 ;
+constant: down          0x8050 ;
+constant: pageup        0x8049 ;
+constant: pagedown      0x8051 ;
+constant: ctrl-delete   0x8093 ;
+constant: ctrl-home     0x8077 ;
+constant: ctrl-end      0x8075 ;
+constant: ctrl-up       0x808d ;
+constant: ctrl-down     0x8091 ;
+constant: ctrl-left     0x8073 ;
+constant: ctrl-right    0x8074 ;
+constant: alt-left      0x809b ;
+constant: alt-right     0x809d ;
+constant: f3            0x803d ;
+constant: shift-f3      0x8056 ;
+constant: ctrl-f3       0x8060 ;
+constant: f6            0x8040 ;
+constant: f11           0x8085 ;
+constant: shift-f11     0x8087 ;
+constant: f12           0x8086 ;
+constant: shift-f12     0x8088 ;
 #endif
 
 linux? #if
-0x1b5b337e              constant delete
-0x1b5b48                constant home
-0x1b5b46                constant end
-0x1b5b44                constant left
-0x1b5b43                constant right
-0x1b5b41                constant up
-0x1b5b42                constant down
-0x1b5b357e              constant pageup
-0x1b5b367e              constant pagedown
-0x1b5b333b357e          constant ctrl-delete
-0x1b5b313b3548          constant ctrl-home
-0x1b5b313b3546          constant ctrl-end
-0x1b5b313b3541          constant ctrl-up
-0x1b5b313b3542          constant ctrl-down
-0x1b5b313b3543          constant ctrl-right
-0x1b5b313b3544          constant ctrl-left
-0x1b5b313b3344          constant alt-left
-0x1b5b313b3343          constant alt-right
-0x1b4f52                constant f3
-0x1b5b313b3252          constant shift-f3
-0x1b5b313b3552          constant ctrl-f3
-0x1b5b31377e            constant f6
-0x1b5b32337e            constant f11
-0x1b5b32333b327e        constant shift-f11
-0x1b5b32347e            constant f12
-0x1b5b32343b327e        constant shift-f12
+constant: delete        0x1b5b337e ;
+constant: home          0x1b5b48 ;
+constant: end           0x1b5b46 ;
+constant: left          0x1b5b44 ;
+constant: right         0x1b5b43 ;
+constant: up            0x1b5b41 ;
+constant: down          0x1b5b42 ;
+constant: pageup        0x1b5b357e ;
+constant: pagedown      0x1b5b367e ;
+constant: ctrl-delete   0x1b5b333b357e ;
+constant: ctrl-home     0x1b5b313b3548 ;
+constant: ctrl-end      0x1b5b313b3546 ;
+constant: ctrl-up       0x1b5b313b3541 ;
+constant: ctrl-down     0x1b5b313b3542 ;
+constant: ctrl-right    0x1b5b313b3543 ;
+constant: ctrl-left     0x1b5b313b3544 ;
+constant: alt-left      0x1b5b313b3344 ;
+constant: alt-right     0x1b5b313b3343 ;
+constant: f3            0x1b4f52 ;
+constant: shift-f3      0x1b5b313b3252 ;
+constant: ctrl-f3       0x1b5b313b3552 ;
+constant: f6            0x1b5b31377e ;
+constant: f11           0x1b5b32337e ;
+constant: shift-f11     0x1b5b32333b327e ;
+constant: f12           0x1b5b32347e ;
+constant: shift-f12     0x1b5b32343b327e ;
 #endif
 
 // Linux only
-0x1b5b5a                constant shift-tab
-0x1b5b313b3248          constant shift-home
-0x1b5b313b3246          constant shift-end
+constant: shift-tab     0x1b5b5a ;
+constant: shift-home    0x1b5b313b3248 ;
+constant: shift-end     0x1b5b313b3246 ;
