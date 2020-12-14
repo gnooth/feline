@@ -332,8 +332,8 @@ tuple: buffer
     identifier-char-function
     properties ;
 
-"\n"   constant LF
-"\r\n" constant CR+LF
+constant: LF "\n" ;
+constant: CR+LF "\r\n" ;
 
 : make-buffer                           // -> buffer
     buffer make-instance :> buf
