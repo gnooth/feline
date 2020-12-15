@@ -162,6 +162,13 @@ global last-token
                         char iter parse-quoted-string v push
                         iter string-iterator-index start!
                     ]
+                    '`' =>  [
+                        iter string-iterator-index end!
+                        start end iter string-iterator-string substring
+                        start color-text make-segment/3 v push
+                        char iter parse-quoted-string v push
+                        iter string-iterator-index start!
+                    ]
                     '/' => [
                         iter string-iterator-peek '/' eq? [
                             iter string-iterator-index start > [
