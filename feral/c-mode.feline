@@ -23,7 +23,19 @@ global instance
 : get-instance // void -> mode
     instance ;
 
+: skip-quoted-string ( quote-char iter )
+    [
+        iter string-iterator-next       // -> char/nil
+        dup quote-char neq? and
+    ] loop ;
+
+: quote-char?                           // x -> ?
+    dup '"' eq? ?exit
+    dup '\'' eq? ?exit
+    '`' eq? ;
+
 : scan-neutral ( char iter )
+    char quote-char? [ char iter skip-quoted-string ] when
     char '/' neq? [ :neutral ] ?return
     iter string-iterator-peek :> char2
     char2 '/' eq? [ :line-comment ] ?return
