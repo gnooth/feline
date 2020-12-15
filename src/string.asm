@@ -1051,50 +1051,6 @@ code string_skip_to_whitespace, 'string-skip-to-whitespace' ; index string -> in
         next
 endcode
 
-; ### string-skip-quoted-string
-code string_skip_quoted_string, 'string-skip-quoted-string'     ; start-index string -> index/nil
-        _ check_string
-
-        push    this_register
-        popd    this_register           ; -> start-index
-
-        _ check_index                   ; -> untagged-start-index
-
-        _this_string_raw_length
-        _twodup
-        _ge
-        _if .1
-        _2drop
-        _nil
-        jmp     .exit
-        _then .1                        ; -> untagged-start-index untagged-length
-
-        _swap                           ; -> untagged-length untagged-start-index
-
-        _oneplus                        ; skip over quote char we're looking at
-
-        _register_do_range .2
-        _raw_loop_index
-        _this_string_nth_unsafe
-        _lit '"'
-        _eq?
-        _tagged_if .3
-        _raw_loop_index
-        _oneplus
-        _tag_fixnum
-        _unloop
-        jmp     .exit
-        _then .3
-        _loop .2
-
-        ; not found
-        _nil
-
-.exit:
-        pop     this_register
-        next
-endcode
-
 ; ### string-index-from
 code string_index_from, 'string-index-from'     ; char start-index string -- index/nil
 
