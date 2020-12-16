@@ -3452,7 +3452,7 @@ test: file-open-append-test-1
     file exists? assert-false
 
     file file-open-append :> stream!
-    stream file-output-stream? assert-true
+    stream dup file-output-stream? assert-eq
     "this is a test" stream file-output-stream-write-string
     stream file-output-stream-close
 
@@ -3460,7 +3460,7 @@ test: file-open-append-test-1
     file file-contents "this is a test" assert=
 
     file file-open-append stream!
-    stream file-output-stream? assert-true
+    stream dup file-output-stream? assert-eq
     " and this is another test" stream file-output-stream-write-string
     stream file-output-stream-close
 
@@ -3478,7 +3478,7 @@ test: file-open-append-test-2
     file exists? assert-false
 
     file file-open-append :> stream!
-    stream file-output-stream? assert-true
+    stream dup file-output-stream? assert-eq
     "this is a test" stream file-output-stream-write-string
     // generic
     stream close
@@ -3487,7 +3487,7 @@ test: file-open-append-test-2
     file file-contents "this is a test" assert=
 
     file file-open-append stream!
-    stream file-output-stream? assert-true
+    stream dup file-output-stream? assert-eq
     " and this is another test" stream file-output-stream-write-string
     // generic
     stream close
@@ -3520,7 +3520,7 @@ test: stream-output-column-test-1
     file exists? assert-false
 
     file file-open-append :> stream
-    stream output-stream? assert-true
+    stream dup output-stream? assert-eq
     stream stream-output-column 0 assert-eq
 
     "this is a test" stream stream-write-string

@@ -1,4 +1,4 @@
-; Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -26,52 +26,50 @@ file __FILE__
 %define this_file_output_stream_output_column_slot      qword [this_register + BYTES_PER_CELL * 2]
 
 ; ### file-output-stream?
-code file_output_stream?, 'file-output-stream?' ; handle -> ?
-        _ deref                         ; -> raw-object/0
-        test    rbx, rbx
-        jz      .1
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_FILE_OUTPUT_STREAM
-        jne     .1
-        mov     ebx, t_value
-        _return
-.1:
-        mov     ebx, f_value
+code file_output_stream?, 'file-output-stream?' ; x -> x/nil
+; If x is a file output stream, returns x unchanged. Otherwise returns nil.
+        cmp     bl, HANDLE_TAG
+        jne     .no
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_FILE_OUTPUT_STREAM
+        jne     .no
+        next
+.no:
+%if NIL = 0
+        xor     ebx, ebx
+%else
+        mov     ebx, NIL
+%endif
         next
 endcode
 
 ; ### check_file_output_stream
-code check_file_output_stream, 'check_file_output_stream', SYMBOL_INTERNAL ; handle -> raw-stream
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_FILE_OUTPUT_STREAM
+code check_file_output_stream, 'check_file_output_stream' ; file-output-stream -> ^file-output-stream
+        cmp     bl, HANDLE_TAG
+        jne     error_not_file_output_stream
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]
+        cmp     word [rbx], TYPECODE_FILE_OUTPUT_STREAM
         jne     .error
-        _nip
         next
 .error:
-        _drop
-        _ error_not_file_output_stream
-        next
+        mov     rbx, rax
+        jmp     error_not_file_output_stream
 endcode
 
 ; ### verify-file-output-stream
-code verify_file_output_stream, 'verify-file-output-stream' ; handle -> handle
-; returns argument unchanged
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        _object_raw_typecode_eax
-        cmp     eax, TYPECODE_FILE_OUTPUT_STREAM
-        jne     .error
-        _drop
-        next
-.error:
-        _drop
-        _ error_not_file_output_stream
+code verify_file_output_stream, 'verify-file-output-stream' ; file-output-stream -> file-output-stream
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
+        jne     error_not_file_output_stream
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_FILE_OUTPUT_STREAM
+        jne     error_not_file_output_stream
         next
 endcode
 
