@@ -527,7 +527,7 @@ code symbol_set_prop, 'symbol-set-prop' ; value key symbol -> void
         _ check_symbol                  ; -> value key ^symbol
         mov     rax, rbx                ; rax: ^symbol
         mov     rbx, [rax + SYMBOL_PROPS_OFFSET] ; -> value key hashtable/nil
-        cmp     rbx, rbx
+        cmp     rbx, NIL
         je      .no_props
         _ hashtable_set_at
         next
