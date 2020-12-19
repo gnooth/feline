@@ -330,9 +330,8 @@ code postpone, 'postpone:', SYMBOL_IMMEDIATE
         next
 endcode
 
-; ### symbol:
-code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE
-        _ must_parse_token              ; -> string
+; ### define-symbol
+code define_symbol, 'define-symbol'     ; string -> void
         _ new_symbol_in_current_vocab   ; -> symbol
         _dup
         _ new_wrapper
@@ -340,6 +339,13 @@ code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE
         _over
         _ symbol_set_def                ; -> symbol
         _ compile_word
+        next
+endcode
+
+; ### symbol:
+code parse_symbol, 'symbol:', SYMBOL_IMMEDIATE
+        _ must_parse_token              ; -> string
+        _ define_symbol
         next
 endcode
 
