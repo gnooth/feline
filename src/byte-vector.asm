@@ -142,6 +142,15 @@ code byte_vector_length, 'byte-vector-length' ; byte-vector -> length
         next
 endcode
 
+; ### byte-vector-data-address
+code byte_vector_data_address, 'byte-vector-data-address' ; byte-vector -> fixnum
+; unsafe
+        _ check_byte_vector
+        mov     rbx, [rbx + BYTE_VECTOR_RAW_DATA_ADDRESS_OFFSET]
+        _tag_fixnum
+        next
+endcode
+
 ; ### byte-vector-nth-unsafe
 code byte_vector_nth_unsafe, 'byte-vector-nth-unsafe' ; index byte-vector -> u8
         mov     rax, [rbp]              ; rax: index
