@@ -38,6 +38,7 @@ in: feral-colors
 
 constant: color-text            192 192 192 make-colorref ;
 constant: color-comment         128 128   0 make-colorref ;
+constant: color-disabled        128 128 128 make-colorref ;
 
 constant: color-header          160 160   0 make-colorref ;
 

@@ -264,6 +264,7 @@ constant: feral-files {
     "feral.feline"
     "find-definition.feline"
     "find-in-files.feline"
+    "forth-mode.feline"
     "git.feline"
     "go-mode.feline"
     "gtkui-display.feline"

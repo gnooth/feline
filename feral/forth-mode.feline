@@ -1,0 +1,163 @@
+// Copyright (C) 2020 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: modes feral-core feline accessors segments feral-colors ;
+in: forth-mode
+
+private
+
+global instance
+
+: identifier-char?                      // char -> ?
+    char? [ '\s' neq? ] [ nil ] if* ;
+
+: scan-neutral ( char iter )
+    iter string-iterator-peek :> char2
+    char '\' eq? char2 '\s' eq? and [ :line-comment ] ?return
+    char '(' eq? char2 '\s' eq? and [ :block-comment ] [ :neutral ] if ;
+
+: scan-block-comment ( char iter )
+    char ')' eq? [
+        1 iter string-iterator-skip
+        :neutral
+    ] [
+        :block-comment
+    ] if ;
+
+: scan-line ( line ) // line -> state
+    line state>> !> state
+    line text>> :> text
+    nil !> done?
+
+    state :neutral eq? [
+        "0 [IF]" text string-has-prefix? [
+            :disabled state!
+            true done?!
+        ] when
+    ] when
+
+    done? [ state ] ?return
+
+    state :disabled eq? [
+        "[THEN]" text string-has-prefix? [
+            :neutral state!
+            true done?!
+        ] when
+    ] when
+
+    done? [ state ] ?return
+
+    text make-string-iterator :> iter
+    local char
+    [
+        iter string-iterator-next char!
+        char
+    ] [
+        {
+            { [ state :neutral eq? ] [ char iter scan-neutral state! ] }
+            { [ state :block-comment eq? ] [ char iter scan-block-comment state! ] }
+            {
+                [ state :line-comment eq? ]
+                [ iter string-iterator-skip-to-end :neutral state! ]
+            }
+            { [ state :disabled eq? ] [ ] }
+        } cond
+    ] while
+    state ;
+
+: scan-buffer ( buf )                   // buffer -> void
+    buf first-line>> !> line
+    :neutral !> state
+    [ line ] [
+        state line state<<
+        line scan-line state!
+        line next>> line!
+    ] while
+    nil buf needs-scan<< ;
+
+: format-line ( line )                  // line -> segments
+    line text>> detab :> text
+    text make-string-iterator :> iter
+    line state>> !> state
+
+    local char
+    0 !> start-index
+    16 make-vector :> v
+
+    [
+        iter string-iterator-next char!
+        char
+    ] [
+        state match {
+            :neutral => [
+                char iter scan-neutral state!
+                state { :block-comment :line-comment } member-eq? [
+                    start-index iter string-iterator-index text substring
+                    start-index color-text make-segment/3 v push
+                    iter string-iterator-index start-index!
+                ] when
+            ]
+            :block-comment => [
+                char iter scan-block-comment state!
+                state :neutral eq? [
+                    start-index iter string-iterator-index text substring
+                    start-index color-comment make-segment/3 v push
+                    iter string-iterator-index start-index!
+                ] when
+            ]
+            :line-comment => [ ]        // nothing to do
+            :disabled => [ ]
+            _ => [
+                ?nl "forth-mode-format-line unsupported state " write state .
+                "unsupported" error
+            ]
+        }
+    ] while
+
+    start-index iter string-iterator-index text substring
+    start-index
+    state match {
+        :block-comment => [ color-comment ]
+        :line-comment => [ color-comment ]
+        :disabled => [ color-disabled ]
+        _ => [ color-text ]
+    }
+    make-segment/3 v push
+
+    state :line-comment? eq? [ :neutral state! ] when
+
+    v ;
+
+: initialize-buffer                     // buffer -> void
+    1 ?enough :> buf
+    instance indent-size>> buf indent-size<< ;
+
+: initialize-mode
+    mode make-instance :> m
+    "Forth" m name<<
+    4 m indent-size<<
+    "\\ " m comment-start<<
+    ' initialize-buffer m initialize-buffer-function<<
+    ' identifier-char? m identifier-char-function<<
+    ' format-line m format-line-function<<
+    ' scan-buffer m scan-buffer-function<<
+
+    m ".f" modes set-at                 // SwiftForth, win32forth
+    m ".frt" modes set-at               // iForth
+    m ".fs" modes set-at                // gforth
+    m ".fth" modes set-at               // VFX Forth
+    m instance! ;
+
+initialize-mode
