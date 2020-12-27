@@ -39,25 +39,25 @@ global instance
 : scan-line ( line ) // line -> state
     line state>> !> state
     line text>> :> text
-    nil !> done?
+    nil !> done
 
     state :neutral eq? [
         "0 [IF]" text string-has-prefix? [
             :disabled state!
-            true done?!
+            true done!
         ] when
     ] when
 
-    done? [ state ] ?return
+    done [ state ] ?return
 
     state :disabled eq? [
         "[THEN]" text string-has-prefix? [
             :neutral state!
-            true done?!
+            true done!
         ] when
     ] when
 
-    done? [ state ] ?return
+    done [ state ] ?return
 
     text make-string-iterator :> iter
     local char
@@ -87,14 +87,102 @@ global instance
     ] while
     nil buf needs-scan<< ;
 
+constant: syntax-words {
+    "'"
+    ":"
+    ";"
+    "["
+    "]"
+    "[']"
+    "case"
+    "code"
+    "constant"
+    "create"
+    "defer"
+    "do"
+    "does>"
+    "else"
+    "endcase"
+    "endof"
+    "if"
+    "is"
+    "leave"
+    "literal"
+    "loop"
+    "+loop"
+    "of"
+    "then"
+    "value"
+    "variable"
+} ;
+
+constant: defining-words {
+    ":"
+    "constant"
+    "create"
+    "code"
+    "defer"
+    "value"
+    "variable"
+} ;
+
+: parse-line-comment ( iter )           // string-iterator -> segment
+    iter string-iterator-index !> start
+    start 0? [
+        iter string-iterator-string 0 color-comment make-segment/3
+    ] [
+        start
+        iter string-iterator-string string-length
+        iter string-iterator-string substring
+        start color-comment make-segment/3
+    ] if ;
+
+global last-identifier
+
+: downcase dup string? [ string-downcase ] when ;
+
+: parse-identifier ( iter )             // string-iterator -> segment
+    iter string-iterator-index :> start
+
+    local ch
+    [
+        iter string-iterator-next ch!
+        [ ch char? ] [ ch identifier-char? ] both?
+    ] loop
+    // reached end of identifier
+    iter string-iterator-index :> end
+    start end iter string-iterator-string substring :> identifier
+
+    {
+        {
+            [ last-identifier downcase defining-words member? ]
+            [ color-name ]
+        }
+        {
+            [ identifier downcase syntax-words member? ]
+            [ color-syntax ]
+        }
+        [
+            // default
+            color-text
+        ]
+    } cond :> format
+
+    identifier last-identifier!
+
+    identifier start format make-segment/3 ;
+
 : format-line ( line )                  // line -> segments
     line text>> detab :> text
     text make-string-iterator :> iter
     line state>> !> state
+    100 make-vector :> v
+    0 !> start
 
     local char
-    0 !> start-index
-    16 make-vector :> v
+    local end
+
+    nil last-identifier!
 
     [
         iter string-iterator-next char!
@@ -102,41 +190,64 @@ global instance
     ] [
         state match {
             :neutral => [
-                char iter scan-neutral state!
-                state { :block-comment :line-comment } member-eq? [
-                    start-index iter string-iterator-index text substring
-                    start-index color-text make-segment/3 v push
-                    iter string-iterator-index start-index!
-                ] when
+                char match {
+                    '(' => [
+                        iter string-iterator-peek '\s' eq? [
+                            iter string-iterator-index start > [
+                                iter string-iterator-index end!
+                                start end iter string-iterator-string substring
+                                start color-text make-segment/3 v push
+                            ] when
+                            :block-comment state!
+                        ] when
+                    ]
+                    '\' => [
+                        iter string-iterator-peek '\s' eq? [
+                            iter string-iterator-index start > [
+                                iter string-iterator-index end!
+                                start end iter string-iterator-string substring
+                                start color-text make-segment/3 v push
+                            ] when
+                            iter parse-line-comment v push
+                            iter string-iterator-skip-to-end
+                            iter string-iterator-index start!
+                        ] when
+                    ]
+                    _ => [
+                        char identifier-char? [
+                            iter string-iterator-index end!
+                            start end iter string-iterator-string substring
+                            start color-text make-segment/3 v push
+                            iter parse-identifier v push
+                            iter string-iterator-index start!
+                        ] when
+                    ]
+                }
             ]
             :block-comment => [
                 char iter scan-block-comment state!
                 state :neutral eq? [
-                    start-index iter string-iterator-index text substring
-                    start-index color-comment make-segment/3 v push
-                    iter string-iterator-index start-index!
+                    start iter string-iterator-index text substring
+                    start color-comment make-segment/3 v push
+                    iter string-iterator-index start!
                 ] when
             ]
-            :line-comment => [ ]        // nothing to do
-            :disabled => [ ]
-            _ => [
-                ?nl "forth-mode-format-line unsupported state " write state .
-                "unsupported" error
-            ]
+            _ => [ ]
         }
     ] while
 
-    start-index iter string-iterator-index text substring
-    start-index
-    state match {
-        :block-comment => [ color-comment ]
-        :line-comment => [ color-comment ]
-        :disabled => [ color-disabled ]
-        _ => [ color-text ]
-    }
-    make-segment/3 v push
-
-    state :line-comment? eq? [ :neutral state! ] when
+    iter string-iterator-string length end!
+    start end < [
+        start end iter string-iterator-string substring
+        start
+        state match {
+            :block-comment => [ color-comment ]
+            :line-comment => [ color-comment ]
+            :disabled => [ color-disabled ]
+            _ => [ color-text ]
+        }
+        make-segment/3 v push
+    ] when
 
     v ;
 
