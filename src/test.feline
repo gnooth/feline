@@ -3318,9 +3318,10 @@ test: string-iterator-test
     local iter
     { } [
         "this is a test" make-string-iterator iter!
-        iter string-iterator? assert
+        iter dup string-iterator? assert-eq
         iter string-iterator-string "this is a test" assert=
         iter string-iterator-index -1 assert-eq
+        iter string-iterator-length 14 assert-eq
 
         iter string-iterator-peek 't' assert-eq
         iter string-iterator-index -1 assert-eq
@@ -3343,10 +3344,13 @@ test: string-iterator-test
         // subsequent calls continue to return nil
         iter string-iterator-next nil assert-eq
 
+        5 7 iter string-iterator-substring "is" string=? assert
+
         "this is another test" make-string-iterator iter!
-        iter string-iterator? assert
+        iter dup string-iterator? assert-eq
         iter string-iterator-string "this is another test" assert=
         iter string-iterator-index -1 assert-eq
+        iter string-iterator-length 20 assert-eq
 
         1 iter string-iterator-skip
         iter string-iterator-index 0 assert-eq
@@ -3382,6 +3386,8 @@ test: string-iterator-test
         iter string-iterator-next nil assert-eq
         // ...and leave the index unchanged
         iter string-iterator-index 4 assert-eq
+
+        0 4 iter string-iterator-substring "best" string=? assert
 
         // REVIEW string-iterator-reset
         -5 iter string-iterator-skip

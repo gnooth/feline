@@ -85,10 +85,26 @@ code string_iterator_string, 'string-iterator-string'   ; iterator -> string
         next
 endcode
 
+; ### string-iterator-substring
+code string_iterator_substring, 'string-iterator-substring' ; from to iterator -> string
+        _ check_string_iterator
+        mov     rbx, [rbx + STRING_ITERATOR_STRING_OFFSET]
+        _ string_substring
+        next
+endcode
+
 ; ### string-iterator-index
 code string_iterator_index, 'string-iterator-index'     ; iterator -> index
         _ check_string_iterator
         mov     rbx, [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET]
+        _tag_fixnum
+        next
+endcode
+
+; ### string-iterator-length
+code string_iterator_length, 'string-iterator-length' ; iterator -> length
+        _ check_string_iterator
+        mov     rbx, [rbx + STRING_ITERATOR_RAW_LENGTH_OFFSET]
         _tag_fixnum
         next
 endcode
