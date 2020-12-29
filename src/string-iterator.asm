@@ -27,24 +27,23 @@ file __FILE__
 %define STRING_ITERATOR_RAW_DATA_ADDRESS_OFFSET 32
 
 ; ### string-iterator?
-code string_iterator?, 'string-iterator?'       ; x -> x/nil
-; If x is a string-iterator, returns x unchanged.
-; If x is not a string-iterator, returns nil.
+code string_iterator?, 'string-iterator?' ; x -> x/nil
+; Returns x unchanged if x is a string iterator. Otherwise, returns nil.
         cmp     bl, HANDLE_TAG
-        jne     .not_a_string_iterator
+        jne     .no
         mov     rax, rbx
         shr     rax, HANDLE_TAG_BITS
         mov     rax, [rax]
         cmp     word [rax], TYPECODE_STRING_ITERATOR
-        jne     .not_a_string_iterator
+        jne     .no
         next
-.not_a_string_iterator:
+.no:
         mov     ebx, NIL
         next
 endcode
 
 ; ### verify-string-iterator
-code verify_string_iterator, 'verify-string-iterator'   ; iterator -> iterator
+code verify_string_iterator, 'verify-string-iterator' ; iterator -> iterator
 ; Returns argument unchanged.
         cmp     bl, HANDLE_TAG
         jne     error_not_string_iterator
@@ -57,7 +56,7 @@ code verify_string_iterator, 'verify-string-iterator'   ; iterator -> iterator
 endcode
 
 ; ### check-string-iterator
-code check_string_iterator, 'check_string_iterator'     ; iterator -> ^iterator
+code check_string_iterator, 'check_string_iterator' ; iterator -> ^iterator
         cmp     bl, HANDLE_TAG
         jne     error_not_string_iterator
         mov     rax, rbx
@@ -72,14 +71,14 @@ code check_string_iterator, 'check_string_iterator'     ; iterator -> ^iterator
 endcode
 
 ; ### error-not-string-iterator
-code error_not_string_iterator, 'error-not-string-iterator'     ; x ->
+code error_not_string_iterator, 'error-not-string-iterator' ; x ->
         _quote "a string-iterator"
         _ format_type_error
         next
 endcode
 
 ; ### string-iterator-string
-code string_iterator_string, 'string-iterator-string'   ; iterator -> string
+code string_iterator_string, 'string-iterator-string' ; iterator -> string
         _ check_string_iterator
         mov     rbx, [rbx + STRING_ITERATOR_STRING_OFFSET]
         next
@@ -94,7 +93,7 @@ code string_iterator_substring, 'string-iterator-substring' ; from to iterator -
 endcode
 
 ; ### string-iterator-index
-code string_iterator_index, 'string-iterator-index'     ; iterator -> index
+code string_iterator_index, 'string-iterator-index' ; iterator -> index
         _ check_string_iterator
         mov     rbx, [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET]
         _tag_fixnum
@@ -110,7 +109,7 @@ code string_iterator_length, 'string-iterator-length' ; iterator -> length
 endcode
 
 ; ### make-string-iterator
-code make_string_iterator, 'make-string-iterator'       ; string -> iterator
+code make_string_iterator, 'make-string-iterator' ; string -> iterator
 ; 5 cells: object header, string, raw index, raw length, raw data address
 
         ; allocate memory for the iterator object
@@ -170,7 +169,7 @@ code string_iterator_nth, 'string-iterator-nth' ; n iterator -> char/nil
 endcode
 
 ; ### string-iterator-next
-code string_iterator_next, 'string-iterator-next'       ; iterator -> char/nil
+code string_iterator_next, 'string-iterator-next' ; iterator -> char/nil
         _ check_string_iterator
 
         mov     rax, [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET]
@@ -192,7 +191,7 @@ code string_iterator_next, 'string-iterator-next'       ; iterator -> char/nil
 endcode
 
 ; ### string-iterator-peek
-code string_iterator_peek, 'string-iterator-peek'       ; iterator -> element/nil
+code string_iterator_peek, 'string-iterator-peek' ; iterator -> char/nil
         _ check_string_iterator
 
         mov     rax, [rbx + STRING_ITERATOR_RAW_INDEX_OFFSET]
