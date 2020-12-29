@@ -114,7 +114,7 @@ code make_string_iterator, 'make-string-iterator'       ; string -> iterator
 ; 5 cells: object header, string, raw index, raw length, raw data address
 
         ; allocate memory for the iterator object
-        mov     arg0_register, FIXNUM_HASHTABLE_SIZE
+        mov     arg0_register, STRING_ITERATOR_SIZE
         _ feline_malloc                 ; returns raw address in rax
 
         mov     qword [rax], TYPECODE_STRING_ITERATOR
