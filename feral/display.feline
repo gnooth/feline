@@ -53,17 +53,24 @@ global changed-lines
     x verify-string string-format-line ;
 
 : mode-line-text // void -> string
-    256 <sbuf> :> sb
+    256 make-sbuf :> sb
     modified? '*' '\s' ? sb sbuf-push
     current-buffer name>> "untitled" or sb sbuf-append-string
     dot-line-number 1+
     line-count
     dot-column 1+
-    " %d(%d):%d " format sb sbuf-append-string
+    " %d(%d):%d" format sb sbuf-append-string
     :git-branch current-buffer buffer-get-property [
+        '\s' sb sbuf-push
         sb sbuf-append-string
     ] when*
-    sb sbuf>string ;
+    current-buffer mode>> [
+        name>> [
+            '\s' sb sbuf-push
+            sb sbuf-append-string
+        ] when*
+    ] when*
+    sb sbuf->string ;
 
 using: feral-loader feral-config feline ;
 
