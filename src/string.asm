@@ -800,8 +800,7 @@ code stringequal?, 'string=?'           ; x y -> ?
         add     rcx, 1
         cmp     rcx, rdx
         jne     .top
-        mov     ebx, TRUE
-        next
+        ; fall through...
 
 .yes:
         mov     ebx, TRUE
