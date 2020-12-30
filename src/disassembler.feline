@@ -258,14 +258,14 @@ global regop    // REGister or OPcode extension (depending on the instruction)
     modrm-reg regop! ;
 
 : register-reg                          // n1 -> n2
-    prefix 4 rshift 4 = [
+    prefix 4 rshift 4 eq? [
         prefix rex.r bitand zero? not [
             8 bitor
         ] when
     ] when ;
 
 : register-rm                           // n1 -> n2
-    prefix 4 rshift 4 = [
+    prefix 4 rshift 4 eq? [
         prefix rex.b bitand zero? not [
             8 bitor
         ] when
@@ -1056,26 +1056,41 @@ last-word 0x87 install-handler
     modrm-reg register-reg sreg!
     8 ssize!
     8 dsize!
-    modrm-rm 4 = [ !sib-byte ] when
-    { // cond
-        { [ modrm-mod 0 eq? ] [ modrm-rm dbase! .inst ] }
+    modrm-rm 4 eq? [ !sib-byte ] when
+    {
         {
-            [ modrm-mod 1 = ]
+            [ modrm-mod 0 eq? ]
             [
-                // 1-byte displacement
-                sib-base register-rm dbase!
-                sib-index register-index dindex!
-                sib-scale dscale!
-                next-signed-byte ddisp!
-                .inst
+                modrm-rm 4 eq? [
+                    sib-base register-rm dbase!
+                    sib-index register-index dindex!
+                    sib-scale dscale!
+                ] [
+                    modrm-rm register-rm dbase!
+                ] if
             ]
         }
-        { [ modrm-mod 3 eq? ] [ modrm-rm register-rm dreg! .inst ] }
+        {
+            [ modrm-mod 1 eq? ]
+            [
+                // 1-byte displacement
+                modrm-rm 4 eq? [
+                    sib-base register-rm dbase!
+                    sib-index register-index dindex!
+                    sib-scale dscale!
+                    next-signed-byte ddisp!
+                ] [
+                    modrm-rm dbase!
+                    next-signed-byte ddisp!
+                ] if
+            ]
+        }
+        { [ modrm-mod 3 eq? ] [ modrm-rm register-rm dreg! ] }
         {
             [ modrm-rm 4 eq? ]
             [
                 sib-base
-                { // case
+                {
                     { 5 [ next-int32 ddisp! true memory-operand?! ] }
                     [
                         // default case
@@ -1085,11 +1100,11 @@ last-word 0x87 install-handler
                         sib-scale dscale!
                     ]
                 } case
-                .inst
             ]
         }
         [ unsupported ]
-    } cond ;
+    } cond
+    .inst ;
 
 last-word 0x88 install-handler
 
@@ -1111,35 +1126,53 @@ last-word 0x89 install-handler
     modrm-reg register-reg dreg!
     8 ssize!
     8 dsize!
-    modrm-rm 4 = [ !sib-byte ] when
     {
-        { [ modrm-mod 0 = ] [ modrm-rm register-rm sbase! ] }
         {
-            [ modrm-mod 1 = ]
+            [ modrm-mod 0 eq? ]
             [
-                // 1-byte displacement
-                sib-base register-rm sbase!
-                sib-index register-index sindex!
-                sib-scale sscale!
-                next-signed-byte sdisp!
-            ]
-        }
-        { [ modrm-mod 3 = ] [ modrm-rm register-rm sreg! ] }
-        { [ modrm-rm 4 = ] [
-            sib-base {
-                { 5 [
-                    next-int32 sdisp!
-                    t memory-operand?!
-                ] }
-                [
-                    // default case
-                    drop
+                modrm-rm 4 eq? [
+                    !sib-byte
                     sib-base register-rm sbase!
                     sib-index register-index sindex!
                     sib-scale sscale!
-                ]
-            } case
-        ] }
+                ] [
+                    modrm-rm register-rm sbase!
+                ] if
+            ]
+        }
+        {
+            [ modrm-mod 1 eq? ]
+            [
+                // 1-byte displacement
+                modrm-rm 4 eq? [
+                    !sib-byte
+                    sib-base register-rm sbase!
+                    sib-index register-index sindex!
+                    sib-scale sscale!
+                    next-signed-byte sdisp!
+                ] [
+                    modrm-rm register-rm sbase!
+                    next-signed-byte sdisp!
+                ] if
+            ]
+        }
+        { [ modrm-mod 3 eq? ] [ modrm-rm register-rm sreg! ] }
+        {
+            [ modrm-rm 4 eq? ]
+            [
+                !sib-byte
+                sib-base {
+                    { 5 [ next-int32 sdisp! true memory-operand?! ] }
+                    [
+                        // default case
+                        drop
+                        sib-base register-rm sbase!
+                        sib-index register-index sindex!
+                        sib-scale sscale!
+                    ]
+                } case
+            ]
+        }
         [ unsupported ]
     } cond
     .inst ;
