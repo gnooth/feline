@@ -43,21 +43,21 @@ private: string-trim-tail-internal ( s ) // string -> string
     s ;
 
 : string-downcase ( s ) // string -> string
-    s string-length <sbuf> :> sb
+    s string-length make-sbuf :> sb
     s [ char-downcase sb sbuf-push-unsafe ] each
-    sb sbuf>string ;
+    sb sbuf->string ;
 
 : string-upcase ( s ) // string -> string
-    s string-length <sbuf> :> sb
+    s string-length make-sbuf :> sb
     s [ char-upcase sb sbuf-push-unsafe ] each
-    sb sbuf>string ;
+    sb sbuf->string ;
 
 : pad-left ( c n s ) // char fixnum string -> string
     c char? assert
     s string-length :> len
     len n verify-index >= [ s ] ?return
     n len > assert
-    n <sbuf> :> sb
+    n make-sbuf :> sb
     n len - [ c sb sbuf-push-unsafe ] times
     s sb sbuf-append-string
-    sb sbuf>string ;
+    sb sbuf->string ;
