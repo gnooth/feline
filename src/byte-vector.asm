@@ -95,21 +95,21 @@ code make_byte_vector, 'make-byte-vector' ; capacity -> byte-vector
 
         mov     qword [rbx], TYPECODE_BYTE_VECTOR
 
-        mov     arg0_register, [rbp]    ; raw capacity (cells) in arg0_register
+        mov     arg0_register, [rbp]    ; raw capacity (bytes) in arg0_register
         _ feline_malloc                 ; returns raw address in rax
 
         mov     [rbx + BYTE_VECTOR_RAW_DATA_ADDRESS_OFFSET], rax
 
         mov     rax, [rbp]
         _nip                            ; -> ^byte-vector
-        mov     [rbx + VECTOR_RAW_CAPACITY_OFFSET], rax
-        mov     qword [rbx + VECTOR_RAW_LENGTH_OFFSET], 0
+        mov     [rbx + BYTE_VECTOR_RAW_CAPACITY_OFFSET], rax
+        mov     qword [rbx + BYTE_VECTOR_RAW_LENGTH_OFFSET], 0
 
         ; REVIEW
         ; initialize all elements to 0
-        mov     arg0_register, [rbx + VECTOR_RAW_DATA_ADDRESS_OFFSET]
+        mov     arg0_register, [rbx + BYTE_VECTOR_RAW_DATA_ADDRESS_OFFSET]
         xor     arg1_register, arg1_register
-        mov     arg2_register, [rbx + VECTOR_RAW_CAPACITY_OFFSET]
+        mov     arg2_register, [rbx + BYTE_VECTOR_RAW_CAPACITY_OFFSET]
         sar     arg2_register, 3        ; convert bytes to cells
 
         _ fill_cells
