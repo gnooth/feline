@@ -20,21 +20,80 @@ private
 
 global instance
 
-: identifier-char?                      // char -> ?
+: identifier-char?                      // x -> ?
     char? [ '\s' neq? ] [ nil ] if* ;
+
+: iforth?                               // -> ?
+    current-buffer filename>> file-name-extension ".frt" string-ci=? ;
+
+: vfx?
+    current-buffer filename>> file-name-extension ".fth" string-ci=? ;
+
+: looking-at?                           // pattern iter -> ?
+    2 ?enough :> iter :> pattern
+
+    iter string-iterator-index pattern length + :> end-index
+
+    end-index iter string-iterator-length <=
+    [
+        iter string-iterator-index end-index iter string-iterator-substring
+        pattern string-ci=?
+    ] [
+        nil
+    ] if ;
+
+global block-comment-end
 
 : scan-neutral ( char iter )
     iter string-iterator-peek :> char2
     char '\' eq? char2 '\s' eq? and [ :line-comment ] ?return
-    char '(' eq? char2 '\s' eq? and [ :block-comment ] [ :neutral ] if ;
+    char '(' eq? char2 '\s' eq? and [ ')' block-comment-end! :block-comment ] ?return
+    char '{' eq? char2 '\s' eq? and [ '}' block-comment-end! :block-comment ] ?return
+
+    [ iforth? ] [ "(*" iter looking-at? ] both?
+    [
+        "*)" block-comment-end!
+        :block-comment
+    ] ?return
+
+    [ vfx? ] [ "((" iter looking-at? ] both?
+    [
+        "))" block-comment-end!
+        :block-comment
+    ] ?return
+
+    :neutral ;
 
 : scan-block-comment ( char iter )
-    char ')' eq? [
-        1 iter string-iterator-skip
-        :neutral
-    ] [
-        :block-comment
-    ] if ;
+    {
+        {
+            [
+                block-comment-end char?
+                char block-comment-end eq?
+                and
+            ]
+            [
+                1 iter string-iterator-skip
+                nil block-comment-end!
+                :neutral
+            ]
+        }
+        {
+            [
+                [ block-comment-end string? ]
+                [ block-comment-end iter looking-at? ] both?
+            ]
+            [
+                block-comment-end length iter string-iterator-skip
+                nil block-comment-end!
+                :neutral
+            ]
+        }
+        [
+            // default
+            :block-comment
+        ]
+    } cond ;
 
 : scan-line ( line ) // line -> state
     line state>> !> state
@@ -94,6 +153,14 @@ constant: syntax-words {
     "["
     "]"
     "[']"
+    "[if]"
+    "[else]"
+    "[then]"
+    "[defined]"
+    "[undefined]"
+    "[char]"
+    "[compile]"
+    "begin"
     "case"
     "code"
     "constant"
@@ -104,16 +171,24 @@ constant: syntax-words {
     "else"
     "endcase"
     "endof"
+    "exit"
     "if"
+    "immediate"
     "is"
     "leave"
     "literal"
     "loop"
     "+loop"
     "of"
+    "postpone"
+    "repeat"
     "then"
+    "throw"
+    "unloop"
+    "until"
     "value"
     "variable"
+    "while"
 } ;
 
 constant: defining-words {
@@ -139,27 +214,24 @@ constant: defining-words {
 
 global last-identifier
 
-: downcase dup string? [ string-downcase ] when ;
+: ?downcase dup string? [ string-downcase ] when ;
 
 : parse-identifier ( iter )             // string-iterator -> segment
     iter string-iterator-index :> start
 
-    local ch
-    [
-        iter string-iterator-next ch!
-        [ ch char? ] [ ch identifier-char? ] both?
-    ] loop
+    [ iter string-iterator-next identifier-char? ] loop
+
     // reached end of identifier
     iter string-iterator-index :> end
     start end iter string-iterator-string substring :> identifier
 
     {
         {
-            [ last-identifier downcase defining-words member? ]
+            [ last-identifier ?downcase defining-words member? ]
             [ color-name ]
         }
         {
-            [ identifier downcase syntax-words member? ]
+            [ identifier ?downcase syntax-words member? ]
             [ color-syntax ]
         }
         [
@@ -171,6 +243,25 @@ global last-identifier
     identifier last-identifier!
 
     identifier start format make-segment/3 ;
+
+: parse-quoted-string ( iter )          // string-iterator -> segment
+    iter string-iterator-index :> start
+    local ch
+    [
+        iter string-iterator-next ch!
+        ch dup '"' neq? and
+    ] loop
+    // reached end
+    ch [
+        ch '"' assert-eq
+        1 iter string-iterator-skip
+        iter string-iterator-index
+    ] [
+        iter string-iterator-string string-length
+    ] if :> end
+
+    start end iter string-iterator-string substring
+    start color-string make-segment/3 ;
 
 : format-line ( line )                  // line -> segments
     line text>> detab :> text
@@ -190,39 +281,118 @@ global last-identifier
     ] [
         state match {
             :neutral => [
-                char match {
-                    '(' => [
-                        iter string-iterator-peek '\s' eq? [
+                {
+                    {
+                        [ "s\" " iter looking-at? ]
+                        [
+                            1 iter string-iterator-skip
+                            iter string-iterator-index end!
+                            start end iter string-iterator-substring
+                            start color-text make-segment/3 v push
+                            iter parse-quoted-string v push
+                            iter string-iterator-index start!
+                        ]
+                    }
+                    {
+                        [ [ iforth? ] [ "(*" iter looking-at? ] both? ]
+                        [
                             iter string-iterator-index start > [
                                 iter string-iterator-index end!
-                                start end iter string-iterator-string substring
+                                start end iter string-iterator-substring
                                 start color-text make-segment/3 v push
                             ] when
+                            "*)" block-comment-end!
                             :block-comment state!
-                        ] when
-                    ]
-                    '\' => [
-                        iter string-iterator-peek '\s' eq? [
+                        ]
+                    }
+                    {
+                        [ [ vfx? ] [ "((" iter looking-at? ] both? ]
+                        [
                             iter string-iterator-index start > [
                                 iter string-iterator-index end!
-                                start end iter string-iterator-string substring
+                                start end iter string-iterator-substring
+                                start color-text make-segment/3 v push
+                            ] when
+                            "))" block-comment-end!
+                            :block-comment state!
+                        ]
+                    }
+                    {
+                        [ char '(' eq? ]
+                        [
+                            iter string-iterator-peek '\s' eq? [
+                                iter string-iterator-index start > [
+                                    iter string-iterator-index end!
+                                    start end iter string-iterator-substring
+                                    start color-text make-segment/3 v push
+                                ] when
+                                ')' block-comment-end!
+                                :block-comment state!
+                            ] [
+                                iter string-iterator-index end!
+                                start end iter string-iterator-substring
+                                start color-text make-segment/3 v push
+                                iter parse-identifier v push
+                                iter string-iterator-index start!
+                            ] if
+                        ]
+                    }
+                    {
+                        [ char '{' eq? ]
+                        [
+                            iter string-iterator-peek '\s' eq? [
+                                [ iter string-iterator-index 0? ]
+                                [ iter string-iterator-index 1- iter nth '\s' eq? ] either? [
+                                    iter string-iterator-index start > [
+                                        iter string-iterator-index end!
+                                        start end iter string-iterator-substring
+                                        start color-text make-segment/3 v push
+                                    ] when
+                                    '}' block-comment-end!
+                                    :block-comment state!
+                                ] when
+                            ] when
+                        ]
+                    }
+                    {
+                        [ char '\' eq? ]
+                        [
+                            iter string-iterator-peek '\s' eq? [
+                                iter string-iterator-index start > [
+                                    iter string-iterator-index end!
+                                    start end iter string-iterator-substring
+                                    start color-text make-segment/3 v push
+                                ] when
+                                iter parse-line-comment v push
+                                iter string-iterator-skip-to-end
+                                iter string-iterator-index start!
+                            ] when
+                        ]
+                    }
+                    {
+                        [ [ iforth? ] [ "-- " iter looking-at? ] both? ]
+                        [
+                            iter string-iterator-index start > [
+                                iter string-iterator-index end!
+                                start end iter string-iterator-substring
                                 start color-text make-segment/3 v push
                             ] when
                             iter parse-line-comment v push
                             iter string-iterator-skip-to-end
                             iter string-iterator-index start!
-                        ] when
-                    ]
-                    _ => [
+                        ]
+                    }
+                    [
+                        // default
                         char identifier-char? [
                             iter string-iterator-index end!
-                            start end iter string-iterator-string substring
+                            start end iter string-iterator-substring
                             start color-text make-segment/3 v push
                             iter parse-identifier v push
                             iter string-iterator-index start!
                         ] when
                     ]
-                }
+                } cond
             ]
             :block-comment => [
                 char iter scan-block-comment state!
@@ -238,13 +408,13 @@ global last-identifier
 
     iter string-iterator-string length end!
     start end < [
-        start end iter string-iterator-string substring
+        start end iter string-iterator-substring
         start
         state match {
             :block-comment => [ color-comment ]
-            :line-comment => [ color-comment ]
-            :disabled => [ color-disabled ]
-            _ => [ color-text ]
+            :line-comment  => [ color-comment ]
+            :disabled      => [ color-disabled ]
+            _              => [ color-text ]
         }
         make-segment/3 v push
     ] when
