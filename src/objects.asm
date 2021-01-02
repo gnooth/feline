@@ -187,6 +187,8 @@ code destroy_heap_object, 'destroy_heap_object', SYMBOL_INTERNAL ; ^object -> vo
         je      destroy_thread
         cmp     eax, TYPECODE_MUTEX
         je      destroy_mutex
+        cmp     eax, TYPECODE_BYTE_VECTOR
+        je      destroy_byte_vector
 
         ; Default behavior for objects with only one allocation.
 

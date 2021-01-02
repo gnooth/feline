@@ -119,8 +119,21 @@ code make_byte_vector, 'make-byte-vector' ; capacity -> byte-vector
         next
 endcode
 
+; ### destroy_byte_vector
+code destroy_byte_vector, 'destroy_byte_vector', SYMBOL_INTERNAL ; ^vector -> void
+
+        mov     arg0_register, [rbx + BYTE_VECTOR_RAW_DATA_ADDRESS_OFFSET]
+        xcall   free
+
+        ; zero out object header
+        mov     qword [rbx], 0
+
+        _feline_free
+        next
+endcode
+
 ; ### byte-vector-capacity
-code byte_vector_capacity, 'byte-vector-capacity' ; bite-vector -> capacity
+code byte_vector_capacity, 'byte-vector-capacity' ; byte-vector -> capacity
         _ check_byte_vector
         mov     rbx, [rbx + BYTE_VECTOR_RAW_CAPACITY_OFFSET]
         _tag_fixnum
