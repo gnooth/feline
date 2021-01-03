@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -96,6 +96,12 @@ global inspected-object
     { "data address" :raw }
     { "length" :raw }
 } string-slice builtin-type-set-layout
+
+{
+    { "length" :raw }
+    { "data address" :raw }
+    { "capacity" :rax }
+} vector builtin-type-set-layout
 
 {
     { "length" :raw }
