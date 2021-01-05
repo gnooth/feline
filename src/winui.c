@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -719,4 +719,24 @@ void winui__minibuffer_clear_eol (int x, int y)
 void winui__minibuffer_invalidate (void)
 {
   InvalidateRect (hwnd_minibuffer, NULL, FALSE);
+}
+
+char *
+winui__get_clipboard_text (void)
+{
+  if (!IsClipboardFormatAvailable (CF_TEXT))
+    return NULL;
+  if (!OpenClipboard (hwnd_frame))
+    return NULL;
+  HANDLE h = GetClipboardData (CF_TEXT);
+  char *p = NULL;
+  if (h != NULL)
+    {
+      LPCSTR s = GlobalLock (h);
+      size_t len = strlen (s);
+      p = malloc (len + 1);
+      strcpy (p, s);
+    }
+  CloseClipboard ();
+  return p;
 }
