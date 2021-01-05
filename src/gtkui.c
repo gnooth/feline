@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -661,4 +661,12 @@ void gtkui__minibuffer_set_caret_pos (int column, int row)
 {
   minibuffer_caret_column = column;
   minibuffer_caret_row = row;
+}
+
+gchar *
+gtkui__get_clipboard_text (void)
+{
+  GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+  gchar *text = gtk_clipboard_wait_for_text (clipboard);
+  return text;
 }
