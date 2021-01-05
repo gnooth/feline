@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -723,7 +723,8 @@ use: kill-ring
     ] if ;
 
 : paste
-    last-kill [ paste1 ] [ "Kill ring is empty" message ] if* ;
+    [ get-clipboard-text ] [ last-kill ] either?
+    [ paste1 ] [ "Clipboard is empty" message ] if* ;
 
 : cycle-paste
     last-command ' paste eq? [
