@@ -1,4 +1,4 @@
-; Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2019-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -574,5 +574,25 @@ code winui_set_caret_pos, 'textview-set-caret-pos' ; x y -> void
         poprbx
         extern  SetCaretPos
         xcall   SetCaretPos
+        next
+endcode
+
+; ### get-clipboard-text
+code get_clipboard_text, 'get-clipboard-text' ; void -> string
+        extern  winui__get_clipboard_text
+        xcall   winui__get_clipboard_text
+        test    rax, rax
+        jz      .1
+        _dup
+        mov     rbx, rax
+        push    rbx
+        _ zcount
+        _ copy_to_string
+        pop     arg0_register
+        xcall   free
+        next
+.1:
+        _dup
+        mov     ebx, NIL
         next
 endcode
