@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ global directory-mode-local-map
             [ s string-length 40 >= ]
             [ 37 s ?nth digit? ]
             [ 38 s ?nth '\s' eq? ]
-            [ 39 s ?nth dup alphanumeric? swap '.' eq? or ]
+            [ 39 s ?nth dup alphanumeric? swap { '.' '_' } member-eq? or ]
         } && // -> ?
         [
             // The string qualifies. The name begins at offset 39.
@@ -60,7 +60,7 @@ global directory-mode-local-map
             {
                 [ index 1-  s ?nth digit? ]
                 [ index s ?nth '\s' eq? ]
-                [ index 1+ s ?nth dup alphanumeric? swap '.' eq? or ]
+                [ index 1+ s ?nth dup alphanumeric? swap { '.' '_' } member-eq? or ]
             } && // -> ?
             index 1+ nil ?
         ] when
