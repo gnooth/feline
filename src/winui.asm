@@ -596,3 +596,18 @@ code get_clipboard_text, 'get-clipboard-text' ; void -> string
         mov     ebx, NIL
         next
 endcode
+
+; ### set-clipboard-text
+code set_clipboard_text, 'set-clipboard-text' ; string -> ?
+        _ check_string
+        lea     arg0_register, [rbx + STRING_RAW_DATA_OFFSET]
+        extern  winui__set_clipboard_text
+        xcall   winui__set_clipboard_text
+        test    rax, rax
+        jz      .1
+        mov     ebx, TRUE
+        next
+.1:
+        mov     ebx, NIL
+        next
+endcode

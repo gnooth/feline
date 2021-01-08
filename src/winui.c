@@ -740,3 +740,25 @@ winui__get_clipboard_text (void)
   CloseClipboard ();
   return p;
 }
+
+BOOL
+winui__set_clipboard_text (char *string)
+{
+  BOOL ret = FALSE;
+  if (OpenClipboard (hwnd_frame))
+    {
+      EmptyClipboard ();
+      size_t len = strlen (string);
+      HGLOBAL h = GlobalAlloc (GMEM_MOVEABLE, len + 1);
+      if (h != NULL)
+        {
+          char *copy = GlobalLock (h);
+          strcpy (copy, string);
+          if (SetClipboardData (CF_TEXT, copy))
+            ret = TRUE;
+          GlobalUnlock (h);
+        }
+      CloseClipboard ();
+    }
+    return ret;
+}
