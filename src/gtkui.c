@@ -670,3 +670,10 @@ gtkui__get_clipboard_text (void)
   gchar *text = gtk_clipboard_wait_for_text (clipboard);
   return text;
 }
+
+void
+gtkui__set_clipboard_text (const char *text)
+{
+  GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
+  gtk_clipboard_set_text  (clipboard, text, strlen (text));
+}

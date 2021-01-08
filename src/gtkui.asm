@@ -478,3 +478,13 @@ code get_clipboard_text, 'get-clipboard-text' ; void -> string
         mov     ebx, NIL
         next
 endcode
+
+; ### set-clipboard-text
+code set_clipboard_text, 'set-clipboard-text' ; string -> ?
+        _ check_string
+        lea     arg0_register, [rbx + STRING_RAW_DATA_OFFSET]
+        extern  gtkui__set_clipboard_text
+        xcall   gtkui__set_clipboard_text
+        mov     ebx, TRUE
+        next
+endcode
