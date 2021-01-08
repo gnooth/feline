@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2019 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ global kill-list-next                   // -> fixnum/nil
 global last-paste                       // -> string/nil
 
 : initialize-kill-ring
-    16 <vector> kill-list!
+    16 make-vector kill-list!
     nil kill-list-next! ;
 
 initialize-kill-ring
@@ -57,4 +57,4 @@ initialize-kill-ring
 
 : append-kill                           // string -> void
     maybe-promote-last-paste
-    kill-list vector-push ;
+    [ kill-list vector-push ] [ set-clipboard-text drop ] bi ;
