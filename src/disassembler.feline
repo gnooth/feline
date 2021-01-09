@@ -480,6 +480,7 @@ global regop    // REGister or OPcode extension (depending on the instruction)
                 ] }
             } case
         ] }
+        { 3 [ modrm-rm register-rm sreg! ] }
     } case
     .inst ;
 
