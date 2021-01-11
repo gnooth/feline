@@ -354,18 +354,19 @@ public
     pending length 0? [ node node-operator compile-call-symbol ] ?return
     pending-last-value dup wrapper? [ wrapped ] when :> callable
 
-    nil !> address
-    callable symbol? [ symbol-code-address address! ] when
+    local symbol
+    local address
+    callable symbol? [ dup symbol! symbol-code-address address! ] when
     callable quotation? [
         [ callable length 1 eq? ] [ callable first symbol? ] both?
-        [ callable first ] [ callable ] if callable-code-address address!
+        [ callable first dup symbol! ] [ callable ] if callable-code-address address!
     ] when
 
     address [
         pending-remove-last
         flush-pending
         0x53 emit-byte                  // push rbx
-        address compile-call-address
+        symbol [ inline-or-compile-call ] [ address compile-call-address ] if*
         emit-dup
         0x5b emit-byte                  // pop rbx
     ] [
