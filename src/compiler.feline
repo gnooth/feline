@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -352,8 +352,14 @@ public
 : compile-keep ( node )
 
     pending length 0? [ node node-operator compile-call-symbol ] ?return
-    pending-last-value dup wrapper? [ wrapped ] when :> last-value
-    last-value callable-code-address :> address
+    pending-last-value dup wrapper? [ wrapped ] when :> callable
+
+    nil !> address
+    callable symbol? [ symbol-code-address address! ] when
+    callable quotation? [
+        [ callable length 1 eq? ] [ callable first symbol? ] both?
+        [ callable first ] [ callable ] if callable-code-address address!
+    ] when
 
     address [
         pending-remove-last
