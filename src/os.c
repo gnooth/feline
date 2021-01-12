@@ -1,4 +1,4 @@
-// Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2012-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -439,9 +439,13 @@ cell os_resize_file (cell fd, off_t offset)
 
 cell os_delete_file (const char *filename)
 {
+// Returns 0 if successful.
 #ifdef WIN64
+  // "If the function succeeds, the return value is nonzero."
   return DeleteFile (filename) ? 0 : -1;
 #else
+  // "On success, zero is returned. On error, -1 is returned,
+  // and errno is set appropriately."
   return unlink (filename);
 #endif
 }
