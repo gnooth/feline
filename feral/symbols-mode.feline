@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ constant: line-number-suffix ": " ;
 
 : symbols-mode-format-line ( s ) // string -> segments
 
-    16 <vector> :> v
+    16 make-vector :> v
 
     line-number-suffix s substring-start 1+ :> end
     0 end s substring 0 color-linenumber make-segment/3 v push
