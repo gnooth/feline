@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -225,6 +225,7 @@ endcode
 
 ; ### symbol?
 code symbol?, 'symbol?'                 ; x -> x/nil
+; If x is a symbol, returns x unchanged. If x is not a symbol, returns nil.
         cmp     bl, HANDLE_TAG
         jne     .1
         mov     rax, rbx                ; save x in rax
@@ -762,19 +763,6 @@ code global_inc, 'global-inc'   ; symbol --
         next
 endcode
 
-; ### global-dec
-code global_dec, 'global-dec'   ; symbol --
-        _ check_global
-        _dup
-        _symbol_value
-        _check_fixnum
-        _oneminus
-        _tag_fixnum
-        _swap
-        _symbol_set_value
-        next
-endcode
-
 ; ### symbol_raw_code_address
 code symbol_raw_code_address, 'symbol_raw_code_address', SYMBOL_INTERNAL
 ; symbol -- raw-code-address/0
@@ -830,6 +818,18 @@ code symbol_set_code_size, 'symbol-set-code-size'       ; tagged-code-size symbo
         _verify_fixnum [rbp]
         _untag_fixnum qword [rbp]
         _symbol_set_raw_code_size
+        next
+endcode
+
+; ### symbol-code
+code symbol_code, 'symbol-code'         ; symbol -> address size
+        _ check_symbol                  ; rbx: ^symbol
+        mov     rax, [rbx + SYMBOL_RAW_CODE_ADDRESS_OFFSET] ; rax: raw size
+        lea     rbp, [rbp - BYTES_PER_CELL] ; make room
+        _tag_fixnum rax                 ; rax: tagged size
+        mov     rbx, [rbx + SYMBOL_RAW_CODE_SIZE_OFFSET] ; rbx: raw address
+        mov     [rbp], rax              ; -> address raw-size
+        _tag_fixnum                     ; -> address size
         next
 endcode
 
