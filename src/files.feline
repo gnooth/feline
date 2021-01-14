@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2020-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ in: feline
 
 public
 
-: file-name-as-directory // string -> string'
+: file-name-as-directory                // string -> string
     dup string-?last path-separator-char? [
         path-separator-char string-append-char
     ] unless ;
@@ -28,13 +28,13 @@ public
     len 1- filename [ path-separator-char? ] find-last-from // -> index/nil element/nil
     [ 1+ filename tail ] [ filename nip ] if ;
 
-// returns filename without its directory component
 : file-name-nondirectory                // string -> string
+// Returns filename without its directory component.
     win64? [ file-name-nondirectory-win64 ] [ file-name-nondirectory-linux ] if ;
 
+: file-name-extension                   // filename -> string/nil
 // Returns the filename's extension, including its leading '.' (".ext"),
 // or nil if the filename has no extension.
-: file-name-extension // filename -> string/nil
     file-name-nondirectory :> name
     name length :> len
 
@@ -52,7 +52,7 @@ public
     } cond ;
 
 : file-name-directory-win64 ( filename ) // filename -> dirname/nil
-// returns the file name's directory component
+// Returns the filename's directory component.
     filename length :> len
 
     {
@@ -81,8 +81,8 @@ public
 
     dirname ;
 
-: file-name-directory // filename -> dirname/nil
-// returns the file name's directory component
+: file-name-directory                   // filename -> dirname/nil
+// Returns the filename's directory component.
     win64? [ file-name-directory-win64 ] [ file-name-directory-linux ] if ;
 
 : verify-extension // extension filename  -> filename/nil
@@ -91,7 +91,7 @@ public
 
 win64? #if
 
-: directory-files // string -> sequence/nil
+: directory-files                       // string -> sequence/nil
     1 ?enough !> arg
 
     arg empty? [ nil ] ?return
@@ -114,7 +114,7 @@ win64? #if
 
     p zero? [ nil ] ?return
 
-    64 <vector> :> v
+    64 make-vector :> v
 
     nil !> filename
     extension [
@@ -147,7 +147,7 @@ win64? #if
 
 linux? #if
 
-: directory-files // string -> sequence/nil
+: directory-files                       // string -> sequence/nil
     1 ?enough !> arg
     arg empty? [ nil ] ?return
 
@@ -162,7 +162,7 @@ linux? #if
     ] if
 
     arg file-name-extension :> extension
-    64 <vector> :> v
+    64 make-vector :> v
 
     dir opendir :> p
 
