@@ -135,6 +135,7 @@ constant: ctrl-shift-kp-home    0x0006ffb7 ; // GDK_KEY_KP_7
 constant: ctrl-shift-kp-end     0x0006ffb1 ; // GDK_KEY_KP_1
 
 constant: ctrl-space 0x20 ctrl ;
+constant: ctrl-enter enter ctrl ;
 
 constant: alt-b 'b' char-code alt ;
 constant: alt-c 'c' char-code alt ;
