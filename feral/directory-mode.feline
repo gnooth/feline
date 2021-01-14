@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-using: feral-core segments feral-colors feline accessors ;
+using: feral-core segments feral-colors feline accessors mini ;
 in: directory-mode
 
 private
@@ -22,7 +22,7 @@ global instance
 
 global directory-mode-local-map
 
-: name-offset // string -> index/nil
+: name-offset                           // string -> index/nil
     1 ?enough verify-string :> s
 
     nil !> index
@@ -84,7 +84,7 @@ global directory-mode-local-map
         1array
     ] if ;
 
-: get-instance // void -> mode
+: get-instance                          // void -> mode
     instance ;
 
 : directory-contents ( dirname )        // dirname -> string/nil
@@ -98,7 +98,7 @@ global directory-mode-local-map
     ] if
     shell-command-to-string ;
 
-: directory-mode-initialize-buffer // buffer -> void
+: directory-mode-initialize-buffer      // buffer -> void
     1 ?enough :> buf
     directory-mode-local-map buf local-map<< ;
 
@@ -120,7 +120,19 @@ global directory-mode-local-map
     buf buffer-list vector-push
     buf ;
 
-: dir-get-filename // line -> filename/nil
+: refresh-buffer                        // void -> void
+    current-buffer-filename directory-contents :> s
+    s empty? ?exit
+    dot-line-number :> dotlinenumber
+    top-line-number :> toplinenumber
+    s current-buffer editor:buffer-set-contents
+    toplinenumber nth-line top-line!
+    top-line line? assert
+    dotlinenumber nth-line 0 make-position dot!
+    dot-line-text name-offset [ dot-offset! ] when*
+    true repaint?! ;
+
+: line-get-filename                     // line -> filename/nil
     text>> :> s
     s name-offset [ s tail ] [ nil ] if* ;
 
@@ -128,7 +140,7 @@ global directory-mode-local-map
     dot-line !> line
 
     [ line ] [
-        line dir-get-filename { nil "." ".." } member?
+        line line-get-filename { nil "." ".." } member?
         [ line next>> line! ] [
             line dup text>> name-offset move-dot-to
             nil line!
@@ -147,7 +159,7 @@ global directory-mode-local-map
         editor:move-up
     ] when* ;
 
-: dir-goto-file ( filename ) // filename -> void
+: dir-goto-file ( filename )            // filename -> void
     current-buffer mode>> directory-mode:get-instance neq? ?exit
     filename nil? ?exit
     filename file-name-nondirectory :> name
@@ -170,7 +182,7 @@ global directory-mode-local-map
         linenumber 1+ editor:goto-line-internal
     ] when ;
 
-: open-directory ( dirname ) // dirname -> void
+: open-directory ( dirname )            // dirname -> void
     dirname directory? [
         dirname create-directory-buffer [
             set-current-buffer
@@ -208,16 +220,13 @@ global directory-mode-local-map
 
     filename [ dir-goto-file ] [ dir-goto-next-nontrivial-file ] if* ;
 
+: dot-line-name                         // void -> string/nil
+    dot-line-text dup name-offset [ swap tail ] [ nil ] if* ;
+
 : dir-open-file                         // void -> void
-    dot-line-text :> s
-
-    local name
-    s name-offset [
-        s tail name!
-        current-buffer filename>> name path-append
-        canonical-path
-    ] [ nil ] if* :> filename
-
+    dot-line-name :> name
+    name nil? ?exit
+    current-buffer-filename name path-append canonical-path :> filename
     filename [
         filename find-buffer-from-file-name [
             set-current-buffer
@@ -229,6 +238,47 @@ global directory-mode-local-map
             ] if
         ] if*
     ] when ;
+
+: dir-open-file-kill-directory          // void -> void
+    dot-line-name :> name
+    name nil? ?exit
+    current-buffer-filename name path-append canonical-path :> filename
+    filename [
+        filename find-buffer-from-file-name [
+            // -> buf
+            dup current-buffer eq? [ editor:kill-current-buffer ] unless
+            set-current-buffer
+        ] [
+            filename directory? [
+                filename open-directory-in-current-buffer
+            ] [
+                editor:kill-current-buffer
+                filename 1 editor:create-buffer/2
+            ] if
+        ] if*
+    ] when ;
+
+private: cancelled "Cancelled" message ;
+
+: dir-delete-file                       // void -> void
+    dot-line-name :> name
+    name nil? ?exit
+    name { "." ".." } member? ?exit
+    name "Delete %s (yes or no) " format minibuffer-accept-string :> response
+    {
+        { [ response nil? ] [ cancelled ] }
+        {
+            [ response string-downcase { "y" "yes" } member? ]
+            [
+                current-buffer-filename name path-append canonical-path [
+                    delete-file
+                    [ refresh-buffer "File deleted" ] [ "Unable to delete file" ] if message
+                ] when*
+            ]
+        }
+        // default
+        [ cancelled ]
+    } cond ;
 
 : dir-up-dir
     current-buffer :> buf
@@ -252,12 +302,16 @@ global directory-mode-local-map
 : initialize-local-map
     128 <hashtable> :> m
     ' dir-open-file         feral-key:enter     m set-at
+    ' dir-delete-file       feral-key:delete    m set-at
     ' dir-up-dir            'u'                 m set-at
-    ' dir-up-dir            '^'                 m set-at // Emacs
     ' dir-next-line         feral-key:down      m set-at
     ' dir-next-line         feral-key:kp-down   m set-at
     ' dir-previous-line     feral-key:up        m set-at
     ' dir-previous-line     feral-key:kp-up     m set-at
+
+    ' dir-open-file-kill-directory  feral-key:ctrl-enter    m set-at
+    ' editor:kill-current-buffer    'q'                     m set-at
+
     m directory-mode-local-map! ;
 
 initialize-local-map
