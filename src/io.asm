@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -20,14 +20,14 @@ value os_errno, 'errno', 0
 
 ; ### delete-file
 code delete_file, 'delete-file'         ; string -> ?
-; returns t if successful, f on error
+; Returns true if successful, nil on error.
         _ string_raw_data_address
         mov     arg0_register, rbx
-        xcall   os_delete_file
-        mov     ebx, t_value
-        mov     edx, f_value
+        xcall   os_delete_file          ; os_delete_file returns 0 if successful
+        mov     ebx, TRUE
+        mov     edx, NIL
         test    rax, rax
-        cmovs   ebx, edx
+        cmovnz  ebx, edx
         next
 endcode
 
