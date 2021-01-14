@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -130,6 +130,22 @@ code set_pc, 'pc!'                      ; fixnum -> void
         _lit tagged_zero
         _ current_context
         _ array_set_nth_unsafe
+        next
+endcode
+
+; ### pc+!
+code pc_plus_store, 'pc+!'              ; fixnum -> void
+        _check_fixnum                   ; -> untagged-fixnum
+        _ current_context               ; -> untagged-fixnum array
+        _handle_to_object_unsafe        ; -> untagged-fixnum ^array
+
+        ; pc is first element of array
+        mov     rax, [rbx + ARRAY_DATA_OFFSET]
+        shl     qword [rbp], FIXNUM_TAG_BITS
+        add     rax, qword [rbp]
+        mov     [rbx + ARRAY_DATA_OFFSET], rax
+
+        _2drop
         next
 endcode
 
@@ -297,9 +313,8 @@ code emit_byte, 'emit-byte'             ; byte -> void
         _verify_fixnum
         _ pc
         _ cstore
-        _ pc
-        add     rbx, (1 << FIXNUM_TAG_BITS)
-        _ set_pc
+        _lit tagged_fixnum(1)
+        _ pc_plus_store
         next
 endcode
 
@@ -321,10 +336,8 @@ code emit_int32, 'emit-int32'           ; int32 -> void
         _ verify_int32
         _ pc
         _ lstore
-        _ pc
         _lit tagged_fixnum(4)
-        _ fast_fixnum_plus
-        _ set_pc
+        _ pc_plus_store
         next
 endcode
 
@@ -339,10 +352,8 @@ endcode
 code emit_qword, 'emit-qword'           ; raw-qword -> void
         _ pc
         _ store
-        _ pc
         _lit tagged_fixnum(8)
-        _ fixnum_fixnum_plus
-        _ set_pc
+        _ pc_plus_store
         next
 endcode
 
@@ -351,10 +362,8 @@ code emit_raw_qword, 'emit_raw_qword'   ; raw-qword -> void
         _ new_uint64
         _ pc
         _ store
-        _ pc
         _lit tagged_fixnum(8)
-        _ fixnum_fixnum_plus
-        _ set_pc
+        _ pc_plus_store
         next
 endcode
 
@@ -368,10 +377,8 @@ code emit_dup, 'emit-dup'               ; void -> void
         mov     rax, 0xf86d8d48f85d8948
         mov     [rbx], rax
         _drop
-        _ pc
         _lit tagged_fixnum(8)
-        _ fast_fixnum_plus
-        _ set_pc
+        _ pc_plus_store
         next
 endcode
 
@@ -385,10 +392,8 @@ code emit_drop, 'emit-drop'             ; void -> void
         mov     rax, 0x086d8d48005d8b48
         mov     [rbx], rax
         _drop
-        _ pc
         _lit tagged_fixnum(8)
-        _ fast_fixnum_plus
-        _ set_pc
+        _ pc_plus_store
         next
 endcode
 
@@ -399,10 +404,8 @@ code emit_2drop, 'emit-2drop'           ; void -> void
         mov     rax, 0x106d8d48085d8b48
         mov     [rbx], rax
         _drop
-        _ pc
         _lit tagged_fixnum(8)
-        _ fast_fixnum_plus
-        _ set_pc
+        _ pc_plus_store
         next
 endcode
 
@@ -413,10 +416,8 @@ code emit_nip, 'emit-nip'               ; void -> void
         mov     eax, 0x086d8d48
         mov     [rbx], eax
         _drop
-        _ pc
         _lit tagged_fixnum(4)
-        _ fast_fixnum_plus
-        _ set_pc
+        _ pc_plus_store
         next
 endcode
 
@@ -545,18 +546,18 @@ endcode
 
 ; ### inline-call-symbol
 code inline_call_symbol, 'inline-call-symbol' ; symbol -> void
-        _dup
-        _ symbol_code_address
-        _swap
-        _ symbol_code_size              ; -> address size
-        _ oneminus                      ; adjust size to exclue ret instruction
-        _ pc
-        _swap
-        _tick unsafe_copy_bytes         ; -> size
-        _ keep
-        _ pc
-        _ generic_plus
-        _ set_pc
+        _ symbol_code                   ; -> address size
+        sub     rbx, (1 << FIXNUM_TAG_BITS) ; adjust size to exclude ret instruction
+        _ pc                            ; -> address size pc
+        _check_fixnum
+        mov     arg1_register, rbx      ; arg1_register: pc (untagged)
+        _drop                           ; -> address size
+        mov     arg2_register, rbx      ; arg2_register: size
+        mov     arg0_register, [rbp]    ; arg0_register: address
+        sar     arg0_register, FIXNUM_TAG_BITS
+        _ copy_bytes
+        _nip                            ; -> size
+        _ pc_plus_store
         next
 endcode
 
@@ -743,7 +744,7 @@ code initialize_compiler, 'initialize_compiler'
 endcode
 
 ; ### inline-or-compile-call
-code inline_or_compile_call, 'inline-or-compile-call' ; word -> void
+code inline_or_compile_call, 'inline-or-compile-call' ; symbol -> void
         _dup
 %ifdef DEBUG
         _ symbol_always_inline?
