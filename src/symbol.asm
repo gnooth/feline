@@ -722,47 +722,6 @@ code symbol_set_value, 'symbol-set-value'       ; value symbol -> void
         next
 endcode
 
-; ### error-not-global
-code error_not_global, 'error-not-global'       ; x --
-        _error "not a global"
-        next
-endcode
-
-; ### verify-global
-code verify_global, 'verify-global'     ; global -- global
-        _dup
-        _ check_symbol
-        _symbol_flags
-        and     rbx, SYMBOL_GLOBAL
-        poprbx
-        jz      error_not_global
-        next
-endcode
-
-; ### check_global
-code check_global, 'check_global', SYMBOL_INTERNAL      ; x -- unboxed-symbol
-        _ check_symbol
-        _dup
-        _symbol_flags
-        and     rbx, SYMBOL_GLOBAL
-        poprbx
-        jz      error_not_global
-        next
-endcode
-
-; ### global-inc
-code global_inc, 'global-inc'   ; symbol --
-        _ check_global
-        _dup
-        _symbol_value
-        _check_fixnum
-        _oneplus
-        _tag_fixnum
-        _swap
-        _symbol_set_value
-        next
-endcode
-
 ; ### symbol_raw_code_address
 code symbol_raw_code_address, 'symbol_raw_code_address', SYMBOL_INTERNAL
 ; symbol -- raw-code-address/0
@@ -785,11 +744,14 @@ code symbol_code_address, 'symbol-code-address' ; symbol -> code-address/nil
 endcode
 
 ; ### symbol-set-code-address
-code symbol_set_code_address, 'symbol-set-code-address' ; tagged-code-address symbol --
+code symbol_set_code_address, 'symbol-set-code-address' ; tagged-code-address symbol -> void
         _ check_symbol
-        _verify_fixnum [rbp]
-        _untag_fixnum qword [rbp]
-        _symbol_set_raw_code_address
+        mov     rax, qword [rbp]
+        test    al, FIXNUM_TAG
+        jz      error_not_fixnum_rax
+        sar     rax, FIXNUM_TAG_BITS
+        mov     qword [rbx + SYMBOL_RAW_CODE_ADDRESS_OFFSET], rax
+        _2drop
         next
 endcode
 
