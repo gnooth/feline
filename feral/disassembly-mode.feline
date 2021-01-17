@@ -1,4 +1,4 @@
-// Copyright (C) 2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2020-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ feral-config:winui? feral-config:gtkui? or #if
 
 : initialize-mode
     mode make-instance :> m
-    "Disassembly" m name<<
+    "Feline disassembly" m name<<
     ' initialize-buffer m initialize-buffer-function<<
     ' format-line m format-line-function<<
     m instance! ;
