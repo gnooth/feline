@@ -1,4 +1,4 @@
-// Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2018-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -79,9 +79,9 @@ initialize-local-map
     asm-mode-local-map buf local-map<<
     instance indent-size>> buf indent-size<< ;
 
-: initialize-asm-mode
+: initialize-mode
     mode make-instance :> m
-    "Assembly" m name<<
+    "Feline NASM" m name<<
     8 m indent-size<<
     "; " m comment-start<<
     ' format-line m format-line-function<<
@@ -90,4 +90,6 @@ initialize-local-map
     m ".asm" modes set-at
     m instance! ;
 
-initialize-asm-mode
+initialize-mode
+
+forget initialize-mode
