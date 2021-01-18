@@ -141,25 +141,23 @@ constant: comment-start-length comment-start length ;
     start 1+ end + ;
 
 : string-segments ( s )                 // string -> segments
-    s string-length :> len
+    s length :> len
     0 !> start
     0 !> end
-    16 make-vector :> v
-    nil !> c
+    16 make-vector :> vec
 
     [ end len fixnum-fixnum< ] [
-        start s string-nth c!
+        start s nth :> c
         {
             { [ c '\s' eq? ] [ start s string-skip-whitespace len or end! ] }
             { [ c '"' eq? ] [ start s skip-quoted-string len or end! ] }
             [ start s string-skip-to-whitespace len or end! ]
         } cond
-        start end s string-substring start make-segment v vector-push
+        start end s string-substring start make-segment vec push
         end start!
     ] while
 
-    v
-;
+    vec ;
 
 var in-comment?
 
