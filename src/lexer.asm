@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -356,40 +356,38 @@ code lexer_line, 'lexer-line'           ; lexer -- string
 endcode
 
 ; ### lexer-next-line
-code lexer_next_line, 'lexer-next-line' ; lexer --
+code lexer_next_line, 'lexer-next-line' ; lexer -> void
 
         _ check_lexer
 
         push    this_register
         mov     this_register, rbx
-        poprbx
+        _drop
 
         _this_lexer_raw_index
-        _this_lexer_string_raw_length
-
-        _twodup
-        _ge
-        _if .1
+        _this_lexer_string_raw_length   ; -> untagged-index untagged-length
+        cmp     [rbp], rbx
+        jl      .1
         _2drop
         jmp     .exit
-        _then .1                        ; -- untagged-start-index untagged-length
 
+.1:
         _swap
         _register_do_range .2
         _raw_loop_index
         _this_lexer_string_nth_unsafe
-        _lit 10
-        _equal
-        _if .3
+        cmp     rbx, 10                 ; eol?
+        _drop
+        jne     .3
         _this_lexer_increment_line_number
         _raw_loop_index
         _oneplus
-        _dup
-        _this_lexer_set_raw_index
-        _this_lexer_set_raw_line_start
+        mov [this_register + LEXER_RAW_INDEX_OFFSET], rbx
+        mov [this_register + LEXER_RAW_LINE_START_OFFSET], rbx
+        _drop
         _unloop
         jmp     .exit
-        _then .3
+.3:
         _loop .2
 
         ; reached end of string without finding a newline
