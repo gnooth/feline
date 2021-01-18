@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ asm_global last_raw_typecode_, LAST_BUILTIN_TYPECODE + 1
 
 ; ### next-typecode
 code next_typecode, 'next-typecode'     ; -> fixnum
-        pushrbx
+        _dup
         mov     rbx, [last_raw_typecode_]
         add     qword [last_raw_typecode_], 1
         _tag_fixnum
@@ -84,7 +84,8 @@ OBJECT_ALLOCATED_BIT            equ 4
 %define this_register   r15
 
 %macro  _this 0
-        pushd   this_register
+        _dup
+        mov     rbx, this_register
 %endmacro
 
 %macro  _slot0 0
@@ -95,7 +96,7 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 ; The object's raw typecode is stored in the first two bytes of the object header.
 
-%macro  _object_raw_typecode 0          ; object -- raw-typecode
+%macro  _object_raw_typecode 0          ; object -> raw-typecode
         _wfetch                         ; 16 bits
 %endmacro
 
@@ -121,7 +122,7 @@ OBJECT_ALLOCATED_BIT            equ 4
         movzx   rbx, OBJECT_FLAGS_BYTE
 %endmacro
 
-%macro  _object_set_flags 0             ; object flags --
+%macro  _object_set_flags 0             ; object flags ->
         mov     rax, [rbp]              ; object in rax
         mov     [rax + OBJECT_FLAGS_BYTE_OFFSET], bl
         _2drop
@@ -131,7 +132,7 @@ OBJECT_ALLOCATED_BIT            equ 4
         mov     byte [this_register + OBJECT_FLAGS_BYTE_OFFSET], %1
 %endmacro
 
-%macro  _object_allocated? 0            ; object -- 0/1
+%macro  _object_allocated? 0            ; object -> 0/1
         test    OBJECT_FLAGS_BYTE, OBJECT_ALLOCATED_BIT
         setnz   bl
         movzx   ebx, bl
@@ -146,57 +147,57 @@ OBJECT_ALLOCATED_BIT            equ 4
         movzx   rbx, OBJECT_MARK_BYTE
 %endmacro
 
-%macro  _slot 1                         ; object -- x
+%macro  _slot 1                         ; object -> x
         mov     rbx, [rbx + BYTES_PER_CELL * %1]
 %endmacro
 
-%macro  _this_slot 1                    ; -- x
-        pushrbx
+%macro  _this_slot 1                    ; -> x
+        _dup
         mov     rbx, [this_register + BYTES_PER_CELL * %1]
 %endmacro
 
-%macro  _set_slot 1                     ; x object --
+%macro  _set_slot 1                     ; x object ->
         mov     rax, [rbp]
         mov     [rbx + BYTES_PER_CELL * %1], rax
         _2drop
 %endmacro
 
-%macro  _this_set_slot 1                ; x --
+%macro  _this_set_slot 1                ; x ->
         mov     [this_register + BYTES_PER_CELL * %1], rbx
-        poprbx
+        _drop
 %endmacro
 
-%macro  _this_nth_slot 0                ; n -- x
+%macro  _this_nth_slot 0                ; n -> x
         _cells
         add     rbx, this_register
         mov     rbx, [rbx]
 %endmacro
 
-%macro  _slot1 0                        ; object -- x
+%macro  _slot1 0                        ; object -> x
         _slot 1
 %endmacro
 
-%macro  _set_slot1 0                    ; x object --
+%macro  _set_slot1 0                    ; x object ->
         _set_slot 1
 %endmacro
 
 %define this_slot1      qword [this_register + BYTES_PER_CELL * 1]
 
-%macro  _this_slot1 0                   ; -- x
-        pushrbx
+%macro  _this_slot1 0                   ; -> x
+        _dup
         mov     rbx, this_slot1
 %endmacro
 
-%macro  _this_set_slot1 0               ; x --
+%macro  _this_set_slot1 0               ; x ->
         mov     this_slot1, rbx
-        poprbx
+        _drop
 %endmacro
 
-%macro  _slot2 0                        ; object -- x
+%macro  _slot2 0                        ; object -> x
         mov     rbx, [rbx + BYTES_PER_CELL * 2]
 %endmacro
 
-%macro  _set_slot2 0                    ; x object --
+%macro  _set_slot2 0                    ; x object ->
         mov     rax, [rbp]
         mov     [rbx + BYTES_PER_CELL * 2], rax
         _2drop
@@ -204,21 +205,21 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 %define this_slot2      qword [this_register + BYTES_PER_CELL * 2]
 
-%macro  _this_slot2 0                   ; -- x
-        pushrbx
+%macro  _this_slot2 0                   ; -> x
+        _dup
         mov     rbx, this_slot2
 %endmacro
 
-%macro  _this_set_slot2 0               ; x --
+%macro  _this_set_slot2 0               ; x ->
         mov     this_slot2, rbx
-        poprbx
+        _drop
 %endmacro
 
-%macro  _slot3 0                        ; object -- x
+%macro  _slot3 0                        ; object -> x
         mov     rbx, [rbx + BYTES_PER_CELL * 3]
 %endmacro
 
-%macro  _set_slot3 0                    ; x object --
+%macro  _set_slot3 0                    ; x object ->
         mov     rax, [rbp]              ; x in rax
         mov     [rbx + BYTES_PER_CELL * 3], rax
         _2drop
@@ -226,21 +227,21 @@ OBJECT_ALLOCATED_BIT            equ 4
 
 %define this_slot3      qword [this_register + BYTES_PER_CELL * 3]
 
-%macro  _this_slot3 0                   ; -- x
-        pushrbx
+%macro  _this_slot3 0                   ; -> x
+        _dup
         mov     rbx, this_slot3
 %endmacro
 
-%macro  _this_set_slot3 0               ; x --
+%macro  _this_set_slot3 0               ; x ->
         mov     this_slot3, rbx
-        poprbx
+        _drop
 %endmacro
 
-%macro  _slot4 0                        ; object -- x
+%macro  _slot4 0                        ; object -> x
         mov     rbx, [rbx + BYTES_PER_CELL * 4]
 %endmacro
 
-%macro  _set_slot4 0                    ; x object --
+%macro  _set_slot4 0                    ; x object ->
         mov     rax, [rbp]              ; x in rax
         mov     [rbx + BYTES_PER_CELL * 4], rax
         _2drop
@@ -249,20 +250,20 @@ OBJECT_ALLOCATED_BIT            equ 4
 %define this_slot4      qword [this_register + BYTES_PER_CELL * 4]
 
 %macro  _this_slot4 0
-        pushrbx
+        _dup
         mov     rbx, this_slot4
 %endmacro
 
-%macro  _this_set_slot4 0               ; x --
+%macro  _this_set_slot4 0               ; x ->
         mov     this_slot4, rbx
-        poprbx
+        _drop
 %endmacro
 
-%macro  _slot5 0                        ; object -- x
+%macro  _slot5 0                        ; object -> x
         mov     rbx, [rbx + BYTES_PER_CELL * 5]
 %endmacro
 
-%macro  _set_slot5 0                    ; x object --
+%macro  _set_slot5 0                    ; x object ->
         mov     rax, [rbp]              ; x in rax
         mov     [rbx + BYTES_PER_CELL * 5], rax
         _2drop
@@ -271,20 +272,20 @@ OBJECT_ALLOCATED_BIT            equ 4
 %define this_slot5      qword [this_register + BYTES_PER_CELL * 5]
 
 %macro  _this_slot5 0
-        pushrbx
+        _dup
         mov     rbx, [this_register + BYTES_PER_CELL * 5]
 %endmacro
 
-%macro  _this_set_slot5 0               ; x --
+%macro  _this_set_slot5 0               ; x ->
         mov     [this_register + BYTES_PER_CELL * 5], rbx
-        poprbx
+        _drop
 %endmacro
 
-%macro  _slot6 0                        ; object -- x
+%macro  _slot6 0                        ; object -> x
         mov     rbx, [rbx + BYTES_PER_CELL * 6]
 %endmacro
 
-%macro  _set_slot6 0                    ; x object --
+%macro  _set_slot6 0                    ; x object ->
         mov     rax, [rbp]              ; x in rax
         mov     [rbx + BYTES_PER_CELL * 6], rax
         _2drop
@@ -293,27 +294,27 @@ OBJECT_ALLOCATED_BIT            equ 4
 %define this_slot6      qword [this_register + BYTES_PER_CELL * 6]
 
 %macro  _this_slot6 0
-        pushrbx
+        _drop
         mov     rbx, [this_register + BYTES_PER_CELL * 6]
 %endmacro
 
-%macro  _this_set_slot6 0               ; x --
+%macro  _this_set_slot6 0               ; x ->
         mov     [this_register + BYTES_PER_CELL * 6], rbx
-        poprbx
+        _drop
 %endmacro
 
-%macro  _slot7 0                        ; object -- x
+%macro  _slot7 0                        ; object -> x
         mov     rbx, [rbx + BYTES_PER_CELL * 7]
 %endmacro
 
 %define this_slot7      qword [this_register + BYTES_PER_CELL * 7]
 
 %macro  _this_slot7 0
-        pushrbx
+        _drop
         mov     rbx, [this_register + BYTES_PER_CELL * 7]
 %endmacro
 
-%macro  _this_set_slot7 0               ; x --
+%macro  _this_set_slot7 0               ; x ->
         mov     [this_register + BYTES_PER_CELL * 7], rbx
-        poprbx
+        _drop
 %endmacro
