@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -68,15 +68,15 @@ public: options ( search )              // search -> string
     current-search [
         16 make-sbuf :> sb
         current-search regex>> [
-            sb length 0? [ " [" sb sbuf-append-string ] unless
+            sb length 0? [ " [" sb sbuf-append-string ] when
             'r' sb push
         ] when
         current-search whole-words-only>> [
-            sb length 0? [ " [" sb sbuf-append-string ] unless
+            sb length 0? [ " [" sb sbuf-append-string ] when
             'w' sb push
         ] when
         current-search ignore-case>> [
-            sb length 0? [ " [" sb sbuf-append-string ] unless
+            sb length 0? [ " [" sb sbuf-append-string ] when
             'i' sb push
         ] when
         sb length 0? [ ']' sb push ] unless
@@ -322,7 +322,7 @@ use: regex
 public
 
 : make-prompt
-    short-options :> s
+    default-options :> s
     s length 0? [ "Find: " ] [ "Find" s + ": " + ] if ;
 
 : find-command
@@ -545,7 +545,7 @@ public
 
 private: set-prompt-with-options        // void -> void
     dot-offset minibuffer-prompt length - :> offset
-    "Find" short-options + ": " + :> prompt
+    "Find" default-options + ": " + :> prompt
     prompt minibuffer-user-text + minibuffer-set-text
     prompt minibuffer-set-prompt
     offset prompt length + dot-offset! ;
@@ -602,9 +602,11 @@ global replacement
 : query-replace-command
     "find" set-history
 
+    make-prompt :> prompt
+
     // REVIEW with-current-context
     :find-prompt current-context!
-    "Find: " minibuffer-accept-string :> pattern
+    prompt minibuffer-accept-string :> pattern
     nil current-context!
 
     pattern empty? ?exit
