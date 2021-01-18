@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -56,14 +56,14 @@ file __FILE__
         lea     rbx, [this_register + STRING_RAW_DATA_OFFSET]
 %endmacro
 
-%macro  _string_nth_unsafe 0            ; untagged-index string -- untagged-char
-        _string_raw_data_address
-        _plus
-        _cfetch
+%macro  _string_nth_unsafe 0            ; untagged-index ^string -> untagged-char
+        mov     rax, qword [rbp]        ; rax: untagged index
+        lea     rbp, [rbp + BYTES_PER_CELL] ; -> ^string
+        movzx   ebx, byte [rbx + STRING_RAW_DATA_OFFSET + rax] ; -> untagged-char
 %endmacro
 
-%macro  _this_string_nth_unsafe 0       ; untagged-index -- untagged-char
-        movzx   ebx, byte [rbx + this_register + STRING_RAW_DATA_OFFSET]
+%macro  _this_string_nth_unsafe 0       ; untagged-index -> untagged-char
+        movzx   ebx, byte [this_register + STRING_RAW_DATA_OFFSET + rbx]
 %endmacro
 
 %macro  _string_first_unsafe 0
