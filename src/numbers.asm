@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -198,17 +198,24 @@ code float_equal?, 'float-equal?'       ; x float -- ?
 endcode
 
 ; ### fixnum-fixnum<
-code fixnum_fixnum_lt, 'fixnum-fixnum<' ; fixnum1 fixnum2 -- ?
-        _check_fixnum
-        _swap
-        _check_fixnum
-        _swap
-
-        mov     eax, t_value
-        cmp     [rbp], rbx
-        mov     ebx, f_value
-        cmovl   ebx, eax
+code fixnum_fixnum_lt, 'fixnum-fixnum<' ; fixnum1 fixnum2 -> ?
+        test    bl, FIXNUM_TAG
+        jz      .error2
+        sar     rbx, FIXNUM_TAG_BITS
+        mov     rax, [rbp]
+        test    al, FIXNUM_TAG
+        jz      .error2
+        sar     rax, FIXNUM_TAG_BITS
         lea     rbp, [rbp + BYTES_PER_CELL]
+        cmp     rax, rbx
+        mov     eax, TRUE
+        mov     ebx, NIL
+        cmovl   ebx, eax
+        next
+.error2:
+        mov     rbx, rax
+.error1:
+        _ error_not_fixnum
         next
 endcode
 
@@ -233,7 +240,8 @@ endcode
 code fixnum_lt, 'fixnum<'               ; number fixnum -> ?
 
         ; last arg must be a fixnum
-        _verify_fixnum
+        test    bl, FIXNUM_TAG
+        jz      .error
 
         ; dispatch on type of first arg
         test    byte [rbp], FIXNUM_TAG
@@ -243,6 +251,10 @@ code fixnum_lt, 'fixnum<'               ; number fixnum -> ?
         mov     ebx, NIL
         cmovl   ebx, eax
         lea     rbp, [rbp + BYTES_PER_CELL]
+        next
+
+.error:
+        _ error_not_fixnum
         next
 
 .1:
