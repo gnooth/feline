@@ -200,7 +200,7 @@ endcode
 ; ### fixnum-fixnum<
 code fixnum_fixnum_lt, 'fixnum-fixnum<' ; fixnum1 fixnum2 -> ?
         test    bl, FIXNUM_TAG
-        jz      .error2
+        jz      .error1
         sar     rbx, FIXNUM_TAG_BITS
         mov     rax, [rbp]
         test    al, FIXNUM_TAG
@@ -601,12 +601,24 @@ code float_le, 'float<='                        ; number float -- ?
 endcode
 
 ; ### fixnum-fixnum>
-code fixnum_fixnum_gt, 'fixnum-fixnum>' ; fixnum1 fixnum2 -- ?
-        _check_fixnum
-        _swap
-        _check_fixnum
-        _swap
-        _ raw_int64_int64_gt
+code fixnum_fixnum_gt, 'fixnum-fixnum>' ; fixnum1 fixnum2 -> ?
+        test    bl, FIXNUM_TAG
+        jz      .error1
+        sar     rbx, FIXNUM_TAG_BITS
+        mov     rax, [rbp]
+        test    al, FIXNUM_TAG
+        jz      .error2
+        sar     rax, FIXNUM_TAG_BITS
+        lea     rbp, [rbp + BYTES_PER_CELL]
+        cmp     rax, rbx
+        mov     eax, TRUE
+        mov     ebx, NIL
+        cmovg   ebx, eax
+        next
+.error2:
+        mov     rbx, rax
+.error1:
+        _ error_not_fixnum
         next
 endcode
 
