@@ -1,4 +1,4 @@
-; Copyright (C) 2015-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2015-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -25,50 +25,28 @@ file __FILE__
         _this_slot1
 %endmacro
 
-%macro  _this_array_set_raw_length 0    ; untagged-length --
-        _this_set_slot1
-%endmacro
-
 ; Arrays store their data inline starting at this offset.
 %define ARRAY_DATA_OFFSET       16
 
-%macro _array_raw_data_address 0
-        lea     rbx, [rbx + ARRAY_DATA_OFFSET]
-%endmacro
-
-%macro _this_array_raw_data_address 0
-        pushrbx
-        lea     rbx, [this_register + ARRAY_DATA_OFFSET]
-%endmacro
-
 %macro  _array_nth_unsafe 0             ; untagged-index array -> element
-        mov     rax, [rbp]              ; untagged index in rax
+        mov     rax, [rbp]              ; rax: untagged index
         _nip
-        mov     rbx, [rbx + ARRAY_DATA_OFFSET + BYTES_PER_CELL * rax]
+        mov     rbx, [rbx + ARRAY_DATA_OFFSET + rax * BYTES_PER_CELL]
 %endmacro
 
-%macro  _this_array_nth_unsafe 0        ; untagged-index -- element
-        mov     rbx, [this_register + BYTES_PER_CELL*rbx + ARRAY_DATA_OFFSET]
+%macro  _this_array_nth_unsafe 0        ; untagged-index -> element
+        mov     rbx, [this_register + ARRAY_DATA_OFFSET + rbx * BYTES_PER_CELL ]
 %endmacro
 
-%macro  _array_set_nth_unsafe 0         ; element index array --
-        _array_raw_data_address
-        _swap
-        _cells
-        _plus
-        _store
-%endmacro
-
-%macro  _this_array_set_nth_unsafe 0    ; element index --
-        _cells
-        _this_array_raw_data_address
-        _plus
-        _store
+%macro  _this_array_set_nth_unsafe 0    ; element untagged-index -> void
+        mov     rax, [rbp]              ; rax: element
+        mov     [this_register + ARRAY_DATA_OFFSET + rbx * BYTES_PER_CELL], rax
+        _2drop
 %endmacro
 
 ; ### array?
-code array?, 'array?'                 ; x -> x/nil
-; If x is an array, returns x unchanged. If x is not an array, returns nil.
+code array?, 'array?'                   ; x -> x/nil
+; If x is an array, returns x unchanged. Otherwise, returns nil.
         cmp     bl, HANDLE_TAG
         jne     .not_an_array
         mov     rax, rbx
