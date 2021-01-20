@@ -31,178 +31,112 @@ file __FILE__
 %define SYMBOL_SOURCE_FILE_OFFSET       80
 %define SYMBOL_LINE_NUMBER_OFFSET       88
 
-%macro  _symbol_name 0                  ; symbol -- name
+%macro  _symbol_name 0                  ; ^symbol -> string
         _slot1
 %endmacro
 
-%macro  _this_symbol_name 0             ; -- name
-        _this_slot1
-%endmacro
-
-%macro  _this_symbol_set_name 0         ; name --
-        _this_set_slot1
-%endmacro
-
-%macro  _symbol_vocab_name 0            ; symbol -- vocab-name
+%macro  _symbol_vocab_name 0            ; ^symbol -> string
         _slot2
 %endmacro
 
-%macro  _this_symbol_vocab_name 0       ; -- vocab-name
-        _this_slot2
-%endmacro
-
-%macro  _this_symbol_set_vocab_name 0   ; vocab-name --
-        _this_set_slot2
-%endmacro
-
-%macro  _symbol_hashcode 0              ; symbol -- hashcode
+%macro  _symbol_hashcode 0              ; ^symbol -> fixnum
         _slot3
 %endmacro
 
-%macro  _symbol_set_hashcode 0          ; hashcode symbol --
+%macro  _symbol_set_hashcode 0          ; hashcode symbol ->
         _set_slot3
 %endmacro
 
-%macro  _this_symbol_hashcode 0         ; -- hashcode
-        _this_slot3
-%endmacro
-
-%macro  _this_symbol_set_hashcode 0     ; hashcode --
-        _this_set_slot3
-%endmacro
-
-%macro  _symbol_def 0                   ; symbol -- definition
+%macro  _symbol_def 0                   ; symbol -> definition
         _slot4
 %endmacro
 
-%macro  _symbol_set_def 0               ; definition symbol --
+%macro  _symbol_set_def 0               ; definition symbol ->
         _set_slot4
 %endmacro
 
-%macro  _this_symbol_def 0              ; -- definition
+%macro  _this_symbol_def 0              ; -> definition
         _this_slot4
 %endmacro
 
-%macro  _this_symbol_set_def 0          ; definition --
+%macro  _this_symbol_set_def 0          ; definition ->
         _this_set_slot4
 %endmacro
-
-%define SYMBOL_PROPS_OFFSET BYTES_PER_CELL * 5
 
 %macro  _symbol_props 0
         _slot5
 %endmacro
 
-%macro  _symbol_set_props 0             ; props symbol --
-        _set_slot5
-%endmacro
-
-%macro  _this_symbol_props 0            ; -- props
-        _this_slot5
-%endmacro
-
-%macro  _this_symbol_set_props 0        ; props --
-        _this_set_slot5
-%endmacro
-
-%define SYMBOL_VALUE_OFFSET     BYTES_PER_CELL * 6
-
-%macro  _symbol_value 0                 ; symbol -- value
+%macro  _symbol_value 0                 ; symbol -> value
         _slot 6
 %endmacro
 
-%macro  _symbol_set_value 0             ; value symbol --
-        _set_slot 6
-%endmacro
-
-%macro  _this_symbol_set_value 0        ; value --
-        _this_set_slot 6
-%endmacro
-
-%define SYMBOL_RAW_CODE_ADDRESS_OFFSET  BYTES_PER_CELL * 7
-
-%macro  _symbol_raw_code_address 0      ; symbol -- raw-code-address
+%macro  _symbol_raw_code_address 0      ; symbol -> raw-code-address
         _slot 7
 %endmacro
 
-%macro  _symbol_set_raw_code_address 0  ; raw-code-address symbol --
-        _set_slot 7
-%endmacro
-
-%macro  _this_symbol_set_raw_code_address 0     ; raw-code-address --
-        _this_set_slot 7
-%endmacro
-
-%macro  _symbol_raw_code_size 0         ; symbol -- raw-code-size
+%macro  _symbol_raw_code_size 0         ; symbol -> raw-code-size
         _slot 8
 %endmacro
 
-%macro  _symbol_set_raw_code_size 0     ; raw-code-size symbol --
+%macro  _symbol_set_raw_code_size 0     ; raw-code-size symbol ->
         _set_slot 8
 %endmacro
 
-%macro  _this_symbol_set_raw_code_size 0        ; raw-code-size --
+%macro  _this_symbol_set_raw_code_size 0 ; raw-code-size ->
         _this_set_slot 8
 %endmacro
 
-%define symbol_flags_slot       qword [rbx + BYTES_PER_CELL * 9]
-
-%define this_symbol_flags_slot  qword [this_register + BYTES_PER_CELL * 9]
-
-%macro  _symbol_flags 0                 ; symbol -- flags
+%macro  _symbol_flags 0                 ; symbol -> flags
         _slot 9
 %endmacro
 
-%macro  _symbol_set_flags 0             ; flags symbol --
+%macro  _symbol_set_flags 0             ; flags symbol ->
         _set_slot 9
 %endmacro
 
-%macro  _this_symbol_set_flags 0        ; flags --
+%macro  _this_symbol_set_flags 0        ; flags -> void
         _this_set_slot 9
 %endmacro
 
-%macro  _symbol_flags_bit 1             ; symbol -- ?
+%macro  _symbol_flags_bit 1             ; symbol -> ?
         _ check_symbol
-        mov     eax, t_value
-        test    symbol_flags_slot, %1
-        mov     ebx, f_value
+        mov     eax, TRUE
+        test    qword [rbx + SYMBOL_RAW_FLAGS_OFFSET], %1
+        mov     ebx, NIL
         cmovnz  ebx, eax
 %endmacro
 
-%macro  _symbol_set_flags_bit 1         ; symbol --
+%macro  _symbol_set_flags_bit 1         ; symbol -> void
         _ check_symbol
-        or      symbol_flags_slot, %1
+        or      qword [rbx + SYMBOL_RAW_FLAGS_OFFSET], %1
         _drop
 %endmacro
 
-%macro  _this_symbol_set_flags_bit 1    ; --
-        or      this_symbol_flags_slot, %1
-%endmacro
-
-%macro  _symbol_clear_flags_bit 1       ; symbol --
+%macro  _symbol_clear_flags_bit 1       ; symbol -> void
         _ check_symbol
-        and     symbol_flags_slot, ~%1
+        and     qword [rbx + SYMBOL_RAW_FLAGS_OFFSET], ~%1
         _drop
 %endmacro
 
-%macro  _symbol_file 0                  ; symbol -- file
+%macro  _symbol_file 0                  ; symbol -> file
         _slot 10
 %endmacro
 
-%macro  _symbol_set_file 0              ; file symbol --
+%macro  _symbol_set_file 0              ; file symbol -> void
         _set_slot 10
 %endmacro
 
-%macro  _this_symbol_set_file 0         ; file --
+%macro  _this_symbol_set_file 0         ; file -> void
         _this_set_slot 10
 %endmacro
 
 ; The line number is 1-based and stored as a tagged fixnum.
-%macro  _symbol_line_number 0           ; symbol -- line-number
+%macro  _symbol_line_number 0           ; symbol -> fixnum
         _slot 11
 %endmacro
 
-%macro  _this_symbol_set_line_number 0  ; line-number --
+%macro  _this_symbol_set_line_number 0  ; fixnum -> void
         _this_set_slot 11
 %endmacro
 
@@ -245,7 +179,7 @@ code symbol?, 'symbol?'                 ; x -> x/nil
 endcode
 
 ; ### check_symbol
-code check_symbol, 'check_symbol', SYMBOL_INTERNAL      ; x -> ^symbol
+code check_symbol, 'check_symbol', SYMBOL_INTERNAL ; x -> ^symbol
 
         cmp     bl, HANDLE_TAG
         jne     .1
@@ -402,7 +336,7 @@ code ensure_symbol, 'ensure-symbol'     ; symbol-name vocab-name -> symbol
 endcode
 
 ; ### symbol-equal?
-code symbol_equal?, 'symbol-equal?'     ; x y -- ?
+code symbol_equal?, 'symbol-equal?'     ; x y -> ?
         _dup
         _ symbol?
         _tagged_if .1
@@ -469,35 +403,35 @@ code symbol_set_hashcode, 'symbol-set-hashcode' ; hashcode symbol -> void
 endcode
 
 ; ### symbol-vocab-name
-code symbol_vocab_name, 'symbol-vocab-name' ; symbol -- vocab-name
+code symbol_vocab_name, 'symbol-vocab-name' ; symbol -> vocab-name
         _ check_symbol
         _symbol_vocab_name
         next
 endcode
 
 ; ### symbol-vocab
-code symbol_vocab, 'symbol-vocab'       ; symbol -> vocab/f
+code symbol_vocab, 'symbol-vocab'       ; symbol -> vocab/nil
         _ check_symbol
         _symbol_vocab_name              ; -> string
-        _ dictionary                    ; -> string hashtable/f
-        _dup                            ; -> string hashtable/f hashtable/f
+        _ dictionary                    ; -> string hashtable/nil
+        _dup                            ; -> string hashtable/nil hashtable/nil
         _tagged_if .1                   ; -> string hashtable
-        _ hashtable_at                  ; -> vocab/f
-        _else .1                        ; -> string f
-        _nip                            ; -> f
+        _ hashtable_at                  ; -> vocab/nil
+        _else .1                        ; -> string nil
+        _nip                            ; -> nil
         _then .1
         next
 endcode
 
 ; ### symbol-def
-code symbol_def, 'symbol-def'           ; symbol -- definition
+code symbol_def, 'symbol-def'           ; symbol -> definition
         _ check_symbol
         _symbol_def
         next
 endcode
 
 ; ### symbol-set-def
-code symbol_set_def, 'symbol-set-def'   ; definition symbol --
+code symbol_set_def, 'symbol-set-def'   ; definition symbol ->
         _ check_symbol
         _symbol_set_def
         next
@@ -552,112 +486,112 @@ endcode
 
 ; ### symbol-set-primitive
 code symbol_set_primitive, 'symbol-set-primitive', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; symbol --
+; symbol ->
         _symbol_set_flags_bit SYMBOL_PRIMITIVE
         next
 endcode
 
 ; ### symbol-immediate?
-code symbol_immediate?, 'symbol-immediate?'     ; symbol -- ?
+code symbol_immediate?, 'symbol-immediate?'     ; symbol -> ?
         _symbol_flags_bit SYMBOL_IMMEDIATE
         next
 endcode
 
 ; ### symbol-set-immediate
 code symbol_set_immediate, 'symbol-set-immediate', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; symbol --
+; symbol ->
         _symbol_set_flags_bit SYMBOL_IMMEDIATE
         next
 endcode
 
 ; ### symbol-always-inline?
-code symbol_always_inline?, 'symbol-always-inline?'     ; symbol -- ?
+code symbol_always_inline?, 'symbol-always-inline?' ; symbol -> ?
         _symbol_flags_bit SYMBOL_ALWAYS_INLINE
         next
 endcode
 
 ; ### symbol-inline?
-code symbol_inline?, 'symbol-inline?'           ; symbol -- ?
+code symbol_inline?, 'symbol-inline?'   ; symbol -> ?
         _symbol_flags_bit SYMBOL_INLINE
         next
 endcode
 
 ; ### symbol-global?
-code symbol_global?, 'symbol-global?'           ; symbol -- ?
+code symbol_global?, 'symbol-global?'   ; symbol -> ?
         _symbol_flags_bit SYMBOL_GLOBAL
         next
 endcode
 
 ; ### symbol-set-global-bit
 code symbol_set_global_bit, 'symbol-set-global-bit', SYMBOL_PRIVATE
-; symbol --
+; symbol ->
         _symbol_set_flags_bit SYMBOL_GLOBAL
         next
 endcode
 
 ; ### symbol-thread-local?
-code symbol_thread_local?, 'symbol-thread-local?'       ; symbol -- ?
+code symbol_thread_local?, 'symbol-thread-local?' ; symbol -> ?
         _symbol_flags_bit SYMBOL_THREAD_LOCAL
         next
 endcode
 
 ; ### symbol-set-thread-local-bit
-code symbol_set_thread_local_bit, 'symbol-set-thread-local-bit', SYMBOL_PRIVATE ; symbol --
+code symbol_set_thread_local_bit, 'symbol-set-thread-local-bit', SYMBOL_PRIVATE ; symbol ->
         _symbol_set_flags_bit SYMBOL_THREAD_LOCAL
         next
 endcode
 
 ; ### error-not-thread-local
-code error_not_thread_local, 'error-not-thread-local'   ; x --
+code error_not_thread_local, 'error-not-thread-local' ; x ->
         _error "not a thread-local"
         next
 endcode
 
 ; ### verify-thread-local
-code verify_thread_local, 'verify-thread-local' ; thread-local -- thread-local
+code verify_thread_local, 'verify-thread-local' ; thread-local -> thread-local
         _dup
         _ check_symbol
         _symbol_flags
         and     rbx, SYMBOL_THREAD_LOCAL
-        poprbx
+        _drop
         jz      error_not_thread_local
         next
 endcode
 
 ; ### symbol-set-special-bit
 code symbol_set_special_bit, 'symbol-set-special-bit', SYMBOL_PRIVATE
-; symbol --
+; symbol ->
         _symbol_set_flags_bit SYMBOL_SPECIAL
         next
 endcode
 
 ; ### symbol-constant?
-code symbol_constant?, 'symbol-constant?'       ; symbol -- ?
+code symbol_constant?, 'symbol-constant?' ; symbol -> ?
         _symbol_flags_bit SYMBOL_CONSTANT
         next
 endcode
 
 ; ### symbol-special?
-code symbol_special?, 'symbol-special?'         ; symbol -- ?
+code symbol_special?, 'symbol-special?' ; symbol -> ?
         _symbol_flags_bit SYMBOL_SPECIAL
         next
 endcode
 
 ; ### symbol-private?
-code symbol_private?, 'symbol-private?'         ; symbol -- ?
+code symbol_private?, 'symbol-private?' ; symbol -> ?
         _symbol_flags_bit SYMBOL_PRIVATE
         next
 endcode
 
 ; ### symbol-set-private
 code symbol_set_private, 'symbol-set-private', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; symbol --
+; symbol ->
         _symbol_set_flags_bit SYMBOL_PRIVATE
         next
 endcode
 
 ; ### symbol-public?
-code symbol_public?, 'symbol-public?'           ; symbol -- ?
+code symbol_public?, 'symbol-public?'   ; symbol -> ?
         _symbol_flags_bit SYMBOL_PRIVATE
         _not
         next
@@ -665,26 +599,26 @@ endcode
 
 ; ### symbol-set-public
 code symbol_set_public, 'symbol-set-public', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; symbol --
+; symbol -> void
         _symbol_clear_flags_bit SYMBOL_PRIVATE
         next
 endcode
 
 ; ### symbol-internal?
-code symbol_internal?, 'symbol-internal?'       ; symbol -- ?
+code symbol_internal?, 'symbol-internal?' ; symbol -> ?
         _symbol_flags_bit SYMBOL_INTERNAL
         next
 endcode
 
 ; ### generic?
-code generic?, 'generic?'                       ; symbol -- ?
+code generic?, 'generic?'               ; symbol -> ?
         _symbol_flags_bit SYMBOL_GENERIC
         next
 endcode
 
 ; ### symbol-set-generic
 code symbol_set_generic, 'symbol-set-generic', SYMBOL_PRIMITIVE | SYMBOL_PRIVATE
-; symbol --
+; symbol ->
         _symbol_set_flags_bit SYMBOL_GENERIC
         next
 endcode
@@ -703,14 +637,14 @@ code symbol_set_deferred_bit, 'symbol-set-deferred-bit', SYMBOL_PRIMITIVE | SYMB
 endcode
 
 ; ### symbol-value
-code symbol_value, 'symbol-value'               ; symbol -- value
+code symbol_value, 'symbol-value'       ; symbol -> value
         _ check_symbol
         _symbol_value
         next
 endcode
 
 ; ### symbol-set-value
-code symbol_set_value, 'symbol-set-value'       ; value symbol -> void
+code symbol_set_value, 'symbol-set-value' ; value symbol -> void
         _ check_symbol
         mov     rax, [rbp]
 
@@ -724,7 +658,7 @@ endcode
 
 ; ### symbol_raw_code_address
 code symbol_raw_code_address, 'symbol_raw_code_address', SYMBOL_INTERNAL
-; symbol -- raw-code-address/0
+; symbol -> raw-code-address/0
         _ check_symbol
         _symbol_raw_code_address
         next
@@ -756,26 +690,26 @@ code symbol_set_code_address, 'symbol-set-code-address' ; tagged-code-address sy
 endcode
 
 ; ### symbol_raw_code_size
-code symbol_raw_code_size, 'symbol_raw_code_size'       ; symbol -> raw-code-size/0
+code symbol_raw_code_size, 'symbol_raw_code_size' ; symbol -> raw-code-size/0
         _ check_symbol
         _symbol_raw_code_size
         next
 endcode
 
 ; ### symbol-code-size
-code symbol_code_size, 'symbol-code-size'       ; symbol -> code-size/nil
+code symbol_code_size, 'symbol-code-size' ; symbol -> code-size/nil
         _ check_symbol
         _symbol_raw_code_size
         _?dup_if .1
         _tag_fixnum
         _else .1
-        _f
+        _nil
         _then .1
         next
 endcode
 
 ; ### symbol-set-code-size
-code symbol_set_code_size, 'symbol-set-code-size'       ; tagged-code-size symbol --
+code symbol_set_code_size, 'symbol-set-code-size' ; tagged-code-size symbol ->
         _ check_symbol
         _verify_fixnum [rbp]
         _untag_fixnum qword [rbp]
@@ -796,22 +730,22 @@ code symbol_code, 'symbol-code'         ; symbol -> address size
 endcode
 
 ; ### symbol-flags
-code symbol_flags, 'symbol-flags'       ; symbol -- flags
+code symbol_flags, 'symbol-flags'       ; symbol -> flags
         _ check_symbol
-        _symbol_flags                   ; -- raw-uint64
+        _symbol_flags                   ; -> raw-uint64
         _ new_uint64
         next
 endcode
 
 ; ### symbol-source-file
-code symbol_source_file, 'symbol-source-file'   ; symbol -> string
+code symbol_source_file, 'symbol-source-file' ; symbol -> string
         _ check_symbol
         _symbol_file
         next
 endcode
 
 ; ### symbol-set-source-file
-code symbol_set_source_file, 'symbol-set-source-file'   ; string symbol -> void
+code symbol_set_source_file, 'symbol-set-source-file' ; string symbol -> void
         _ check_symbol
         _symbol_set_file
         next
@@ -834,7 +768,7 @@ code symbol_set_location, 'symbol-set-location' ; file line-number symbol -> voi
         _tagged_if .1
         push    this_register
         mov     this_register, rbx
-        poprbx
+        _drop
         _verify_index
         _this_symbol_set_line_number
         _ verify_string
@@ -847,7 +781,7 @@ code symbol_set_location, 'symbol-set-location' ; file line-number symbol -> voi
 endcode
 
 ; ### call-symbol
-code call_symbol, 'call-symbol'         ; symbol --
+code call_symbol, 'call-symbol'         ; symbol ->
         _dup
         _ check_symbol
         mov rax, [rbx + SYMBOL_RAW_CODE_ADDRESS_OFFSET]
