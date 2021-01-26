@@ -173,7 +173,14 @@ endcode
 
 ; ### string-length-unsafe
 code string_length_unsafe, 'string-length-unsafe' ; string -> length
-        _ string_raw_address_unsafe
+        cmp     bl, HANDLE_TAG
+        jne     .1
+        _handle_to_object_unsafe
+        _string_raw_length
+        _tag_fixnum
+        next
+.1:
+        _untag_static_string
         _string_raw_length
         _tag_fixnum
         next
@@ -271,7 +278,8 @@ code hash_string, 'hash-string'         ; string -> fixnum
 
 hash_string_unchecked:
         push    this_register
-        popd    this_register           ; -> empty
+        mov     this_register, rbx
+        _drop
 
         _zero                           ; -> accumulator
 
@@ -419,7 +427,8 @@ code string_find_char, 'string-find-char'       ; char string -- index/nil
         _ check_string
 
         push    this_register
-        popd    this_register           ; -- tagged-char
+        mov     this_register, rbx
+        _drop
 
         _check_char                     ; -- untagged-char
 
@@ -1056,7 +1065,8 @@ code string_index_from, 'string-index-from'     ; char start-index string -- ind
         _ check_string
 
         push    this_register
-        popd    this_register
+        mov     this_register, rbx
+        _drop
 
         _ check_index                   ; -- char untagged-start-index
 
@@ -1107,7 +1117,8 @@ code string_last_index_from, 'string-last-index-from'   ; char start-index strin
         _ check_string
 
         push    this_register
-        popd    this_register
+        mov     this_register, rbx
+        _drop
 
         _check_index                    ; -> char untagged-start-index
 
