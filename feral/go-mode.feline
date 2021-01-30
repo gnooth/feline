@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -107,7 +107,7 @@ global last-identifier
     start end iter string-iterator-string substring :> identifier
 
     {
-        { [ last-identifier "func" = ] [ color-name ] }
+        { [ last-identifier { "func" "type" } member? ] [ color-name ] }
         { [ identifier syntax-words member? ] [ color-syntax ] }
         { [ identifier special-types member? ] [ color-type ] }
         [
@@ -121,7 +121,7 @@ global last-identifier
     identifier start format make-segment/3 ;
 
 : format-iter ( iter )
-    100 <vector> :> v
+    100 make-vector :> v
     0 !> start
 
     local ch
@@ -195,13 +195,111 @@ global last-identifier
 : go-mode-list-symbols
     ' go-mode:line-is-definition? list-symbols:list-symbols ;
 
+global sourcefile
+
+: extract-name ( string )               // string -> name
+    string [ default-identifier-char? not ] find // -> index/nil element/nil
+    [ string head ] [ drop nil ] if ;
+
+: scan-current-buffer                   // void -> hashtable/nil
+    current-buffer filename>> sourcefile!
+    local ht
+    sourcefile file-name-extension ".go" equal? [
+        128 <hashtable> ht!
+        sourcefile file-lines [
+            // -> string index
+            :> index :> string
+            {
+                {
+                    [ "func (" string string-has-prefix? ]
+                    [
+                        ')' string string-find-char !> offset
+                        offset [
+                            1+ string string-skip-whitespace offset!
+                            offset [
+                                string string-skip-to-whitespace [
+                                    offset swap string string-substring
+                                    extract-name :> name
+                                    name [
+                                        sourcefile index 1+ 2array
+                                        name ht set-at
+                                    ] when
+                                ] when*
+                            ] when*
+                        ] when*
+                    ]
+                }
+                {
+                    [ "func " string string-has-prefix? ]
+                    [
+                        5 :> offset
+                        offset string ?nth default-identifier-char? [
+                            offset string string-skip-to-whitespace [
+                                offset swap string string-substring
+                                extract-name :> name
+                                name [
+                                    sourcefile index 1+ 2array
+                                    name ht set-at
+                                ] when
+                            ] when*
+                        ] when
+                    ]
+                }
+                {
+                    [ "type " string string-has-prefix? ]
+                    [
+                        5 :> offset
+                        offset string ?nth default-identifier-char? [
+                            offset string string-skip-to-whitespace [
+                                offset swap string string-substring :> name
+                                name [
+                                    sourcefile index 1+ 2array
+                                    name ht set-at
+                                ] when
+                            ] when*
+                        ] when
+                    ]
+                }
+                // default (do nothing)
+                [ ]
+            } cond
+        ] each-index
+    ] when*
+    ht ;
+
+: find-definition-internal ( string )
+    scan-current-buffer [
+        // -> hashtable
+        string swap at [
+            // -> location
+            second editor:goto-line-internal
+        ] when*
+    ] when* ;
+
+: find-definition-at-dot
+    dot-offset :> old-dot-offset
+    dot-line indentation-length :> indent
+
+    dot-char whitespace? [
+        {
+            { [ dot-offset indent < ] [ indent dot-offset! ] }
+            { [ dot-offset 0> ] [ dot-offset 1- dot-offset! ] }
+        } cond
+    ] when
+
+    identifier-at-dot                   // -> index/nil string/nil
+    nip                                 // -> string/nil
+    old-dot-offset dot-offset!
+    [ find-definition-internal ] when* ;
+
 global go-mode-local-map
 
 feral-config:winui? feral-config:gtkui? or #if
 
 : initialize-local-map
     128 <hashtable> :> m
-    ' go-mode-list-symbols feral-key:ctrl-shift-o m set-at
+    ' go-mode-list-symbols      feral-key:ctrl-shift-o      m set-at
+    ' find-definition-at-dot    feral-key:f12               m set-at
     m go-mode-local-map! ;
 
 initialize-local-map
