@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -67,7 +67,9 @@ global changed-lines
     current-buffer mode>> [
         name>> [
             '\s' sb sbuf-push
+            '(' sb sbuf-push
             sb sbuf-append-string
+            ')' sb sbuf-push
         ] when*
     ] when*
     sb sbuf->string ;
