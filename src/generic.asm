@@ -188,7 +188,7 @@ endcode
 
 %define DEFAULT_METHOD tagged_fixnum(65535)
 
-; %define USE_FIXNUM_HASHTABLE
+%define USE_FIXNUM_HASHTABLE
 
 ; ### set-default-method
 code set_default_method, 'set-default-method' ; callable generic-symbol -> void
