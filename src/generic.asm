@@ -188,6 +188,8 @@ endcode
 
 %define DEFAULT_METHOD tagged_fixnum(65535)
 
+; %define USE_FIXNUM_HASHTABLE
+
 ; ### set-default-method
 code set_default_method, 'set-default-method' ; callable generic-symbol -> void
         _dup
@@ -200,7 +202,11 @@ code set_default_method, 'set-default-method' ; callable generic-symbol -> void
         _swap
         _lit DEFAULT_METHOD
         _swap
+%ifdef USE_FIXNUM_HASHTABLE
+        _ fixnum_hashtable_set_at
+%else
         _ hashtable_set_at
+%endif
         _else .1
         _ error_not_generic_word
         _then .1
@@ -212,7 +218,11 @@ code do_generic, 'do-generic'           ; object typecode dispatch-table ->
 
         push    rbx                     ; save dispatch table
 
+%ifdef USE_FIXNUM_HASHTABLE
+        _ fixnum_hashtable_at           ; -> object raw-code-address/nil
+%else
         _ hashtable_at                  ; -> object raw-code-address/nil
+%endif
 
         cmp     rbx, NIL
         je      .1
@@ -232,7 +242,11 @@ code do_generic, 'do-generic'           ; object typecode dispatch-table ->
         pop     rbx                     ; -> object dispatch-table
         _lit DEFAULT_METHOD
         _swap
+%ifdef USE_FIXNUM_HASHTABLE
+        _ fixnum_hashtable_at
+%else
         _ hashtable_at
+%endif
         cmp     rbx, NIL
         je      .2
         mov     rax, rbx
@@ -270,6 +284,7 @@ endcode
 
 %endmacro
 
+%ifndef USE_FIXNUM_HASHTABLE
 ; ### make-fixnum-hashtable/0
 code make_fixnum_hashtable_0, 'make-fixnum-hashtable/0' ; -> hashtable
 ; return a new hashtable with hash and test functions suitable for fixnum keys
@@ -289,6 +304,7 @@ code make_fixnum_hashtable_0, 'make-fixnum-hashtable/0' ; -> hashtable
 
         next
 endcode
+%endif
 
 ; ### initialize-generic-function
 code initialize_generic_function, 'initialize-generic-function' ; generic-symbol -> gf
@@ -297,12 +313,22 @@ code initialize_generic_function, 'initialize-generic-function' ; generic-symbol
         _ make_generic_function         ; -> symbol gf
 
         ; methods
+%ifdef USE_FIXNUM_HASHTABLE
+        _tagged_fixnum 2
+        _ make_fixnum_hashtable
+%else
         _ make_fixnum_hashtable_0
+%endif
         _over
         _ generic_function_set_methods
 
         ; dispatch
+%ifdef USE_FIXNUM_HASHTABLE
+        _tagged_fixnum 2
+        _ make_fixnum_hashtable
+%else
         _ make_fixnum_hashtable_0
+%endif
         _over
         _ generic_function_set_dispatch ; -> symbol gf
 
@@ -324,12 +350,22 @@ code define_generic, 'define-generic'   ; symbol -> symbol
         _tor                            ; -> symbol     r: -> gf
 
         ; methods
+%ifdef USE_FIXNUM_HASHTABLE
+        _tagged_fixnum 2
+        _ make_fixnum_hashtable
+%else
         _ make_fixnum_hashtable_0
+%endif
         _rfetch
         _ generic_function_set_methods
 
         ; dispatch table
+%ifdef USE_FIXNUM_HASHTABLE
+        _tagged_fixnum 2
+        _ make_fixnum_hashtable
+%else
         _ make_fixnum_hashtable_0
+%endif
         _rfetch
         _ generic_function_set_dispatch ; -> symbol
 
@@ -393,9 +429,12 @@ code find_method, 'find-method'         ; symbol-or-type symbol-or-gf -> method/
         _swap
 
         _ generic_function_methods
+%ifdef USE_FIXNUM_HASHTABLE
+        _ fixnum_hashtable_at
+%else
         _ verify_hashtable
         _ hashtable_at
-
+%endif
         next
 endcode
 
@@ -418,8 +457,12 @@ code install_method, 'install-method'   ; method -> void
         _over
         _ method_generic_function
         _ generic_function_methods
+%ifdef USE_FIXNUM_HASHTABLE
+        _ fixnum_hashtable_set_at
+%else
         _ verify_hashtable              ; -> method typecode ht
         _ hashtable_set_at
+%endif
 
         _rfrom                          ; -> method
 
@@ -435,8 +478,12 @@ code install_method, 'install-method'   ; method -> void
         _ method_generic_function       ; -> raw-code-address typecode gf
 
         _ generic_function_dispatch
+%ifdef USE_FIXNUM_HASHTABLE
+        _ fixnum_hashtable_set_at
+%else
         _ verify_hashtable
         _ hashtable_set_at
+%endif
 
         next
 endcode
