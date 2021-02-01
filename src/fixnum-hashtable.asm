@@ -1,4 +1,4 @@
-; Copyright (C) 2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2020-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -60,7 +60,8 @@ code check_fixnum_hashtable, 'check_fixnum_hashtable' ; handle -> ^hashtable
 .error1:
         mov     rbx, rdx                ; restore original argument
 .error2:
-        jmp     error_not_fixnum_hashtable
+        _ error_not_fixnum_hashtable
+        next
 endcode
 
 subroutine make_bucket_array    ; raw-capacity -> raw-address
@@ -161,7 +162,7 @@ endcode
 
 ; ### hash-fixnum
 code hash_fixnum, 'hash-fixnum'         ; x -> hashcode
-; sbcl src/code/compiler/sxhash.lisp
+; sbcl src/compiler/sxhash.lisp
 
 ;  (let ((c (logand 1193941380939624010 sb-xc:most-positive-fixnum)))
 ;    ;; shift by -1 to get sign bit into hash
@@ -242,8 +243,8 @@ endcode
 %endif
 %endmacro
 
-; ### gethash
-code gethash, 'gethash'                 ; key hashtable -> void
+; ### fixnum-hashtable-at
+code fixnum_hashtable_at, 'fixnum-hashtable-at' ; key hashtable -> value/nil
 
         _ check_fixnum_hashtable        ; -> key ^hashtable
         push    this_register
@@ -311,8 +312,8 @@ code gethash, 'gethash'                 ; key hashtable -> void
         next
 endcode
 
-; ### remhash
-code remhash, 'remhash'                 ; key hashtable -> void
+; ### fixnum-hashtable-delete-at
+code fixnum_hashtable_delete_at, 'fixnum-hashtable-delete-at' ; key hashtable -> void
 
         _ check_fixnum_hashtable        ; -> key ^hashtable
         push    this_register
@@ -447,12 +448,12 @@ subroutine puthash_internal             ; value key -> void
         ret
 endsub
 
-; ### puthash
-code puthash, 'puthash'                 ; value key hashtable ->
+; ### fixnum-hashtable-set-at
+code fixnum_hashtable_set_at, 'fixnum-hashtable-set-at' ; value key hashtable -> void
 
         _ check_fixnum_hashtable        ; -> value key ^hashtable
         push    this_register
-        mov     this_register, rbx      ; ^hashtable in this_register
+        mov     this_register, rbx      ; this_register: ^hashtable
         _drop                           ; -> value key
 
         _verify_fixnum

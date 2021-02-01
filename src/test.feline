@@ -4495,13 +4495,13 @@ test: fixnum-hashtable-test
         ht fixnum-hashtable-occupancy 0? assert
         ht fixnum-hashtable-deletions 0? assert
 
-        count [ dup 17 + swap ht puthash ] each-integer
+        count [ dup 17 + swap ht fixnum-hashtable-set-at ] each-integer
 
         ht fixnum-hashtable-capacity 2048 assert-eq
         ht fixnum-hashtable-occupancy count assert-eq
         ht fixnum-hashtable-deletions 0? assert
 
-        count [ dup ht gethash 17 - assert-eq ] each-integer
+        count [ dup ht fixnum-hashtable-at 17 - assert-eq ] each-integer
 
         ht fixnum-hashtable-capacity 2048 assert-eq
         ht fixnum-hashtable-occupancy count assert-eq
@@ -4513,7 +4513,7 @@ test: fixnum-hashtable-test
         ht fixnum-hashtable-occupancy count assert-eq
         ht fixnum-hashtable-deletions 0? assert
 
-        count [ dup ht gethash 17 - assert-eq ] each-integer
+        count [ dup ht fixnum-hashtable-at 17 - assert-eq ] each-integer
     ] unit-test ;
 
 fixnum-hashtable-test
@@ -4527,21 +4527,21 @@ test: fixnum-hashtable-test-2
         ht fixnum-hashtable-occupancy 0? assert
         ht fixnum-hashtable-deletions 0? assert
 
-        "foo" 42 ht puthash
-        42 ht gethash "foo" assert=
+        "foo" 42 ht fixnum-hashtable-set-at
+        42 ht fixnum-hashtable-at "foo" assert=
 
-        "bar" 42 ht puthash
-        42 ht gethash "bar" assert=
+        "bar" 42 ht fixnum-hashtable-set-at
+        42 ht fixnum-hashtable-at "bar" assert=
 
         // negative key
-        "zork" -87 ht puthash
-        -87 ht gethash "zork" assert=
+        "zork" -87 ht fixnum-hashtable-set-at
+        -87 ht fixnum-hashtable-at "zork" assert=
 
-        "high" most-positive-fixnum ht puthash
-        most-positive-fixnum ht gethash "high" assert=
+        "high" most-positive-fixnum ht fixnum-hashtable-set-at
+        most-positive-fixnum ht fixnum-hashtable-at "high" assert=
 
-        "low" most-negative-fixnum ht puthash
-        most-negative-fixnum ht gethash "low" assert=
+        "low" most-negative-fixnum ht fixnum-hashtable-set-at
+        most-negative-fixnum ht fixnum-hashtable-at "low" assert=
 
     ] unit-test ;
 
@@ -4555,42 +4555,42 @@ test: fixnum-hashtable-deletion-test
         ht fixnum-hashtable-occupancy 0? assert
         ht fixnum-hashtable-deletions 0? assert
 
-        "foo" 42 ht puthash
+        "foo" 42 ht fixnum-hashtable-set-at
 
         ht fixnum-hashtable-occupancy 1 assert-eq
         ht fixnum-hashtable-deletions 0? assert
-        42 ht gethash "foo" assert=
+        42 ht fixnum-hashtable-at "foo" assert=
 
-        "bar" 87 ht puthash
+        "bar" 87 ht fixnum-hashtable-set-at
 
         ht fixnum-hashtable-occupancy 2 assert-eq
         ht fixnum-hashtable-deletions 0? assert
-        87 ht gethash "bar" assert=
+        87 ht fixnum-hashtable-at "bar" assert=
 
-        42 ht remhash
+        42 ht fixnum-hashtable-delete-at
 
         ht fixnum-hashtable-occupancy 2 assert-eq
         ht fixnum-hashtable-deletions 1 assert-eq
-        42 ht gethash nil? assert
+        42 ht fixnum-hashtable-at nil? assert
 
-        87 ht remhash
-
-        ht fixnum-hashtable-occupancy 2 assert-eq
-        ht fixnum-hashtable-deletions 2 assert-eq
-        87 ht gethash nil? assert
-
-        6 ht gethash nil? assert    // key not found
-        6 ht remhash                // no error
-        6 ht gethash nil? assert    // still not found
+        87 ht fixnum-hashtable-delete-at
 
         ht fixnum-hashtable-occupancy 2 assert-eq
         ht fixnum-hashtable-deletions 2 assert-eq
+        87 ht fixnum-hashtable-at nil? assert
 
-        "foo" 42 ht puthash
+        6 ht fixnum-hashtable-at nil? assert // key not found
+        6 ht fixnum-hashtable-delete-at // no error
+        6 ht fixnum-hashtable-at nil? assert // still not found
+
+        ht fixnum-hashtable-occupancy 2 assert-eq
+        ht fixnum-hashtable-deletions 2 assert-eq
+
+        "foo" 42 ht fixnum-hashtable-set-at
 
         ht fixnum-hashtable-occupancy 3 assert-eq
         ht fixnum-hashtable-deletions 2 assert-eq
-        42 ht gethash "foo" assert=
+        42 ht fixnum-hashtable-at "foo" assert=
 
         ht grow-fixnum-hashtable
 
@@ -4598,7 +4598,7 @@ test: fixnum-hashtable-deletion-test
         ht fixnum-hashtable-occupancy 1 assert-eq
         ht fixnum-hashtable-deletions 0? assert
 
-        42 ht gethash "foo" assert=
+        42 ht fixnum-hashtable-at "foo" assert=
     ] unit-test ;
 
 fixnum-hashtable-deletion-test
@@ -4606,10 +4606,10 @@ fixnum-hashtable-deletion-test
 test: fixnum-hashtable-gc-test
     10 :> count
     count make-fixnum-hashtable :> ht
-    count [ dup fixnum>string swap ht puthash ] each-integer
-    count [ dup ht gethash swap fixnum>string assert= ] each-integer
+    count [ dup fixnum>string swap ht fixnum-hashtable-set-at ] each-integer
+    count [ dup ht fixnum-hashtable-at swap fixnum>string assert= ] each-integer
     gc
-    count [ dup ht gethash swap fixnum>string assert= ] each-integer ;
+    count [ dup ht fixnum-hashtable-at swap fixnum>string assert= ] each-integer ;
 
 fixnum-hashtable-gc-test
 
