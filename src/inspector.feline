@@ -75,6 +75,15 @@ global inspected-object
     { "raw mask" :raw }
 } hashtable builtin-type-set-layout
 
+{
+    { "capacity" :raw }
+    { "occupancy" :raw }
+    { "deletions" :raw }
+    { "data address" :raw }
+    { "old data address" :rax }
+    { "raw mask" :raw }
+} fixnum-hashtable builtin-type-set-layout
+
 { "name" "hashtable" } vocab builtin-type-set-layout
 
 {
