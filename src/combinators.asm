@@ -1,4 +1,4 @@
-; Copyright (C) 2016-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2016-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -212,15 +212,13 @@ code tri@, 'tri@'                       ; x y z quot ->
 endcode
 
 ; ### ?
-code question, '?'                      ; ? x y -> x-or-y
-; If the condition `?` is true, returns x. If the condition is nil,
-; returns y.
+inline question, '?'                    ; condition x y -> x-or-y
+; If condition is non-nil, returns x, otherwise returns y.
         cmp     qword [rbp + BYTES_PER_CELL], NIL
         mov     rax, [rbp]
         _2nip
         cmovne  rbx, rax
-        next
-endcode
+endinline
 
 ; ### case
 code case, 'case'               ; x array ->
