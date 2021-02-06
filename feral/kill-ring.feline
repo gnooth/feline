@@ -35,25 +35,27 @@ initialize-kill-ring
 : last-kill                             // void -> string/nil
     kill-list empty? [ nil ] ?return
 
-    maybe-promote-last-paste
+    kill-list length 1- :> n
 
-    kill-list length 1- kill-list nth   // -> string
+    n kill-list nth                     // -> string
 
-    kill-list vector-length 2 - kill-list-next! ;
+    n 0> n 1- nil ? kill-list-next! ;
 
 : next-kill
     kill-list empty? [ nil ] ?return
+
+    kill-list-next nil? [ nil ] ?return
 
     kill-list-next kill-list nth        // -> string
 
     dup last-paste!
 
-    kill-list-next 0 > [
-        kill-list-next 1-
+    kill-list-next 0> [
+        kill-list-next 1- kill-list-next!
     ] [
         // wrap around
-        kill-list length 1-
-    ] if kill-list-next! ;
+        kill-list length 1- kill-list-next!
+    ] if ;
 
 : append-kill                           // string -> void
     maybe-promote-last-paste

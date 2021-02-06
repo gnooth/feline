@@ -584,11 +584,11 @@ use: kill-ring
 
 : copy-line
     dot-line-text "\n" string-append append-kill
-    "Line copied to kill ring" message ;
+    "Line copied to clipboard" message ;
 
 : copy-region                           // region -> void
     region-as-string append-kill
-    "Region copied to kill ring" message ;
+    "Region copied to clipboard" message ;
 
 : copy
     [ anchor ] [ mark ] either?
@@ -672,7 +672,7 @@ use: kill-ring
 : cut
     mark [ dot make-region/2 cut-region ] [ cut-line ] if* ;
 
-: paste1-internal ( s )                 // string -> void
+: paste-string-internal ( s )           // string -> void
     {
         {
             [ s string-?last '\n' eq? ]
@@ -713,22 +713,22 @@ use: kill-ring
 
     modified ;
 
-: paste1                                // string -> void
+: paste-string                          // string -> void
     1 ?enough :> s
     reset-redo
     mark [
-        [ delete-region s paste1-internal ] with-compound-undo
+        [ delete-region s paste-string-internal ] with-compound-undo
     ] [
-        s paste1-internal
+        s paste-string-internal
     ] if ;
 
 : paste
-    [ get-clipboard-text ] [ last-kill ] either?
-    [ paste1 ] [ "Clipboard is empty" message ] if* ;
+    get-clipboard-text [ kill-list vector-adjoin ] when*
+    last-kill [ paste-string ] [ "Clipboard is empty" message ] if* ;
 
 : cycle-paste
     last-command ' paste eq? [
-        next-kill [ undo paste1 ] when*
+        next-kill [ undo paste-string ] when*
     ] [
         paste
     ] if
