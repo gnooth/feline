@@ -168,6 +168,7 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	lexer.asm \
 	load.asm \
 	locals.asm \
+        lvar.asm \
 	math.asm \
 	memory.asm \
 	method.asm \

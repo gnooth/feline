@@ -1,4 +1,4 @@
-; Copyright (C) 2012-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2012-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ static_data_area:
 %include "vector.asm"
 %include "byte-vector.asm"
 %include "handles.asm"
+%include "lvar.asm"
 %include "locals.asm"
 %include "hashtable-common.asm"
 %include "hashtable.asm"

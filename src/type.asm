@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -257,6 +257,7 @@ code initialize_types, 'initialize_types', SYMBOL_INTERNAL
         _add_type "string-slice", TYPECODE_STRING_SLICE
         _add_type "bit-array", TYPECODE_BIT_ARRAY
         _add_type "byte-vector", TYPECODE_BYTE_VECTOR
+        _add_type "lvar", TYPECODE_LVAR
 
         next
 endcode
