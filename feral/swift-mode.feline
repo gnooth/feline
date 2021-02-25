@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2019-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -78,22 +78,21 @@ global instance
 
 global last-identifier
 
-: parse-identifier ( iter )             // string-iterator -> segment
+: format-identifier ( iter )            // string-iterator -> segment
     iter string-iterator-index :> start
 
-    local ch
     [
-        iter string-iterator-next ch!
-        [ ch char? ] [ ch identifier-char? ] both?
+        iter string-iterator-next :> c
+        [ c char? ] [ c identifier-char? ] both?
     ] loop
     // reached end of identifier
     iter string-iterator-index :> end
     start end iter string-iterator-string substring :> identifier
 
     {
-        { [ last-identifier "func" = ] [ color-name ] }
+        { [ last-identifier { "func" "protocol" } member? ] [ color-name ] }
         { [ identifier syntax-words member? ] [ color-syntax ] }
-        { [ 0 identifier string-nth-unsafe char-upper-case? ] [ color-type ] }
+        { [ identifier string-first-char char-upper-case? ] [ color-type ] }
         [
             // default
             color-text
@@ -105,21 +104,21 @@ global last-identifier
     identifier start format make-segment/3 ;
 
 : format-iter ( iter )
-    100 <vector> :> v
+    100 make-vector :> v
     0 !> start
 
-    local ch
+    local c
     local end
 
     nil last-identifier!
 
     [
-        iter string-iterator-next ch!
-        ch
+        iter string-iterator-next c!
+        c
     ] [
         {
             {
-                [ ch '"' eq? ]
+                [ c '"' eq? ]
                 [
                     iter string-iterator-index end!
                     start end iter string-iterator-string substring
@@ -130,7 +129,7 @@ global last-identifier
             }
 
             {
-                [ ch '/' eq? ]
+                [ c '/' eq? ]
                 [
                     iter string-iterator-peek '/' eq? [
                         iter string-iterator-index start > [
@@ -146,12 +145,12 @@ global last-identifier
             }
 
             {
-                [ ch identifier-char? ]
+                [ c identifier-char? ]
                 [
                     iter string-iterator-index end!
                     start end iter string-iterator-string substring
                     start color-text make-segment/3 v push
-                    iter parse-identifier v push
+                    iter format-identifier v push
                     iter string-iterator-index start!
                 ]
             }
@@ -173,16 +172,19 @@ global last-identifier
 : swift-mode-format-line ( line )        // line -> segments
     line text>> detab make-string-iterator format-iter ;
 
-: line-is-definition? ( line )
-    " func " line text>> substring-start !> offset
+: line-is-definition? ( line )          // line -> index/nil
+    line text>> :> text
 
-    offset nil? [ nil ] ?return
+    [ " func "     text substring-start ]
+    [ " protocol " text substring-start ] either? !> index
 
-    "//" line text>> substring-start [
-        offset < [ nil offset! ] when
+    index nil? [ nil ] ?return
+
+    "//" text substring-start [
+        index < [ nil index! ] when
     ] when*
 
-    offset ;
+    index ;
 
 : swift-mode-list-symbols
     ' swift-mode:line-is-definition? list-symbols:list-symbols ;
