@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2020 Peter Graves <gnooth@gmail.com>
+// Copyright (C) 2017-2021 Peter Graves <gnooth@gmail.com>
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -116,6 +116,11 @@ tuple: position
 
 : copy-position ( pos )                 // position -> copy
     pos line>> pos offset>> make-position ;
+
+: position-char ( pos )                 // position -> char/nil
+    pos line>> :> line
+    line nil? [ nil ] ?return
+    pos offset>> pos line>> text>> [ ?nth ] [ drop nil ] if* ;
 
 : position-equal? ( pos1 pos2 )
     [ pos1 line>> pos2 line>> eq? ]

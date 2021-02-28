@@ -140,7 +140,7 @@ constant: comment-start-length comment-start length ;
 
     start 1+ end + ;
 
-: string-segments ( s )                 // string -> segments
+: string-segments ( s )                 // string -> vector
     s length :> len
     0 !> start
     0 !> end
@@ -256,6 +256,82 @@ use: completion
 
 unuse: completion
 
+: find-matching-char
+// sublime move_to_brackets ctrl-m
+// atom bracket-matcher:go-to-matching-bracket ctrl-m
+// vscode Go to Bracket ctrl-shift-\
+
+//     "find-matching-char" dprintf
+
+    dot nil? ?exit                      // shouldn't happen
+
+    "{([})]" :> chars
+    dot copy-position :> pos
+    nil !> outside?
+
+    pos position-char !> orig-char
+    orig-char nil? [
+        // dot at eol
+        pos offset>> 0> [
+            pos offset>> 1- pos offset<<
+            pos position-char orig-char!
+            true outside?!
+        ] when
+    ] when
+
+    orig-char nil? ?exit
+
+    orig-char chars string-find-char !> index
+    index [
+        pos offset>> 0> [
+            pos offset>> 1- pos offset<<
+            pos position-char orig-char!
+            orig-char chars string-find-char index!
+            true outside?!
+        ] when
+    ] unless
+
+    index nil? ?exit
+
+    index 3 >= :> search-backward?
+
+    index 3 search-backward? [ - ] [ + ] if chars nth :> match-char
+
+    1 !> count
+
+    search-backward? [
+        [
+            count 0> [ pos move-prev ] [ nil ] if
+        ]
+        [
+            pos position-char :> char
+            char orig-char  eq? [ count 1+ count! ] when
+            char match-char eq? [ count 1- count! ] when
+        ] while
+        outside? [
+            pos [ move-next drop ] when*
+        ] unless
+    ] [
+        [
+            count 0> [ pos move-next ] [ nil ] if
+        ]
+        [
+            pos position-char :> char
+            char orig-char  eq? [ count 1+ count! ] when
+            char match-char eq? [ count 1- count! ] when
+        ] while
+        outside? [
+            pos [ move-next drop ] when*
+        ] unless
+    ] if
+
+    pos [
+        editor:add-undo-move
+        dot!
+        true repaint?!
+        maybe-reframe
+    ] when* ;
+
 global local-map
 
 feral-config:winui? feral-config:gtkui? or #if
@@ -268,6 +344,8 @@ use: feral-key
     ' expand                            ctrl-space      m set-at
     ' list-symbols                      ctrl-shift-o    m set-at
     ' find-definition                   ctrl-t          m set-at
+    ' find-matching-char                ctrl-m          m set-at
+
     m local-map! ;
 
 initialize-local-map
