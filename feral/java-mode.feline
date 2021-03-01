@@ -1,0 +1,246 @@
+// Copyright (C) 2019-2021 Peter Graves <gnooth@gmail.com>
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+using: modes feral-core feline accessors segments feral-colors ;
+in: java-mode
+
+private
+
+global instance
+
+: get-instance // void -> mode
+    instance ;
+
+: skip-quoted-string ( quote-char iter )
+    [
+        iter string-iterator-next       // -> char/nil
+        dup quote-char neq? and
+    ] loop ;
+
+: quote-char?                           // x -> ?
+    dup '"' eq? ?exit
+    dup '\'' eq? ?exit
+    '`' eq? ;
+
+global last-identifier
+
+constant: syntax-words {
+    "abstract"
+    "abstract"
+    "assert"
+    "boolean"
+    "break"
+    "byte"
+    "case"
+    "catch"
+    "char"
+    "class"
+    "const"
+    "continue"
+    "default"
+    "do"
+    "double"
+    "else"
+    "extends"
+    "false"
+    "final"
+    "finally"
+    "float"
+    "for"
+    "goto"
+    "if"
+    "implements"
+    "import"
+    "instanceof"
+    "int"
+    "interface"
+    "long"
+    "native"
+    "new"
+    "null"
+    "package"
+    "private"
+    "protected"
+    "public"
+    "return"
+    "short"
+    "static"
+    "strictfp"
+    "super"
+    "switch"
+    "synchronized"
+    "this"
+    "throw"
+    "throws"
+    "transient"
+    "true"
+    "try"
+    "void"
+    "volatile"
+    "while"
+} ;
+
+: parse-quoted-string ( iter )          // string-iterator -> segment
+    iter string-iterator-index :> start
+    local ch
+    [
+        iter string-iterator-next ch!
+        ch dup '"' neq? and
+    ] loop
+    // reached end
+    ch [
+        ch '"' assert-eq
+        1 iter string-iterator-skip
+        iter string-iterator-index
+    ] [
+        iter string-iterator-string string-length
+    ] if :> end
+
+    start end iter string-iterator-string substring
+    start color-string make-segment/3 ;
+
+: parse-line-comment ( iter )           // string-iterator -> segment
+    iter string-iterator-index !> start
+    start 0? [
+        iter string-iterator-string 0 color-comment make-segment/3
+    ] [
+        start
+        iter string-iterator-string string-length
+        iter string-iterator-string substring
+        start color-comment make-segment/3
+    ] if ;
+
+: parse-identifier ( iter )             // string-iterator -> segment
+    iter string-iterator-index :> start
+
+    local ch
+    [
+        iter string-iterator-next ch!
+        [ ch char? ] [ ch identifier-char? ] both?
+    ] loop
+    // reached end of identifier
+    iter string-iterator-index :> end
+    start end iter string-iterator-string substring :> identifier
+
+    {
+        { [ identifier syntax-words member? ] [ color-syntax ] }
+        [
+            // default
+            color-text
+        ]
+    } cond :> format
+
+    identifier last-identifier!
+
+    identifier start format make-segment/3 ;
+
+: format-line ( line )        // line -> vector-of-segments
+    line text>> detab :> text
+    text make-string-iterator :> iter
+    line state>> !> state
+    100 make-vector :> v
+    0 !> start
+
+    local char
+    local end
+
+    nil last-identifier!
+
+    [
+        iter string-iterator-next char!
+        char
+    ] [
+        state match {
+            :neutral => [
+                char match {
+                    '"' =>  [
+                        iter string-iterator-index end!
+                        start end iter string-iterator-string substring
+                        start color-text make-segment/3 v push
+                        iter parse-quoted-string v push
+                        iter string-iterator-index start!
+                    ]
+                    '/' => [
+                        iter string-iterator-peek '/' eq? [
+                            iter string-iterator-index start > [
+                                iter string-iterator-index end!
+                                start end iter string-iterator-string substring
+                                start color-text make-segment/3 v push
+                            ] when
+                            iter parse-line-comment v push
+                            iter string-iterator-skip-to-end
+                            iter string-iterator-index start!
+                        ] [
+                            iter string-iterator-peek '*' eq? [
+                                iter string-iterator-index start > [
+                                    iter string-iterator-index end!
+                                    start end iter string-iterator-string substring
+                                    start color-text make-segment/3 v push
+                                ] when
+                                :block-comment state!
+                            ] when
+                        ] if
+                    ]
+                    _ => [
+                        char identifier-char?
+                        [
+                            iter string-iterator-index end!
+                            start end iter string-iterator-string substring
+                            start color-text make-segment/3 v push
+                            iter parse-identifier v push
+                            iter string-iterator-index start!
+                        ] when
+                    ]
+                }
+            ]
+            :block-comment => [
+                char iter c-mode:scan-block-comment state!
+                state :neutral eq? [
+                    start iter string-iterator-index text substring
+                    start color-comment make-segment/3 v push
+                    iter string-iterator-index start!
+                ] when
+            ]
+            _ => [ ]
+        }
+    ] while
+
+    iter string-iterator-string length end!
+    start end < [
+        start end iter string-iterator-string substring
+        start
+        state { :block-comment :line-comment } member-eq? [ color-comment ] [ color-text ] if
+        make-segment/3 v push
+    ] when
+
+    v ;
+
+: initialize-buffer ( buf )             // buffer -> void
+    get-instance :> m
+    m indent-size>> buf indent-size<<
+    true buf needs-scan<< ;
+
+: initialize-mode
+    mode make-instance :> m
+    "Java" m name<<
+    2 m indent-size<<
+    "// " m comment-start<<
+    ' initialize-buffer m initialize-buffer-function<<
+    ' format-line m format-line-function<<
+    ' c-mode:scan-buffer m scan-buffer-function<<
+    m ".java" modes set-at
+    m instance! ;
+
+initialize-mode
