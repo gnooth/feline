@@ -1,4 +1,4 @@
-; Copyright (C) 2018-2020 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2018-2021 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -19,11 +19,8 @@ file __FILE__
 %define STRING_ITERATOR_SIZE                    5 * BYTES_PER_CELL
 
 %define STRING_ITERATOR_STRING_OFFSET           8
-
 %define STRING_ITERATOR_RAW_INDEX_OFFSET        16
-
 %define STRING_ITERATOR_RAW_LENGTH_OFFSET       24
-
 %define STRING_ITERATOR_RAW_DATA_ADDRESS_OFFSET 32
 
 ; ### string-iterator?
@@ -58,16 +55,18 @@ endcode
 ; ### check-string-iterator
 code check_string_iterator, 'check_string_iterator' ; iterator -> ^iterator
         cmp     bl, HANDLE_TAG
-        jne     error_not_string_iterator
+        jne     .error2
         mov     rax, rbx
         shr     rbx, HANDLE_TAG_BITS
         mov     rbx, [rbx]              ; rbx: ^iterator
         cmp     word [rbx], TYPECODE_STRING_ITERATOR
-        jne     .error
+        jne     .error1
         next
-.error:
+.error1:
         mov     rbx, rax
-        jmp     error_not_string_iterator
+.error2:
+        _ error_not_string_iterator
+        next
 endcode
 
 ; ### error-not-string-iterator
