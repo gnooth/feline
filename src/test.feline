@@ -3322,6 +3322,7 @@ test: string-iterator-test
         iter string-iterator-string "this is a test" assert=
         iter string-iterator-index -1 assert-eq
         iter string-iterator-length 14 assert-eq
+        iter length 14 assert-eq
 
         iter string-iterator-peek 't' assert-eq
         iter string-iterator-index -1 assert-eq
@@ -3345,12 +3346,14 @@ test: string-iterator-test
         iter string-iterator-next nil assert-eq
 
         5 7 iter string-iterator-substring "is" string=? assert
+        5 7 iter substring "is" string=? assert
 
         "this is another test" make-string-iterator iter!
         iter dup string-iterator? assert-eq
         iter string-iterator-string "this is another test" assert=
         iter string-iterator-index -1 assert-eq
         iter string-iterator-length 20 assert-eq
+        iter length 20 assert-eq
 
         1 iter string-iterator-skip
         iter string-iterator-index 0 assert-eq
@@ -3388,6 +3391,7 @@ test: string-iterator-test
         iter string-iterator-index 4 assert-eq
 
         0 4 iter string-iterator-substring "best" string=? assert
+        0 4 iter substring "best" string=? assert
 
         // REVIEW string-iterator-reset
         -5 iter string-iterator-skip
@@ -4066,39 +4070,39 @@ test: tilde-expand-filename-test-1
 
 tilde-expand-filename-test-1
 
-test: both?-test
-    { 42 } [ [ true ] [ 42 ] both? ] unit-test
-    { 1 2 3 4 42 } [ 1 2 3 4 [ true ] [ 42 ] both? ] unit-test
+test: and*-test
+    { 42 } [ [ true ] [ 42 ] and* ] unit-test
+    { 1 2 3 4 42 } [ 1 2 3 4 [ true ] [ 42 ] and* ] unit-test
 
-    { nil } [ [ true ] [ nil ]  both? ] unit-test
-    { 1 2 3 4 nil }  [ 1 2 3 4 [ true ] [ nil ]  both? ] unit-test
+    { nil } [ [ true ] [ nil ]  and* ] unit-test
+    { 1 2 3 4 nil }  [ 1 2 3 4 [ true ] [ nil ]  and* ] unit-test
 
     87 !> x
 
-    { nil } [ [ x ] [ 93 x! nil ] both? ] unit-test
+    { nil } [ [ x ] [ 93 x! nil ] and* ] unit-test
     x 93 assert-eq
 
-    { nil } [ [ 71 x! nil ] [ 97 x! nil ] both? ] unit-test
+    { nil } [ [ 71 x! nil ] [ 97 x! nil ] and* ] unit-test
     x 71 assert-eq ;
 
-both?-test
+and*-test
 
-test: either?-test
-    { 42 } [ [ nil ] [ 42 ] either? ] unit-test
-    { 1 2 3 4 42 } [ 1 2 3 4 [ nil ] [ 42 ] either? ] unit-test
+test: or*-test
+    { 42 } [ [ nil ] [ 42 ] or* ] unit-test
+    { 1 2 3 4 42 } [ 1 2 3 4 [ nil ] [ 42 ] or* ] unit-test
 
-    { true } [ [ nil ] [ true ]  either? ] unit-test
-    { 1 2 3 4 true }  [ 1 2 3 4 [ nil ] [ true ]  either? ] unit-test
+    { true } [ [ nil ] [ true ]  or* ] unit-test
+    { 1 2 3 4 true }  [ 1 2 3 4 [ nil ] [ true ]  or* ] unit-test
 
     87 !> x
 
-    { 87 } [ [ x ] [ 93 x! ] either? ] unit-test
+    { 87 } [ [ x ] [ 93 x! ] or* ] unit-test
     x 87 assert-eq
 
-    { nil } [ [ 71 x! nil ] [ 97 x! nil ] either? ] unit-test
+    { nil } [ [ 71 x! nil ] [ 97 x! nil ] or* ] unit-test
     x 97 assert-eq ;
 
-either?-test
+or*-test
 
 test: string-trim-head-test-1
     { "" } [ "" string-trim-head ] unit-test
