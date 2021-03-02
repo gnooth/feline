@@ -521,13 +521,14 @@ code short_circuit_or, '||'             ; seq -> ?
         next
 endcode
 
-; ### both?
-code both?, 'both?'                     ; quot1 quot2 -> ?
+; ### and*
+code and_star, 'and*'                   ; quot1 quot2 -> ?
 ; Short-circuit `and` for two quotations.
-; Removes both quotations from the stack. Calls quot1.
-; Returns nil without calling quot2 if quot1 returns nil.
-; Otherwise, calls quot2 and returns the result quot2
-; returns.
+;
+; Remove both quotations from the stack and call quot1. If quot1
+; returns nil, return nil without calling quot2. Otherwise, call
+; quot2 and return the result quot2 returns.
+
         _tor                            ; move quot2 to return stack
         _ callable_raw_code_address     ; quot1 code address in rbx
         mov     rax, rbx                ; quot1 code address in rax
@@ -546,13 +547,21 @@ code both?, 'both?'                     ; quot1 quot2 -> ?
         next
 endcode
 
-; ### either?
-code either?, 'either?'                 ; quot1 quot2 -> ?
+; ### both?
+; Deprecated. Use and*.
+code both?, 'both?'                     ; quot1 quot2 -> ?
+        _ and_star
+        next
+endcode
+
+; ### or*
+code or_star, 'or*'                     ; quot1 quot2 -> ?
 ; Short-circuit `or` for two quotations.
-; Removes both quotations from the stack. Calls quot1.
-; Returns the result without calling quot2 if the result
-; is not nil. Otherwise, calls quot2 and returns the
-; result quot2 returns.
+;
+; Remove both quotations from the stack and call quot1. If the
+; result is non-nil, return that result without calling quot2.
+; Otherwise, call quot2 and return the result quot2 returns.
+
         _tor                            ; move quot2 to return stack
         _ callable_raw_code_address     ; quot1 code address in rbx
         mov     rax, rbx                ; quot1 code address in rax
@@ -568,6 +577,13 @@ code either?, 'either?'                 ; quot1 quot2 -> ?
         next
 .1:
         _rdrop
+        next
+endcode
+
+; ### either?
+; Deprecated. Use or*.
+code either?, 'either?'                 ; quot1 quot2 -> ?
+        _ or_star
         next
 endcode
 
