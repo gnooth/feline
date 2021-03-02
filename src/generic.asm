@@ -641,6 +641,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _add_method length, TYPECODE_SLICE, slice_length
         _add_method length, TYPECODE_RANGE, range_length
         _add_method length, TYPECODE_QUOTATION, quotation_length
+        _add_method length, TYPECODE_STRING_ITERATOR, string_iterator_length
 
         ; push
         _initialize_generic_function push
@@ -774,6 +775,7 @@ code initialize_generic_functions, 'initialize_generic_functions', SYMBOL_INTERN
         _initialize_generic_function substring
         _add_method substring, TYPECODE_STRING, string_substring
         _add_method substring, TYPECODE_SBUF, sbuf_substring
+        _add_method substring, TYPECODE_STRING_ITERATOR, string_iterator_substring
 
         ; >float
         _initialize_generic_function to_float
