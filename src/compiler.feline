@@ -60,15 +60,15 @@ public
 
 ' compile-?return-locals ' ?return_locals symbol-set-compiler
 
-: compile-both? ( node )
+: compile-and* ( node )
 
-    pending length 2 < [ ' both? compile-call-symbol ] ?return
+    pending length 2 < [ ' and* compile-call-symbol ] ?return
 
     pending last node-literal-value :> quot2
 
     pending dup length 2 - swap nth node-literal-value :> quot1
-    [ quot1 quotation? ] [ quot2 quotation? ] both? nil?
-    [ ' both? compile-call-address ] ?return
+    [ quot1 quotation? ] [ quot2 quotation? ] and* nil?
+    [ ' and* compile-call-address ] ?return
 
     // quot1 and quot2 are both literal quotations
     quot2 callable-code-address :> addr2
@@ -89,7 +89,8 @@ public
     addr2 compile-call-address          // call addr2
 ;
 
-' compile-both? ' both? symbol-set-compiler
+' compile-and* ' and* symbol-set-compiler
+' compile-and* ' both? symbol-set-compiler
 
 : compile-if ( node )
 
@@ -239,15 +240,15 @@ public
 
 ' compile-if* ' if* symbol-set-compiler
 
-: compile-either? ( node )
+: compile-or* ( node )
 
-    pending length 2 < [ ' either? compile-call-address ] ?return
+    pending length 2 < [ ' or* compile-call-address ] ?return
 
     pending last node-literal-value :> quot2
 
     pending dup length 2 - swap nth node-literal-value :> quot1
     [ quot1 quotation? ] [ quot2 quotation? ] both? nil?
-    [ ' either? compile-call-symbol ] ?return
+    [ ' or* compile-call-symbol ] ?return
 
     // quot1 and quot2 are both literal quotations
     quot2 callable-code-address :> addr2
@@ -268,7 +269,8 @@ public
     addr2 compile-call-address          // call addr2
 ;
 
-' compile-either? ' either? symbol-set-compiler
+' compile-or* ' or* symbol-set-compiler
+' compile-or* ' either? symbol-set-compiler
 
 : compile-while ( node )
 
