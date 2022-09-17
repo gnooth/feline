@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2018 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2022 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -50,20 +50,18 @@ code verify_float, 'verify-float'       ; x -- x
 endcode
 
 ; ### check-float
-code check_float, 'check-float'         ; x -- raw-float
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_FLOAT
+code check_float, 'check-float'         ; x -> raw-float
+        cmp     bl, HANDLE_TAG
+        jne     error_not_float
+        mov     rax, rbx
+        shr     rbx, HANDLE_TAG_BITS
+        mov     rbx, [rbx]
+        cmp     word [rbx], TYPECODE_FLOAT
         jne     .error
-        _nip
-        _return
-.error:
-        _drop                           ; -- x
-        jmp     error_not_float
         next
+.error:
+        mov     rbx, rax
+        jmp     error_not_float
 endcode
 
 %macro _float_raw_value 0               ; raw-float -- raw-value
@@ -170,7 +168,7 @@ code int64_to_float, 'int64>float'
 endcode
 
 ; ### pi
-code pi, 'pi'                   ; -- float
+code pi, 'pi'                           ; -- float
         pushrbx
         xcall   c_pi
         mov     rbx, rax
@@ -179,16 +177,14 @@ code pi, 'pi'                   ; -- float
 endcode
 
 ; ### float-float+
-code float_float_plus, 'float-float+'   ; float1 float2 -- sum
+code float_float_plus, 'float-float+'   ; float1 float2 -> sum
         _ check_float
         _swap
         _ check_float
         mov     arg0_register, rbx
         poprbx
         mov     arg1_register, rbx
-        poprbx
         xcall   c_float_float_plus
-        pushrbx
         mov     rbx, rax
         _ new_handle
         next
