@@ -1,4 +1,4 @@
-; Copyright (C) 2017-2022 Peter Graves <gnooth@gmail.com>
+; Copyright (C) 2017-2023 Peter Graves <gnooth@gmail.com>
 
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -33,24 +33,20 @@ code float?, 'float?'                   ; handle -- ?
 endcode
 
 ; ### verify-float
-code verify_float, 'verify-float'       ; x -- x
-        _dup
-        _ deref
-        test    rbx, rbx
-        jz      .error
-        movzx   eax, word [rbx]
-        cmp     eax, TYPECODE_FLOAT
-        jne     .error
-        _drop
-        _return
-.error:
-        _drop                           ; -- x
-        jmp     error_not_float
+code verify_float, 'verify-float'       ; x -> x
+; Returns argument unchanged.
+        cmp     bl, HANDLE_TAG
+        jne     error_not_float
+        mov     rax, rbx
+        shr     rax, HANDLE_TAG_BITS
+        mov     rax, [rax]
+        cmp     word [rax], TYPECODE_FLOAT
+        jne     error_not_float
         next
 endcode
 
-; ### check-float
-code check_float, 'check-float'         ; x -> raw-float
+; ### check_float
+code check_float, 'check_float'         ; x -> raw-float
         cmp     bl, HANDLE_TAG
         jne     error_not_float
         mov     rax, rbx
