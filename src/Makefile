@@ -37,12 +37,18 @@ OBJS = main.o os.o terminal.o backtrace.o random.o numbers.o math.o \
 	socket.o version.o feline.o
 
 ifeq ($(OS),Windows_NT)
+ifndef WINUI
+        WINUI = 1
+endif
 ifdef WINUI
 	OBJS += winui.o
 	ASMFLAGS += -DWINUI
 endif
 else
 # Linux
+ifndef GTKUI
+        GTKUI = 1
+endif
 ifdef GTKUI
 	OBJS += gtkui.o
 	ASMFLAGS += -DGTKUI
@@ -209,17 +215,9 @@ ASM_SOURCES = feline.asm feline_home.asm externs.asm \
 	xalloc.asm
 
 ifeq ($(OS),Windows_NT)
-
-ifdef WINUI
-	ASM_SOURCES += winui.asm
-endif
-
+ASM_SOURCES += winui.asm
 else
-
-ifdef GTKUI
-	ASM_SOURCES += gtkui.asm
-endif
-
+ASM_SOURCES += gtkui.asm
 endif
 
 # -felf64 even on Windows
